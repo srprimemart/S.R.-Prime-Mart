@@ -1,7 +1,7 @@
 // Google Apps Script URL
 const scriptURL = 'https://script.google.com/macros/s/AKfycbxYNeAUNdXYcUaAeNupvRyoiARb1PGC8au94ZYQzBysMkIop2txBsloRx9C62BDARIF/exec';
 
-// Product Catalog
+// প্রোডাক্টের ক্যাটালগ
 const products = [
     {
         id: 1,
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts(products);
 });
 
-// Render Products Grid
+// প্রোডাক্ট গ্রিড রেন্ডার
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -64,14 +64,14 @@ function renderProducts(items) {
     `).join('');
 }
 
-// Search Filter
+// সার্চ ফিল্টার
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query));
     renderProducts(filtered);
 }
 
-// Add Item to Cart
+// কার্টে যোগ করা
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -87,7 +87,7 @@ function addToCart(productId) {
     toggleCartDrawer();
 }
 
-// Quantity Increase (+)
+// কোয়ান্টিটি বাড়ানো (+)
 function increaseQty(productId) {
     const item = cart.find(i => i.id === productId);
     if (item) {
@@ -96,7 +96,7 @@ function increaseQty(productId) {
     }
 }
 
-// Quantity Decrease (-)
+// কোয়ান্টিটি কমানো (-)
 function decreaseQty(productId) {
     const item = cart.find(i => i.id === productId);
     if (item) {
@@ -108,7 +108,7 @@ function decreaseQty(productId) {
     }
 }
 
-// Update Cart Interface
+// কার্ট UI আপডেট
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartBadge = document.getElementById('cartCount');
@@ -165,11 +165,11 @@ function updateCartUI() {
     calculateFinalTotal();
 }
 
-// Calculate Totals and Delivery Fees
+// ডেলিভারি চার্জ ও সর্বমোট হিসাব (70 / 130 / 110 BDT)
 function calculateFinalTotal() {
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliverySelect = document.getElementById('deliveryLocation');
-    let deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 170;
+    let deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 70;
 
     if (document.getElementById('modalDeliveryFee')) {
         document.getElementById('modalDeliveryFee').innerText = `BDT ${deliveryFee}`;
@@ -181,7 +181,7 @@ function calculateFinalTotal() {
     }
 }
 
-// Toggle Cart Drawer Visibility
+// কার্ট ড্রয়ার ওপেন/ক্লোজ
 function toggleCartDrawer() {
     const drawer = document.getElementById('cartDrawer');
     if (drawer) {
@@ -189,7 +189,7 @@ function toggleCartDrawer() {
     }
 }
 
-// Open Checkout Modal
+// ভিউ কার্ট এ ক্লিক করলে চেকআউট মডাল ওপেন
 function openCheckoutModal() {
     if (cart.length === 0) {
         alert('Your cart is empty!');
@@ -203,7 +203,7 @@ function openCheckoutModal() {
     }
 }
 
-// Close Checkout Modal
+// চেকআউট মডাল বন্ধ করা
 function closeCheckoutModal() {
     const modal = document.getElementById('checkoutModal');
     if (modal) {
@@ -215,7 +215,7 @@ function closeCheckoutModal() {
     }
 }
 
-// Handle Form Submission
+// ফর্ম সাবমিট করা
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -247,7 +247,7 @@ if (orderForm) {
 
         function showSuccess() {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Place Order';
+            submitBtn.textContent = 'Confirm Order';
             orderForm.reset();
             cart = [];
             updateCartUI();
@@ -258,7 +258,7 @@ if (orderForm) {
             
             setTimeout(() => {
                 closeCheckoutModal();
-            }, 4000);
+            }, 5000);
         }
     });
 }
