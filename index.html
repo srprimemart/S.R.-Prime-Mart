@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
 </head>
 <body>
 
-    <!-- টপ হেডার সেকশন (হোয়াইট ও গ্রিন থিম) -->
+    <!-- Header Section -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
@@ -31,8 +31,8 @@
                         <span>01856575222</span>
                     </div>
                 </div>
-                <!-- কার্ট আইকন ও ব্যাজ -->
-                <div class="cart-icon-btn" onclick="openCartModal()">
+                <!-- Cart Icon Button -->
+                <div class="cart-icon-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span id="cartCount" class="cart-badge">0</span>
                 </div>
@@ -40,7 +40,7 @@
         </div>
     </header>
 
-    <!-- নেভিগেশন বার -->
+    <!-- Navigation Bar -->
     <nav class="nav-bar">
         <div class="nav-container">
             <a href="#" class="nav-link active">Home</a>
@@ -48,7 +48,7 @@
         </div>
     </nav>
 
-    <!-- মেইন কনটেন্ট (প্রোডাক্ট গ্রিড) -->
+    <!-- Main Content Grid -->
     <main class="main-container">
         <section id="products-section" class="products-section">
             <h2 class="section-title">All Products</h2>
@@ -56,61 +56,76 @@
         </section>
     </main>
 
-    <!-- পূর্ণাঙ্গ কার্ট ও চেকআউট পপ-আপ মডাল -->
-    <div id="cartModal" class="modal">
+    <!-- Sliding Cart Drawer -->
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="drawer-header">
+            <h3>Your Shopping Cart</h3>
+            <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
+        </div>
+        <div class="drawer-items" id="drawerItemsContainer">
+            <!-- Dynamic Cart Items with Images and +/- Controls -->
+        </div>
+        <div class="drawer-footer">
+            <div class="drawer-subtotal">
+                <span>Subtotal:</span>
+                <span id="drawerSubtotal">BDT 0</span>
+            </div>
+            <button class="view-cart-btn" onclick="openCheckoutModal()">View Cart & Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeCartModal()">&times;</span>
-            <h2>আপনার শপিং কার্ট</h2>
+            <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
+            <h2>Order Confirmation</h2>
             
-            <div class="cart-layout">
-                <!-- বাম পাশ: কার্টে থাকা প্রোডাক্টের তালিকা ও ছবি -->
-                <div class="cart-items-section">
-                    <div id="cartItemsContainer">
-                        <!-- জাভাস্ক্রিপ্ট দিয়ে এখানে কার্টের প্রোডাক্টগুলো ছবিসহ যোগ হবে -->
-                    </div>
+            <div class="checkout-grid">
+                <!-- Left Column: Summary and English Delivery Options -->
+                <div class="checkout-summary-side">
+                    <h4>Cart Summary</h4>
+                    <div id="checkoutItemsList" class="checkout-items-list"></div>
                     
-                    <!-- ডেলিভারি চার্জ অপশন -->
-                    <div class="delivery-options">
-                        <label>ডেলিভারি এলাকা নির্বাচন করুন:</label>
-                        <select id="deliveryLocation" onchange="updateTotal()">
-                            <option value="170">ইনসাইড ঢাকা (১৭০ টাকা)</option>
-                            <option value="130">আউটসাইড ঢাকা (১৩০ টাকা)</option>
-                            <option value="110">সাব এরিয়া (১১০ টাকা)</option>
+                    <div class="delivery-box">
+                        <label for="deliveryLocation">Select Delivery Area:</label>
+                        <select id="deliveryLocation" onchange="calculateFinalTotal()">
+                            <option value="170">Inside Dhaka (170 BDT)</option>
+                            <option value="130">Outside Dhaka (130 BDT)</option>
+                            <option value="110">Sub Area (110 BDT)</option>
                         </select>
                     </div>
 
-                    <!-- হিসাব-নিকাশ -->
-                    <div class="cart-summary-box">
-                        <div class="summary-row"><span>সাবটোটাল:</span> <span id="subTotal">৳0</span></div>
-                        <div class="summary-row"><span>ডেলিভারি চার্জ:</span> <span id="deliveryCharge">৳170</span></div>
-                        <div class="summary-row total-row"><span>সর্বমোট:</span> <span id="grandTotal">৳170</span></div>
+                    <div class="final-calc-box">
+                        <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
+                        <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 170</span></div>
+                        <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 170</span></div>
                     </div>
                 </div>
 
-                <!-- ডান পাশ: কাস্টমার ইনফো ও অর্ডার ফর্ম -->
-                <div class="checkout-form-section">
+                <!-- Right Column: Customer Details Form in English -->
+                <div class="checkout-form-side">
                     <form id="orderForm">
                         <div class="form-group">
-                            <label>আপনার নাম:</label>
-                            <input type="text" id="customerName" name="Name" placeholder="আপনার পুরো নাম লিখুন" required>
+                            <label for="customerName">Full Name:</label>
+                            <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
                         </div>
 
                         <div class="form-group">
-                            <label>ফোন নম্বর:</label>
-                            <input type="tel" id="customerPhone" name="Phone" placeholder="০1XXXXXXXXX" required>
+                            <label for="customerPhone">Phone Number:</label>
+                            <input type="tel" id="customerPhone" name="Phone" placeholder="01XXXXXXXXX" required>
                         </div>
 
                         <div class="form-group">
-                            <label>থানা ও সম্পূর্ণ ঠিকানা:</label>
-                            <textarea id="customerAddress" name="Address" rows="3" placeholder="গ্রাম/রোড, থানা, জেলা" required></textarea>
+                            <label for="customerAddress">Thana & Full Address:</label>
+                            <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                         </div>
 
-                        <button type="submit" class="submit-btn" id="submitBtn">പ്লেস অর্ডার (Place Order)</button>
+                        <button type="submit" class="submit-btn" id="submitBtn">Place Order</button>
                     </form>
 
                     <div id="successMessage" class="success-message" style="display: none;">
-                        ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br>
-                        অর্ডারটি কনফার্ম করার জন্য আমাদের টিম খুব দ্রুত আপনার নাম্বারে যোগাযোগ করবে। ধন্যবাদ!
+                        ✅ Your order has been placed successfully!<br><br>
+                        Our team will contact you shortly at your provided phone number to confirm the order. Thank you for shopping with us!
                     </div>
                 </div>
             </div>
