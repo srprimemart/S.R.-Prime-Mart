@@ -10,7 +10,7 @@ body {
     color: #1f2937;
 }
 
-/* Header Styling */
+/* হেডার স্টাইল */
 .main-header {
     background-color: #ffffff;
     border-bottom: 2px solid #10b981;
@@ -45,7 +45,7 @@ body {
     color: #10b981;
 }
 
-/* Search Bar */
+/* সার্চ বার */
 .search-area {
     display: flex;
     width: 40%;
@@ -80,7 +80,7 @@ body {
     background-color: #059669;
 }
 
-/* Contact and Cart Badge */
+/* ফোন ও কার্ট */
 .header-right {
     display: flex;
     align-items: center;
@@ -128,7 +128,7 @@ body {
     padding: 2px 6px;
 }
 
-/* Navigation Bar */
+/* নেভিগেশন বার */
 .nav-bar {
     background-color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
@@ -156,7 +156,7 @@ body {
     border-bottom: 2px solid #10b981;
 }
 
-/* Products Grid */
+/* প্রোডাক্ট গ্রিড */
 .main-container {
     max-width: 1200px;
     margin: 30px auto;
@@ -256,7 +256,7 @@ body {
     background-color: #059669;
 }
 
-/* Sliding Cart Drawer */
+/* কার্ট ড্রয়ার */
 .cart-drawer {
     position: fixed;
     top: 0;
@@ -333,7 +333,7 @@ body {
     background-color: #059669;
 }
 
-/* Cart Item Rows (+/- buttons) */
+/* ড্রয়ার আইটেম প্লাস-মাইনাস সহ */
 .cart-item-row {
     display: flex;
     align-items: center;
@@ -376,7 +376,7 @@ body {
 .q-btn {
     background: #f3f4f6;
     border: 1px solid #d1d5db;
-    padding: 1px 6px;
+    padding: 1px 8px;
     cursor: pointer;
     border-radius: 3px;
     font-weight: bold;
@@ -388,7 +388,7 @@ body {
     border-color: #10b981;
 }
 
-/* Modal Popup */
+/* চেকআউট পপআপ মডাল */
 .modal {
     display: none;
     position: fixed;
@@ -445,9 +445,10 @@ body {
     }
 }
 
-.checkout-summary-side h4 {
-    margin-bottom: 10px;
+.checkout-summary-side h4, .checkout-form-side h4 {
+    margin-bottom: 12px;
     color: #1f2937;
+    font-size: 16px;
 }
 
 .checkout-items-list {
@@ -504,7 +505,7 @@ body {
     margin-top: 6px;
 }
 
-/* Form Controls */
+/* ফর্ম কন্ট্রোল */
 .form-group {
     margin-bottom: 12px;
 }
@@ -558,5 +559,5 @@ body {
     border-radius: 6px;
     text-align: center;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.6;
 }
