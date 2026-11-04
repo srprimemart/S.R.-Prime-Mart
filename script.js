@@ -1,7 +1,7 @@
-// আপনার Google Apps Script URL
+// Google Apps Script URL
 const scriptURL = 'https://script.google.com/macros/s/AKfycbxYNeAUNdXYcUaAeNupvRyoiARb1PGC8au94ZYQzBysMkIop2txBsloRx9C62BDARIF/exec';
 
-// প্রোডাক্টের তথ্য (b4.jpg ছবি এবং Watch যুক্ত করা হয়েছে)
+// প্রোডাক্টের তালিকা
 const products = [
     {
         id: 1,
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts(products);
 });
 
-// প্রোডাক্ট রেন্ডার করা
+// প্রোডাক্ট গ্রিডে শো করা
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -71,7 +71,7 @@ function searchProducts() {
     renderProducts(filtered);
 }
 
-// কার্টে এড করা ও পপ-আপ মডাল ওপেন করা
+// কার্টে প্রোডাক্ট যোগ ও মডাল ওপেন
 function addToCart(productName, price) {
     cartItemCount++;
     const cartBadge = document.getElementById('cartCount');
@@ -87,7 +87,7 @@ function addToCart(productName, price) {
     openCart();
 }
 
-// পপ-আপ মডাল ওপেন ও ক্লোজ
+// মডাল কন্ট্রোল
 function openCart() {
     const modal = document.getElementById('cartModal');
     if (modal) {
@@ -106,7 +106,7 @@ function closeCart() {
     }
 }
 
-// ফর্ম সাবমিট করা
+// অর্ডার ফর্ম সাবমিশন
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
