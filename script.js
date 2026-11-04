@@ -1,8 +1,7 @@
-
 // Google Apps Script URL
 const scriptURL = 'https://script.google.com/macros/s/AKfycbxYNeAUNdXYcUaAeNupvRyoiARb1PGC8au94ZYQzBysMkIop2txBsloRx9C62BDARIF/exec';
 
-// প্রোডাক্টের তালিকা
+// Product Catalog
 const products = [
     {
         id: 1,
@@ -30,20 +29,19 @@ const products = [
     }
 ];
 
-// কার্ট অ্যারে (যেখানে প্রোডাক্টগুলো জমা হবে)
 let cart = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     renderProducts(products);
 });
 
-// প্রোডাক্ট রেন্ডার করা
+// Render Products Grid
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
 
     if (items.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">কোনো প্রোডাক্ট পাওয়া যায়নি!</p>`;
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found!</p>`;
         return;
     }
 
@@ -55,7 +53,7 @@ function renderProducts(items) {
                 </div>
                 <div class="product-title">${product.name}</div>
                 <div class="price-stock-row">
-                    <span class="product-price">৳${product.price}</span>
+                    <span class="product-price">BDT ${product.price}</span>
                     <span class="stock-badge">In stock</span>
                 </div>
             </div>
@@ -66,41 +64,41 @@ function renderProducts(items) {
     `).join('');
 }
 
-// সার্চ ফাংশন
+// Search Filter
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query));
     renderProducts(filtered);
 }
 
-// কার্টে প্রোডাক্ট যোগ করা
+// Add Item to Cart
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
-    const existingItem = cart.find(item => item.id === productId);
-    if (existingItem) {
-        existingItem.quantity += 1;
+    const existing = cart.find(item => item.id === productId);
+    if (existing) {
+        existing.quantity += 1;
     } else {
         cart.push({ ...product, quantity: 1 });
     }
 
     updateCartUI();
-    openCartModal();
+    toggleCartDrawer();
 }
 
-// কোয়ান্টিটি বাড়ানো (+১)
+// Quantity Increase (+)
 function increaseQty(productId) {
-    const item = cart.find(item => item.id === productId);
+    const item = cart.find(i => i.id === productId);
     if (item) {
         item.quantity += 1;
         updateCartUI();
     }
 }
 
-// কোয়ান্টিটি কমানো (-১)
+// Quantity Decrease (-)
 function decreaseQty(productId) {
-    const item = cart.find(item => item.id === productId);
+    const item = cart.find(i => i.id === productId);
     if (item) {
         item.quantity -= 1;
         if (item.quantity <= 0) {
@@ -110,7 +108,7 @@ function decreaseQty(productId) {
     }
 }
 
-// কার্টের UI এবং টোটাল আপডেট করা
+// Update Cart Interface
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartBadge = document.getElementById('cartCount');
@@ -118,58 +116,96 @@ function updateCartUI() {
         cartBadge.innerText = totalCount;
     }
 
-    const container = document.getElementById('cartItemsContainer');
-    if (!container) return;
+    const drawerContainer = document.getElementById('drawerItemsContainer');
+    const checkoutListContainer = document.getElementById('checkoutItemsList');
 
     if (cart.length === 0) {
-        container.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 20px;">আপনার কার্টটি খালি!</p>`;
-        document.getElementById('subTotal').innerText = `৳0`;
-        document.getElementById('grandTotal').innerText = `৳0`;
+        if (drawerContainer) drawerContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 30px;">Your cart is empty!</p>`;
+        if (checkoutListContainer) checkoutListContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 15px;">Cart is empty</p>`;
+        
+        document.getElementById('drawerSubtotal').innerText = `BDT 0`;
+        if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT 0`;
+        if (document.getElementById('modalGrandTotal')) document.getElementById('modalGrandTotal').innerText = `BDT 0`;
         return;
     }
 
-    container.innerHTML = cart.map(item => `
-        <div class="cart-item-card">
-            <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-            <div class="cart-item-details">
-                <div class="cart-item-title">${item.name}</div>
-                <div class="cart-item-price">৳${item.price} × ${item.quantity}</div>
-                <div class="quantity-controls">
-                    <button class="qty-btn" onclick="decreaseQty(${item.id})">-</button>
-                    <span>${item.quantity}</span>
-                    <button class="qty-btn" onclick="increaseQty(${item.id})">+</button>
+    if (drawerContainer) {
+        drawerContainer.innerHTML = cart.map(item => `
+            <div class="cart-item-row">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">BDT ${item.price}</div>
+                    <div class="qty-box">
+                        <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    }
 
-    updateTotal();
+    if (checkoutListContainer) {
+        checkoutListContainer.innerHTML = cart.map(item => `
+            <div class="cart-item-row" style="font-size: 12px;">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" style="width: 35px; height: 35px;">
+                <div class="cart-item-info">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div>BDT ${item.price} × ${item.quantity}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    document.getElementById('drawerSubtotal').innerText = `BDT ${subtotal}`;
+    if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT ${subtotal}`;
+
+    calculateFinalTotal();
 }
 
-// সাবটোটাল ও ডেলিভারি চার্জ হিসাব করা
-function updateTotal() {
+// Calculate Totals and Delivery Fees
+function calculateFinalTotal() {
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliverySelect = document.getElementById('deliveryLocation');
     let deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 170;
 
-    document.getElementById('subTotal').innerText = `৳${subtotal}`;
-    document.getElementById('deliveryCharge').innerText = `৳${deliveryFee}`;
-    
-    let grandTotal = subtotal > 0 ? subtotal + deliveryFee : 0;
-    document.getElementById('grandTotal').innerText = `৳${grandTotal}`;
-}
+    if (document.getElementById('modalDeliveryFee')) {
+        document.getElementById('modalDeliveryFee').innerText = `BDT ${deliveryFee}`;
+    }
 
-// মডাল ওপেন ও ক্লোজ
-function openCartModal() {
-    const modal = document.getElementById('cartModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        updateCartUI();
+    let grandTotal = subtotal > 0 ? subtotal + deliveryFee : 0;
+    if (document.getElementById('modalGrandTotal')) {
+        document.getElementById('modalGrandTotal').innerText = `BDT ${grandTotal}`;
     }
 }
 
-function closeCartModal() {
-    const modal = document.getElementById('cartModal');
+// Toggle Cart Drawer Visibility
+function toggleCartDrawer() {
+    const drawer = document.getElementById('cartDrawer');
+    if (drawer) {
+        drawer.classList.toggle('open');
+    }
+}
+
+// Open Checkout Modal
+function openCheckoutModal() {
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+    toggleCartDrawer();
+    const modal = document.getElementById('checkoutModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        calculateFinalTotal();
+    }
+}
+
+// Close Checkout Modal
+function closeCheckoutModal() {
+    const modal = document.getElementById('checkoutModal');
     if (modal) {
         modal.style.display = 'none';
     }
@@ -179,14 +215,14 @@ function closeCartModal() {
     }
 }
 
-// অর্ডার সাবমিট করা
+// Handle Form Submission
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
         if (cart.length === 0) {
-            alert('আপনার কার্টে কোনো প্রোডাক্ট নেই!');
+            alert('Your cart is empty!');
             return;
         }
 
@@ -194,9 +230,8 @@ if (orderForm) {
         const successMessage = document.getElementById('successMessage');
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'প্রসেসিং হচ্ছে...';
+        submitBtn.textContent = 'Processing...';
 
-        // কার্টের সব প্রোডাক্টের বিবরণ একসাথে তৈরি করা
         let orderSummaryText = cart.map(i => `${i.name} (Qty: ${i.quantity})`).join(', ');
         let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         let deliveryFee = parseInt(document.getElementById('deliveryLocation').value);
@@ -204,7 +239,7 @@ if (orderForm) {
 
         let formData = new FormData(orderForm);
         formData.append('ProductDetails', orderSummaryText);
-        formData.append('TotalAmount', `৳${totalAmount}`);
+        formData.append('TotalAmount', `BDT ${totalAmount}`);
 
         fetch(scriptURL, { method: 'POST', body: formData })
             .then(response => showSuccess())
@@ -212,7 +247,7 @@ if (orderForm) {
 
         function showSuccess() {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'പ്লেস অর্ডার (Place Order)';
+            submitBtn.textContent = 'Place Order';
             orderForm.reset();
             cart = [];
             updateCartUI();
@@ -222,7 +257,7 @@ if (orderForm) {
             }
             
             setTimeout(() => {
-                closeCartModal();
+                closeCheckoutModal();
             }, 4000);
         }
     });
