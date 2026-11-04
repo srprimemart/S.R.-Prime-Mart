@@ -3,56 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S.R. Prime Mart</title>
-    <!-- Google Fonts থেকে Poppins ফন্ট যুক্ত করা হলো -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>SR Prime Mart</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <!-- হেডার সেকশন -->
     <header class="main-header">
         <div class="header-container">
-            <div class="top-row">
-                <div class="logo-area" onclick="showSection('shop-view')">
-                    <img src="logo.jpg" alt="S.R. Prime Mart" class="logo-img" onerror="this.style.display='none'">
-                    <span class="brand-name">S.R. Prime Mart</span>
-                </div>
-                <div class="header-right">
-                    <div class="contact-info">
-                        <small>LET'S TALK</small>
-                        <span>01600445389</span>
-                    </div>
-                    
-                    <!-- কার্ট আইকন ও ড্রপডাউন -->
-                    <div class="cart-wrapper">
-                        <div class="cart-icon-btn" onclick="toggleMiniCart()">
-                            🛒 <span id="cartCount" class="cart-badge">0</span>
-                        </div>
-
-                        <div id="miniCart" class="mini-cart">
-                            <div class="mini-cart-header">
-                                <h4>Shopping Cart</h4>
-                                <span class="close-mini" onclick="toggleMiniCart()">&times;</span>
-                            </div>
-                            <div id="miniCartItems" class="mini-cart-items">
-                                <p class="empty-msg">আপনার কার্ট খালি আছে</p>
-                            </div>
-                            <div class="mini-cart-footer">
-                                <div class="total-row">
-                                    <span>Subtotal:</span>
-                                    <span id="miniCartSubtotal">৳0</span>
-                                </div>
-                                <button class="view-cart-btn" onclick="goToCheckout()">View Cart & Checkout</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="logo-area">
+                <img src="logo.jpg" alt="SR Prime Mart" class="logo-img" onerror="this.style.display='none'">
+                <span class="brand-name">SR Prime Mart</span>
             </div>
 
             <div class="search-area">
                 <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
-                <button class="search-btn" onclick="searchProducts()">Search</button>
+                <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+            </div>
+
+            <div class="header-right">
+                <div class="contact-info">
+                    <i class="fa-solid fa-phone"></i>
+                    <div>
+                        <small>LET'S TALK</small>
+                        <span>01856575222</span>
+                    </div>
+                </div>
+                <div class="cart-icon-btn" onclick="openCart()">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span id="cartCount" class="cart-badge">0</span>
+                </div>
             </div>
         </div>
     </header>
@@ -60,21 +42,55 @@
     <!-- নেভিগেশন বার -->
     <nav class="nav-bar">
         <div class="nav-container">
-            <a href="javascript:void(0)" class="nav-link active" onclick="showSection('shop-view')">Home</a>
-            <a href="javascript:void(0)" class="nav-link" onclick="showSection('shop-view')">All Products</a>
+            <a href="#" class="nav-link active">Home</a>
+            <a href="#products-section" class="nav-link">All Products</a>
         </div>
     </nav>
 
-    <!-- ১. প্রোডাক্ট গ্রিড পেজ -->
-    <main id="shop-view" class="main-container">
-        <section class="products-section">
+    <!-- মেইন কনটেন্ট -->
+    <main class="main-container">
+        <section id="products-section" class="products-section">
             <h2 class="section-title">All Products</h2>
             <div id="product-container" class="product-grid"></div>
         </section>
     </main>
 
-    <!-- ২. চেকআউট পেজ (নাম, ঠিকানা, ফোন নম্বর) -->
-    <main id="checkout-view" class="main-container" style="display: none;">
-        
-        <div id="topSuccessNotice" class
+    <!-- অর্ডার/কার্ট পপ-আপ মডাল -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCart()">&times;</span>
+            <h2>অর্ডার কনফার্ম করুন</h2>
+            
+            <form id="orderForm">
+                <div class="form-group">
+                    <label>পছন্দের প্রোডাক্ট:</label>
+                    <input type="text" id="selectedProduct" name="Product" readonly required style="background: #1e1e1e; color: #fff;">
+                </div>
 
+                <div class="form-group">
+                    <label>আপনার নাম:</label>
+                    <input type="text" id="customerName" name="Name" placeholder="আপনার পুরো নাম লিখুন" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ফোন নম্বর:</label>
+                    <input type="tel" id="customerPhone" name="Phone" placeholder="০1XXXXXXXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label>সম্পূর্ণ ঠিকানা:</label>
+                    <textarea id="customerAddress" name="Address" rows="3" placeholder="গ্রাম/রোড, থানা, জেলা" required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">অর্ডার কনফার্ম করুন</button>
+            </form>
+
+            <div id="successMessage" class="success-message" style="display: none;">
+                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে! কিছুক্ষণের মধ্যে আমাদের টিম মেম্বার আপনাকে কল দিয়ে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
