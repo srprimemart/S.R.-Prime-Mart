@@ -1,30 +1,13 @@
-/* Google Fonts Import: Hind Siliguri & Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Base Body Style: Hind Siliguri Regular for Bengali / Poppins for English */
 body {
     background-color: #ffffff;
     color: #1f2937;
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-    font-weight: 400; /* Body: Hind Siliguri Regular */
-}
-
-/* Headings: Hind Siliguri SemiBold */
-h1, h2, h3, h4, h5, h6, .section-title, .brand-name, .card-subtitle {
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-    font-weight: 600; /* Heading: Hind Siliguri SemiBold */
-}
-
-/* Buttons: Hind Siliguri Medium */
-button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-order-btn, .q-btn {
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-    font-weight: 500; /* Button: Hind Siliguri Medium */
 }
 
 /* Top Announcement Bar */
@@ -67,6 +50,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 
 .brand-name {
     font-size: 26px;
+    font-weight: 800;
     color: #000000;
     letter-spacing: -0.5px;
     white-space: nowrap;
@@ -89,7 +73,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     outline: none;
     font-size: 14px;
     color: #000000;
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
     font-weight: 400;
 }
 
@@ -98,6 +81,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     background-color: #27ae60;
     border: none;
     color: #000000;
+    font-weight: 500;
     font-size: 15px;
     cursor: pointer;
     transition: 0.2s;
@@ -114,6 +98,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     border: none;
     padding: 10px 20px;
     font-size: 15px;
+    font-weight: 500;
     border-radius: 4px;
     cursor: pointer;
     display: flex;
@@ -147,7 +132,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     color: #000000;
     text-decoration: none;
     padding: 15px 25px 12px 25px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 15px;
     display: inline-block;
 }
@@ -168,6 +153,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     color: #000000;
     margin-bottom: 25px;
     font-size: 26px;
+    font-weight: 800;
 }
 
 .product-grid {
@@ -207,7 +193,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 
 .product-title {
     font-size: 15px;
-    font-weight: 400; /* Body: Hind Siliguri Regular */
+    font-weight: 400;
     color: #000000;
     margin-bottom: 10px;
     height: 40px;
@@ -241,11 +227,11 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     padding: 10px;
     background-color: #f0fdf4;
     color: #000000;
+    font-weight: 400;
     border: 1px solid #27ae60;
     border-radius: 6px;
     cursor: pointer;
     transition: 0.2s;
-    font-size: 14px;
 }
 
 .add-cart-btn:hover {
@@ -284,6 +270,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .drawer-header h3 {
     color: #27ae60;
     font-size: 17px;
+    font-weight: 600;
 }
 
 .close-drawer {
@@ -307,6 +294,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .drawer-subtotal {
     display: flex;
     justify-content: space-between;
+    font-weight: 500;
     font-size: 15px;
     margin-bottom: 12px;
     color: #1f2937;
@@ -319,6 +307,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     color: #000000;
     border: none;
     border-radius: 6px;
+    font-weight: 600;
     cursor: pointer;
     font-size: 15px;
     transition: 0.2s;
@@ -374,6 +363,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     padding: 2px 8px;
     cursor: pointer;
     border-radius: 3px;
+    font-weight: 500;
 }
 
 .q-btn:hover {
@@ -382,7 +372,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     border-color: #27ae60;
 }
 
-/* FULL-SCREEN CHECKOUT MODAL */
+/* FULL-SCREEN CHECKOUT MODAL FIX */
 .modal {
     display: none;
     position: fixed;
@@ -390,7 +380,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #ffffff;
+    background-color: #ffffff; /* Full white background */
     z-index: 10000;
     overflow-y: auto;
 }
@@ -430,6 +420,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .checkout-header-bar h2 {
     font-size: 22px;
     color: #1f2937;
+    font-weight: 700;
 }
 
 .secure-badge {
@@ -461,6 +452,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-size: 17px;
     color: #1f2937;
     margin-bottom: 18px;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -483,6 +475,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-size: 13px;
     color: #4b5563;
     margin-bottom: 6px;
+    font-weight: 400;
 }
 
 .delivery-box select {
@@ -491,9 +484,9 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     border: 1px solid #27ae60;
     border-radius: 6px;
     background: #ffffff;
+    font-weight: 400;
     color: #000000;
     outline: none;
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
 }
 
 .final-calc-box {
@@ -508,9 +501,11 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-size: 14px;
     margin-bottom: 6px;
     color: #4b5563;
+    font-weight: 400;
 }
 
 .f-total {
+    font-weight: 700;
     color: #1f2937;
     font-size: 18px;
     border-top: 1px solid #e5e7eb;
@@ -526,6 +521,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .form-group label {
     display: block;
     font-size: 13px;
+    font-weight: 400;
     margin-bottom: 6px;
     color: #4b5563;
 }
@@ -539,7 +535,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     color: #000000;
     outline: none;
     font-size: 14px;
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
+    font-weight: 400;
 }
 
 .form-group input:focus, .form-group textarea:focus {
@@ -552,6 +548,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     padding: 14px;
     background-color: #27ae60;
     color: #000000;
+    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -574,6 +571,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     text-align: center;
     font-size: 14px;
     line-height: 1.6;
+    font-weight: 400;
 }
 
 /* Mobile Adjustments */
