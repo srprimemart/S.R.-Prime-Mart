@@ -67,7 +67,6 @@ function searchProducts() {
     renderProducts(filtered);
 }
 
-// Add to Cart WITHOUT auto-opening the drawer
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -80,7 +79,6 @@ function addToCart(productId) {
     }
 
     updateCartUI();
-    // Auto drawer popup has been disabled as per request
 }
 
 function increaseQty(productId) {
@@ -109,6 +107,8 @@ function deleteCartItem(productId) {
 
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
     const cartBadge = document.getElementById('cartCount');
     const summaryTotalQty = document.getElementById('summaryTotalQty');
     const drawerItemHeaderSub = document.getElementById('drawerItemHeaderSub');
@@ -120,22 +120,23 @@ function updateCartUI() {
     const drawerContainer = document.getElementById('drawerItemsContainer');
     const checkoutListContainer = document.getElementById('checkoutItemsList');
 
+    // Subtotal and Items total Update
+    document.getElementById('drawerSubtotal').innerText = `৳${subtotal}`;
+    document.getElementById('drawerItemsTotal').innerText = `৳${subtotal}`;
+    if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT ${subtotal}`;
+
     if (cart.length === 0) {
         if (drawerContainer) drawerContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 30px;">Your cart is empty!</p>`;
         if (checkoutListContainer) checkoutListContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 15px;">Cart is empty</p>`;
-        
-        document.getElementById('drawerSubtotal').innerText = `৳0`;
-        document.getElementById('drawerItemsTotal').innerText = `৳0`;
-        if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT 0`;
         if (document.getElementById('modalGrandTotal')) document.getElementById('modalGrandTotal').innerText = `BDT 0`;
         return;
     }
 
-    // Drawer Items rendering in Rounded Card Style (Matching Screenshot)
+    // 1. Drawer Items rendering with Rounded Box Card
     if (drawerContainer) {
         drawerContainer.innerHTML = cart.map(item => `
             <div class="cart-item-card">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/55';">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/60';">
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.name}</div>
                     <div class="cart-item-bottom">
@@ -152,22 +153,26 @@ function updateCartUI() {
         `).join('');
     }
 
+    // 2. Checkout Items rendering with SAME Rounded Box Card Structure
     if (checkoutListContainer) {
         checkoutListContainer.innerHTML = cart.map(item => `
-            <div class="cart-item-card" style="padding: 10px; margin-bottom: 8px;">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img" style="width: 45px; height: 45px;" onerror="this.src='https://via.placeholder.com/45';">
+            <div class="cart-item-card">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/60';">
                 <div class="cart-item-details">
-                    <div class="cart-item-title" style="font-size: 12px;">${item.name}</div>
-                    <div class="cart-item-price" style="font-size: 13px;">BDT ${item.price} × ${item.quantity}</div>
+                    <div class="cart-item-title">${item.name}</div>
+                    <div class="cart-item-bottom">
+                        <div class="cart-item-price">BDT ${item.price} × ${item.quantity}</div>
+                        <div class="cart-qty-controls">
+                            <i class="fa-regular fa-trash-can delete-btn" onclick="deleteCartItem(${item.id})"></i>
+                            <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         `).join('');
     }
-
-    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById('drawerSubtotal').innerText = `৳${subtotal}`;
-    document.getElementById('drawerItemsTotal').innerText = `৳${subtotal}`;
-    if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT ${subtotal}`;
 
     calculateFinalTotal();
 }
