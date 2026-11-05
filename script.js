@@ -67,6 +67,7 @@ function searchProducts() {
     renderProducts(filtered);
 }
 
+// Add to Cart WITHOUT auto-opening the drawer
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -79,7 +80,7 @@ function addToCart(productId) {
     }
 
     updateCartUI();
-    toggleCartDrawer();
+    // Auto drawer popup has been disabled as per request
 }
 
 function increaseQty(productId) {
@@ -101,40 +102,50 @@ function decreaseQty(productId) {
     }
 }
 
+function deleteCartItem(productId) {
+    cart = cart.filter(i => i.id !== productId);
+    updateCartUI();
+}
+
 function updateCartUI() {
-    // মোট কোয়ান্টিটি সঠিক হিসাব (Sum of item quantities)
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
     const cartBadge = document.getElementById('cartCount');
     const summaryTotalQty = document.getElementById('summaryTotalQty');
+    const drawerItemHeaderSub = document.getElementById('drawerItemHeaderSub');
     
     if (cartBadge) cartBadge.innerText = totalCount;
-    if (summaryTotalQty) summaryTotalQty.innerText = totalCount; // কোয়ান্টিটি সঠিকভাবে আপডেট হবে
+    if (summaryTotalQty) summaryTotalQty.innerText = totalCount;
+    if (drawerItemHeaderSub) drawerItemHeaderSub.innerText = `${cart.length} products · ${totalCount} items`;
 
     const drawerContainer = document.getElementById('drawerItemsContainer');
     const checkoutListContainer = document.getElementById('checkoutItemsList');
 
     if (cart.length === 0) {
-        if (drawerContainer) drawerContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 20px;">Your cart is empty!</p>`;
+        if (drawerContainer) drawerContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 30px;">Your cart is empty!</p>`;
         if (checkoutListContainer) checkoutListContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 15px;">Cart is empty</p>`;
         
-        document.getElementById('drawerSubtotal').innerText = `BDT 0`;
+        document.getElementById('drawerSubtotal').innerText = `৳0`;
+        document.getElementById('drawerItemsTotal').innerText = `৳0`;
         if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT 0`;
         if (document.getElementById('modalGrandTotal')) document.getElementById('modalGrandTotal').innerText = `BDT 0`;
         return;
     }
 
+    // Drawer Items rendering in Rounded Card Style (Matching Screenshot)
     if (drawerContainer) {
         drawerContainer.innerHTML = cart.map(item => `
-            <div class="cart-item-row">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/50';">
-                <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">BDT ${item.price}</div>
-                    <div class="qty-box">
-                        <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
+            <div class="cart-item-card">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/55';">
+                <div class="cart-item-details">
+                    <div class="cart-item-title">${item.name}</div>
+                    <div class="cart-item-bottom">
+                        <div class="cart-item-price">৳${item.price}</div>
+                        <div class="cart-qty-controls">
+                            <i class="fa-regular fa-trash-can delete-btn" onclick="deleteCartItem(${item.id})"></i>
+                            <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,23 +154,19 @@ function updateCartUI() {
 
     if (checkoutListContainer) {
         checkoutListContainer.innerHTML = cart.map(item => `
-            <div class="cart-item-row">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/50';">
-                <div class="cart-item-info">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">BDT ${item.price} × ${item.quantity}</div>
-                    <div class="qty-box">
-                        <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
-                    </div>
+            <div class="cart-item-card" style="padding: 10px; margin-bottom: 8px;">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" style="width: 45px; height: 45px;" onerror="this.src='https://via.placeholder.com/45';">
+                <div class="cart-item-details">
+                    <div class="cart-item-title" style="font-size: 12px;">${item.name}</div>
+                    <div class="cart-item-price" style="font-size: 13px;">BDT ${item.price} × ${item.quantity}</div>
                 </div>
             </div>
         `).join('');
     }
 
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById('drawerSubtotal').innerText = `BDT ${subtotal}`;
+    document.getElementById('drawerSubtotal').innerText = `৳${subtotal}`;
+    document.getElementById('drawerItemsTotal').innerText = `৳${subtotal}`;
     if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT ${subtotal}`;
 
     calculateFinalTotal();
@@ -233,10 +240,12 @@ if (orderForm) {
         let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         let deliveryFee = parseInt(document.getElementById('deliveryLocation').value);
         let totalAmount = subtotal + deliveryFee;
+        let selectedPayment = document.querySelector('input[name="PaymentMethod"]:checked').value;
 
         let formData = new FormData(orderForm);
         formData.append('ProductDetails', orderSummaryText);
         formData.append('TotalAmount', `BDT ${totalAmount}`);
+        formData.append('PaymentMethod', selectedPayment);
 
         fetch(scriptURL, { method: 'POST', body: formData })
             .then(response => showSuccess())
