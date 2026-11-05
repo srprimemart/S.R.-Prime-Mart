@@ -10,45 +10,45 @@
 </head>
 <body>
 
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        Welcome to SR Prime Mart
+    </div>
+
     <!-- Header Section -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area">
-                <img src="logo.jpg" alt="S.R. Prime Mart Logo" class="logo-img" onerror="this.style.display='none'">
+                <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
                 <span class="brand-name">S.R. Prime Mart</span>
             </div>
 
+            <!-- Search Bar (Matching Screenshot) -->
             <div class="search-area">
-                <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchProducts()">
-                <button class="search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <input type="text" id="searchInput" placeholder="Search for products..." onkeyup="searchProducts()">
+                <button class="search-btn" onclick="searchProducts()">Search</button>
             </div>
 
             <div class="header-right">
-                <div class="contact-info">
-                    <small>LET'S TALK</small>
-                    <span>01600445389</span>
-                </div>
-                <!-- Cart Icon Button -->
-                <div class="cart-icon-btn" onclick="toggleCartDrawer()">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <span id="cartCount" class="cart-badge">0</span>
-                </div>
+                <!-- Cart Button (Matching Screenshot) -->
+                <button class="header-cart-btn" onclick="toggleCartDrawer()">
+                    <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cartCount">0</span>)
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Navigation Bar -->
+    <!-- Navigation Bar (Only Products) -->
     <nav class="nav-bar">
         <div class="nav-container">
-            <a href="#" class="nav-link active">Home</a>
-            <a href="#products-section" class="nav-link">All Products</a>
+            <a href="#products-section" class="nav-link active">PRODUCTS</a>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="main-container">
         <section id="products-section" class="products-section">
-            <h2 class="section-title">All Products</h2>
+            <h2 class="section-title">Our Products</h2>
             <div id="product-container" class="product-grid"></div>
         </section>
     </main>
@@ -118,7 +118,7 @@
                     </div>
                 </div>
 
-                <!-- Right Side: Your Order & Delivery Method Summary -->
+                <!-- Right Side: Your Order Summary -->
                 <div class="checkout-summary-side">
                     <div class="checkout-card">
                         <div class="summary-header">
