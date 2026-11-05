@@ -30,7 +30,7 @@
             </div>
 
             <div class="header-right">
-                <!-- Cart Button -->
+                <!-- Header Cart Button -->
                 <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> Cart (<span id="cartCount">0</span>)
                 </button>
@@ -53,54 +53,74 @@
         </section>
     </main>
 
-    <!-- Side Cart Drawer -->
+    <!-- Fixed Side Cart Drawer (Slide-out Overlay) -->
     <div id="cartDrawer" class="cart-drawer">
         <div class="drawer-header">
             <h3>Your Cart</h3>
             <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
         </div>
-        <div class="drawer-items" id="drawerItemsContainer"></div>
+        <div class="drawer-items" id="drawerItemsContainer">
+            <!-- Products with Image, Name, Price, +/- Quantity buttons -->
+        </div>
         <div class="drawer-footer">
             <div class="drawer-subtotal">
                 <span>Subtotal:</span>
                 <span id="drawerSubtotal">BDT 0</span>
             </div>
-            <button class="view-cart-btn" onclick="openCheckoutModal()">View Cart & Checkout</button>
+            <button class="drawer-place-order-btn" onclick="openCheckoutModal()">Place Order</button>
         </div>
     </div>
 
-    <!-- Ogerio Style Checkout Modal -->
+    <!-- Separate Checkout Modal (Opens after Place Order) -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
             
             <div class="checkout-header-bar">
-                <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout</h2>
+                <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
                 <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
             </div>
             
             <div class="checkout-grid">
-                <!-- Left Side: Delivery Details Form -->
+                <!-- Left Side: Product Summary, Total Quantity & Delivery Fee -->
+                <div class="checkout-summary-side">
+                    <div class="checkout-card">
+                        <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
+                        <div id="checkoutItemsList" class="checkout-items-list"></div>
+
+                        <div class="delivery-method-section">
+                            <label for="deliveryLocation">Delivery Charge:</label>
+                            <div class="delivery-box">
+                                <select id="deliveryLocation" onchange="calculateFinalTotal()">
+                                    <option value="70">Inside Dhaka - 70 BDT</option>
+                                    <option value="130">Outside Dhaka - 130 BDT</option>
+                                    <option value="120">Sub Area - 120 BDT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="final-calc-box">
+                            <div class="f-row"><span>Total Items (Quantity):</span> <span id="summaryTotalQty">0</span></div>
+                            <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
+                            <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
+                            <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Customer Info (Name, Address, Phone Number) -->
                 <div class="checkout-form-side">
                     <div class="checkout-card">
-                        <h3 class="card-title"><i class="fa-solid fa-location-dot"></i> Delivery details</h3>
+                        <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
                         <form id="orderForm">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="customerName">Full Name *</label>
-                                    <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="customerPhone">Phone *</label>
-                                    <input type="tel" id="customerPhone" name="Phone" placeholder="01XXXXXXXXX" required>
-                                </div>
-                            </div>
-
                             <div class="form-group">
-                                <label for="country">Country / Region *</label>
-                                <select id="country" disabled>
-                                    <option value="Bangladesh" selected>Bangladesh</option>
-                                </select>
+                                <label for="customerName">Full Name *</label>
+                                <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customerPhone">Phone Number *</label>
+                                <input type="tel" id="customerPhone" name="Phone" placeholder="01XXXXXXXXX" required>
                             </div>
 
                             <div class="form-group">
@@ -108,40 +128,14 @@
                                 <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                             </div>
 
-                            <button type="submit" class="submit-btn" id="submitBtn">Place Order</button>
+                            <!-- Green background with Black Text Submit Button -->
+                            <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
                         </form>
 
+                        <!-- Success Note -->
                         <div id="successMessage" class="success-message" style="display: none;">
                             ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
-                            আমাদের টিমের সদস্য খুব তাড়াতাড়ি আপনার সাথে যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Side: Your Order Summary -->
-                <div class="checkout-summary-side">
-                    <div class="checkout-card">
-                        <div class="summary-header">
-                            <h3><i class="fa-solid fa-bag-shopping"></i> Your order (<span id="summaryItemCount">0</span>)</h3>
-                        </div>
-                        
-                        <div id="checkoutItemsList" class="checkout-items-list"></div>
-
-                        <div class="delivery-method-section">
-                            <h4><i class="fa-solid fa-truck"></i> Delivery method</h4>
-                            <div class="delivery-box">
-                                <select id="deliveryLocation" onchange="calculateFinalTotal()">
-                                    <option value="70">Inside Dhaka - 70 BDT</option>
-                                    <option value="130">Outside Dhaka - 130 BDT</option>
-                                    <option value="110">Sub Area - 110 BDT</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="final-calc-box">
-                            <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
-                            <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
-                            <div class="f-row f-total"><span>Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
+                            আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
                         </div>
                     </div>
                 </div>
