@@ -1,7 +1,5 @@
-// Google Apps Script URL
 const scriptURL = 'https://script.google.com/macros/s/AKfycbxYNeAUNdXYcUaAeNupvRyoiARb1PGC8au94ZYQzBysMkIop2txBsloRx9C62BDARIF/exec';
 
-// প্রোডাক্টের ক্যাটালগ
 const products = [
     {
         id: 1,
@@ -35,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProducts(products);
 });
 
-// প্রোডাক্ট গ্রিড রেন্ডার
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -53,7 +50,7 @@ function renderProducts(items) {
                 </div>
                 <div class="product-title">${product.name}</div>
                 <div class="price-stock-row">
-                    <span class="product-price">BDT ${product.price}</span>
+                    <span class="product-price">৳${product.price}</span>
                     <span class="stock-badge">In stock</span>
                 </div>
             </div>
@@ -64,14 +61,12 @@ function renderProducts(items) {
     `).join('');
 }
 
-// সার্চ ফিল্টার
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query));
     renderProducts(filtered);
 }
 
-// কার্টে যোগ করা
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -87,7 +82,6 @@ function addToCart(productId) {
     toggleCartDrawer();
 }
 
-// কোয়ান্টিটি বাড়ানো (+)
 function increaseQty(productId) {
     const item = cart.find(i => i.id === productId);
     if (item) {
@@ -96,7 +90,6 @@ function increaseQty(productId) {
     }
 }
 
-// কোয়ান্টিটি কমানো (-)
 function decreaseQty(productId) {
     const item = cart.find(i => i.id === productId);
     if (item) {
@@ -108,19 +101,19 @@ function decreaseQty(productId) {
     }
 }
 
-// কার্ট UI আপডেট
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartBadge = document.getElementById('cartCount');
-    if (cartBadge) {
-        cartBadge.innerText = totalCount;
-    }
+    const summaryItemCount = document.getElementById('summaryItemCount');
+    
+    if (cartBadge) cartBadge.innerText = totalCount;
+    if (summaryItemCount) summaryItemCount.innerText = totalCount;
 
     const drawerContainer = document.getElementById('drawerItemsContainer');
     const checkoutListContainer = document.getElementById('checkoutItemsList');
 
     if (cart.length === 0) {
-        if (drawerContainer) drawerContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 30px;">Your cart is empty!</p>`;
+        if (drawerContainer) drawerContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 20px;">Your cart is empty!</p>`;
         if (checkoutListContainer) checkoutListContainer.innerHTML = `<p style="text-align: center; color: #6b7280; padding: 15px;">Cart is empty</p>`;
         
         document.getElementById('drawerSubtotal').innerText = `BDT 0`;
@@ -148,11 +141,16 @@ function updateCartUI() {
 
     if (checkoutListContainer) {
         checkoutListContainer.innerHTML = cart.map(item => `
-            <div class="cart-item-row" style="font-size: 12px;">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img" style="width: 35px; height: 35px;">
+            <div class="cart-item-row">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
-                    <div>BDT ${item.price} × ${item.quantity}</div>
+                    <div class="cart-item-price">BDT ${item.price}</div>
+                    <div class="qty-box">
+                        <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -165,7 +163,6 @@ function updateCartUI() {
     calculateFinalTotal();
 }
 
-// ডেলিভারি চার্জ ও সর্বমোট হিসাব (70 / 130 / 110 BDT)
 function calculateFinalTotal() {
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliverySelect = document.getElementById('deliveryLocation');
@@ -181,7 +178,6 @@ function calculateFinalTotal() {
     }
 }
 
-// কার্ট ড্রয়ার ওপেন/ক্লোজ
 function toggleCartDrawer() {
     const drawer = document.getElementById('cartDrawer');
     if (drawer) {
@@ -189,13 +185,14 @@ function toggleCartDrawer() {
     }
 }
 
-// ভিউ কার্ট এ ক্লিক করলে চেকআউট মডাল ওপেন
 function openCheckoutModal() {
     if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
     }
-    toggleCartDrawer();
+    const drawer = document.getElementById('cartDrawer');
+    if (drawer) drawer.classList.remove('open');
+    
     const modal = document.getElementById('checkoutModal');
     if (modal) {
         modal.style.display = 'flex';
@@ -203,7 +200,6 @@ function openCheckoutModal() {
     }
 }
 
-// চেকআউট মডাল বন্ধ করা
 function closeCheckoutModal() {
     const modal = document.getElementById('checkoutModal');
     if (modal) {
@@ -215,7 +211,6 @@ function closeCheckoutModal() {
     }
 }
 
-// ফর্ম সাবমিট করা
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function (e) {
@@ -247,7 +242,7 @@ if (orderForm) {
 
         function showSuccess() {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Confirm Order';
+            submitBtn.textContent = 'Place Order';
             orderForm.reset();
             cart = [];
             updateCartUI();
