@@ -102,12 +102,14 @@ function decreaseQty(productId) {
 }
 
 function updateCartUI() {
+    // মোট কোয়ান্টিটি সঠিক হিসাব (Sum of item quantities)
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
     const cartBadge = document.getElementById('cartCount');
     const summaryTotalQty = document.getElementById('summaryTotalQty');
     
     if (cartBadge) cartBadge.innerText = totalCount;
-    if (summaryTotalQty) summaryTotalQty.innerText = totalCount;
+    if (summaryTotalQty) summaryTotalQty.innerText = totalCount; // কোয়ান্টিটি সঠিকভাবে আপডেট হবে
 
     const drawerContainer = document.getElementById('drawerItemsContainer');
     const checkoutListContainer = document.getElementById('checkoutItemsList');
@@ -146,6 +148,11 @@ function updateCartUI() {
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">BDT ${item.price} × ${item.quantity}</div>
+                    <div class="qty-box">
+                        <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -190,7 +197,7 @@ function openCheckoutModal() {
     
     const modal = document.getElementById('checkoutModal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.style.display = 'block';
         calculateFinalTotal();
     }
 }
