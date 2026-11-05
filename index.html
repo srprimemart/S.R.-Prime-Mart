@@ -102,38 +102,13 @@
                 <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
             </div>
             
-            <div class="checkout-grid">
-                <!-- Left Side: Order Items Summary with Same Box Design -->
-                <div class="checkout-summary-side">
-                    <div class="checkout-card">
-                        <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
-                        <div id="checkoutItemsList" class="checkout-items-list"></div>
-
-                        <div class="delivery-method-section">
-                            <label for="deliveryLocation">Select Delivery Location:</label>
-                            <div class="delivery-box">
-                                <select id="deliveryLocation" onchange="calculateFinalTotal()">
-                                    <option value="70">Inside Dhaka - 70 BDT</option>
-                                    <option value="120">Outside Dhaka - 120 BDT</option>
-                                    <option value="90">Sub Area - 90 BDT</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="final-calc-box">
-                            <div class="f-row"><span>Total Items (Quantity):</span> <span id="summaryTotalQty">0</span></div>
-                            <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
-                            <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
-                            <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Side: Customer Information & Place Order Button -->
-                <div class="checkout-form-side">
-                    <div class="checkout-card">
-                        <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
-                        <form id="orderForm">
+            <form id="orderForm">
+                <div class="checkout-grid">
+                    <!-- বাম পাশ (LEFT SIDE): কাস্টমার ইনফরমেশন ও পেমেন্ট মেথড -->
+                    <div class="checkout-form-side">
+                        <div class="checkout-card">
+                            <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
+                            
                             <div class="form-group">
                                 <label for="customerName">Full Name *</label>
                                 <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
@@ -167,20 +142,46 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Confirm Place Order Button at Bottom Right -->
+                    <!-- ডান পাশ (RIGHT SIDE): প্রোডাক্ট লিস্ট, ডেলিভারি চার্জ, টোটাল এবং নিচে কনফার্ম অর্ডার বাটন -->
+                    <div class="checkout-summary-side">
+                        <div class="checkout-card">
+                            <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
+                            <div id="checkoutItemsList" class="checkout-items-list"></div>
+
+                            <div class="delivery-method-section">
+                                <label for="deliveryLocation">Select Delivery Location:</label>
+                                <div class="delivery-box">
+                                    <select id="deliveryLocation" onchange="calculateFinalTotal()">
+                                        <option value="70">Inside Dhaka - 70 BDT</option>
+                                        <option value="120">Outside Dhaka - 120 BDT</option>
+                                        <option value="90">Sub Area - 90 BDT</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="final-calc-box">
+                                <div class="f-row"><span>Total Items (Quantity):</span> <span id="summaryTotalQty">0</span></div>
+                                <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
+                                <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
+                                <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
+                            </div>
+
+                            <!-- Confirm Place Order Button at Bottom Right Side -->
                             <div class="submit-btn-wrapper">
                                 <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
                             </div>
-                        </form>
 
-                        <div id="successMessage" class="success-message" style="display: none;">
-                            ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
-                            আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
+                            <div id="successMessage" class="success-message" style="display: none;">
+                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
+                                আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
