@@ -1,26 +1,37 @@
+/* Google Fonts Import: Hind Siliguri & Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
     background-color: #ffffff;
     color: #1f2937;
+    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
+    font-weight: 400;
 }
 
-/* Top Announcement Bar */
+h1, h2, h3, h4, h5, h6, .section-title, .brand-name, .card-subtitle {
+    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-order-btn, .q-btn {
+    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
 .top-bar {
     background-color: #000000;
     color: #ffffff;
     text-align: left;
     padding: 8px 25px;
     font-size: 13px;
-    font-weight: 400;
 }
 
-/* Header Styling */
 .main-header {
     background-color: #ffffff;
     padding: 15px 0;
@@ -50,13 +61,11 @@ body {
 
 .brand-name {
     font-size: 26px;
-    font-weight: 800;
     color: #000000;
     letter-spacing: -0.5px;
     white-space: nowrap;
 }
 
-/* Search Bar */
 .search-area {
     display: flex;
     width: 48%;
@@ -73,7 +82,6 @@ body {
     outline: none;
     font-size: 14px;
     color: #000000;
-    font-weight: 400;
 }
 
 .search-btn {
@@ -81,7 +89,6 @@ body {
     background-color: #27ae60;
     border: none;
     color: #000000;
-    font-weight: 500;
     font-size: 15px;
     cursor: pointer;
     transition: 0.2s;
@@ -91,14 +98,12 @@ body {
     background-color: #219653;
 }
 
-/* Header Cart Button */
 .header-cart-btn {
     background-color: #27ae60;
     color: #000000;
     border: none;
     padding: 10px 20px;
     font-size: 15px;
-    font-weight: 500;
     border-radius: 4px;
     cursor: pointer;
     display: flex;
@@ -115,7 +120,6 @@ body {
     background-color: #219653;
 }
 
-/* Nav Bar */
 .nav-bar {
     background-color: #ffffff;
     border-bottom: 1px solid #e5e7eb;
@@ -132,7 +136,7 @@ body {
     color: #000000;
     text-decoration: none;
     padding: 15px 25px 12px 25px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 15px;
     display: inline-block;
 }
@@ -142,7 +146,6 @@ body {
     border-bottom: 3px solid #27ae60;
 }
 
-/* Main Products Grid */
 .main-container {
     max-width: 1200px;
     margin: 30px auto;
@@ -153,7 +156,6 @@ body {
     color: #000000;
     margin-bottom: 25px;
     font-size: 26px;
-    font-weight: 800;
 }
 
 .product-grid {
@@ -193,7 +195,6 @@ body {
 
 .product-title {
     font-size: 15px;
-    font-weight: 400;
     color: #000000;
     margin-bottom: 10px;
     height: 40px;
@@ -209,7 +210,6 @@ body {
 
 .product-price {
     font-size: 17px;
-    font-weight: 400;
     color: #000000;
 }
 
@@ -217,7 +217,6 @@ body {
     background-color: rgba(39, 174, 96, 0.1);
     color: #27ae60;
     font-size: 11px;
-    font-weight: 400;
     padding: 3px 8px;
     border-radius: 4px;
 }
@@ -227,11 +226,11 @@ body {
     padding: 10px;
     background-color: #f0fdf4;
     color: #000000;
-    font-weight: 400;
     border: 1px solid #27ae60;
     border-radius: 6px;
     cursor: pointer;
     transition: 0.2s;
+    font-size: 14px;
 }
 
 .add-cart-btn:hover {
@@ -239,7 +238,7 @@ body {
     color: #000000;
 }
 
-/* FIXED SIDE CART DRAWER */
+/* SIdE CART DRAWER */
 .cart-drawer {
     position: fixed;
     top: 0;
@@ -270,7 +269,6 @@ body {
 .drawer-header h3 {
     color: #27ae60;
     font-size: 17px;
-    font-weight: 600;
 }
 
 .close-drawer {
@@ -294,7 +292,6 @@ body {
 .drawer-subtotal {
     display: flex;
     justify-content: space-between;
-    font-weight: 500;
     font-size: 15px;
     margin-bottom: 12px;
     color: #1f2937;
@@ -307,7 +304,6 @@ body {
     color: #000000;
     border: none;
     border-radius: 6px;
-    font-weight: 600;
     cursor: pointer;
     font-size: 15px;
     transition: 0.2s;
@@ -339,14 +335,12 @@ body {
 
 .cart-item-name {
     font-size: 13px;
-    font-weight: 400;
     color: #000000;
 }
 
 .cart-item-price {
     font-size: 13px;
     color: #000000;
-    font-weight: 400;
     margin-top: 2px;
 }
 
@@ -363,7 +357,6 @@ body {
     padding: 2px 8px;
     cursor: pointer;
     border-radius: 3px;
-    font-weight: 500;
 }
 
 .q-btn:hover {
@@ -372,7 +365,7 @@ body {
     border-color: #27ae60;
 }
 
-/* FULL-SCREEN CHECKOUT MODAL FIX */
+/* FULL-SCREEN CHECKOUT MODAL */
 .modal {
     display: none;
     position: fixed;
@@ -380,7 +373,7 @@ body {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #ffffff; /* Full white background */
+    background-color: #ffffff;
     z-index: 10000;
     overflow-y: auto;
 }
@@ -420,7 +413,6 @@ body {
 .checkout-header-bar h2 {
     font-size: 22px;
     color: #1f2937;
-    font-weight: 700;
 }
 
 .secure-badge {
@@ -428,10 +420,19 @@ body {
     color: #6b7280;
 }
 
+/* 2-COLUMN LAYOUT: LEFT SIDE FORM, RIGHT SIDE SUMMARY */
 .checkout-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
+}
+
+.checkout-form-side {
+    order: 1; /* বাম পাশে কাস্টমার ফর্ম */
+}
+
+.checkout-summary-side {
+    order: 2; /* ডান পাশে অর্ডার সামারি */
 }
 
 @media(max-width: 768px) {
@@ -452,7 +453,6 @@ body {
     font-size: 17px;
     color: #1f2937;
     margin-bottom: 18px;
-    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -475,7 +475,6 @@ body {
     font-size: 13px;
     color: #4b5563;
     margin-bottom: 6px;
-    font-weight: 400;
 }
 
 .delivery-box select {
@@ -484,9 +483,9 @@ body {
     border: 1px solid #27ae60;
     border-radius: 6px;
     background: #ffffff;
-    font-weight: 400;
     color: #000000;
     outline: none;
+    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
 }
 
 .final-calc-box {
@@ -501,11 +500,9 @@ body {
     font-size: 14px;
     margin-bottom: 6px;
     color: #4b5563;
-    font-weight: 400;
 }
 
 .f-total {
-    font-weight: 700;
     color: #1f2937;
     font-size: 18px;
     border-top: 1px solid #e5e7eb;
@@ -513,7 +510,6 @@ body {
     margin-top: 10px;
 }
 
-/* Form Styling */
 .form-group {
     margin-bottom: 16px;
 }
@@ -521,7 +517,6 @@ body {
 .form-group label {
     display: block;
     font-size: 13px;
-    font-weight: 400;
     margin-bottom: 6px;
     color: #4b5563;
 }
@@ -535,20 +530,18 @@ body {
     color: #000000;
     outline: none;
     font-size: 14px;
-    font-weight: 400;
+    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
 }
 
 .form-group input:focus, .form-group textarea:focus {
     border-color: #27ae60;
 }
 
-/* Confirm Button Styling */
 .confirm-order-btn {
     width: 100%;
     padding: 14px;
     background-color: #27ae60;
     color: #000000;
-    font-weight: 600;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -571,10 +564,8 @@ body {
     text-align: center;
     font-size: 14px;
     line-height: 1.6;
-    font-weight: 400;
 }
 
-/* Mobile Adjustments */
 @media (max-width: 600px) {
     .header-container {
         padding: 0 10px;
