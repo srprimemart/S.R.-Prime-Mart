@@ -292,7 +292,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     padding: 16px;
 }
 
-/* SCREENSHOT-STYLE ROUNDED ITEM BOX (Used in Cart & Checkout) */
 .cart-item-card {
     border: 1px solid #e5e7eb;
     border-radius: 16px;
@@ -468,10 +467,19 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     color: #6b7280;
 }
 
+/* LEFT-RIGHT 2 COLUMN GRID */
 .checkout-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
+}
+
+.checkout-form-side {
+    order: 1; /* Customer Information on Left */
+}
+
+.checkout-summary-side {
+    order: 2; /* Product & Order Summary on Right */
 }
 
 @media(max-width: 768px) {
@@ -510,7 +518,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 }
 
 .delivery-method-section label {
-    display: block;
+    display block;
     font-size: 13px;
     color: #4b5563;
     margin-bottom: 6px;
@@ -600,7 +608,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     border-color: #27ae60;
 }
 
-/* Align Submit Button to Bottom Right */
+/* Submit Button Positioned at Bottom Right inside Summary Card */
 .submit-btn-wrapper {
     display: flex;
     justify-content: flex-end;
@@ -609,7 +617,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 
 .confirm-order-btn {
     width: 100%;
-    max-width: 250px;
     padding: 13px;
     background-color: #27ae60;
     color: #ffffff;
@@ -670,6 +677,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
         justify-content: center;
     }
     .confirm-order-btn {
-        max-width: 100%;
+        width: 100%;
     }
 }
