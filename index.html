@@ -53,7 +53,7 @@
         </section>
     </main>
 
-    <!-- Side Cart Drawer (Screen Matching Design) -->
+    <!-- Side Cart Drawer -->
     <div id="cartDrawer" class="cart-drawer">
         <div class="drawer-header">
             <div class="drawer-header-title">
@@ -71,11 +71,11 @@
         </div>
 
         <div class="drawer-footer">
-            <!-- Subtotal & Delivery Info Box (Screenshot Style) -->
+            <!-- Subtotal & Total Box -->
             <div class="cart-calc-card">
                 <div class="calc-row">
                     <span>Subtotal</span>
-                    <span id="drawerSubtotal">BDT 0</span>
+                    <span id="drawerSubtotal">৳0</span>
                 </div>
                 <div class="calc-row text-muted">
                     <span>Delivery</span>
@@ -84,7 +84,7 @@
                 <hr class="calc-divider">
                 <div class="calc-row calc-total">
                     <span>Items total</span>
-                    <span id="drawerItemsTotal">BDT 0</span>
+                    <span id="drawerItemsTotal">৳0</span>
                 </div>
             </div>
 
@@ -98,12 +98,12 @@
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
             
             <div class="checkout-header-bar">
-                <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout</h2>
+                <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
                 <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
             </div>
             
             <div class="checkout-grid">
-                <!-- Left Side: Order Items & Delivery Location Selection -->
+                <!-- Left Side: Order Items Summary with Same Box Design -->
                 <div class="checkout-summary-side">
                     <div class="checkout-card">
                         <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- Right Side: Customer Details & Payment Options -->
+                <!-- Right Side: Customer Information & Place Order Button -->
                 <div class="checkout-form-side">
                     <div class="checkout-card">
                         <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
@@ -149,7 +149,7 @@
                                 <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                             </div>
 
-                            <!-- Payment Options -->
+                            <!-- Payment Method Selection -->
                             <div class="form-group">
                                 <label>Payment Method *</label>
                                 <div class="payment-options">
