@@ -53,15 +53,13 @@
         </section>
     </main>
 
-    <!-- Fixed Side Cart Drawer (Slide-out Overlay) -->
+    <!-- Fixed Side Cart Drawer -->
     <div id="cartDrawer" class="cart-drawer">
         <div class="drawer-header">
             <h3>Your Cart</h3>
             <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
         </div>
-        <div class="drawer-items" id="drawerItemsContainer">
-            <!-- Products with Image, Name, Price, +/- Quantity buttons -->
-        </div>
+        <div class="drawer-items" id="drawerItemsContainer"></div>
         <div class="drawer-footer">
             <div class="drawer-subtotal">
                 <span>Subtotal:</span>
@@ -71,7 +69,7 @@
         </div>
     </div>
 
-    <!-- Separate Checkout Modal (Opens after Place Order) -->
+    <!-- Full-Screen Checkout Modal -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
@@ -82,7 +80,39 @@
             </div>
             
             <div class="checkout-grid">
-                <!-- Left Side: Product Summary, Total Quantity & Delivery Fee -->
+                <!-- LEFT SIDE: Customer Information -->
+                <div class="checkout-form-side">
+                    <div class="checkout-card">
+                        <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
+                        <form id="orderForm">
+                            <div class="form-group">
+                                <label for="customerName">Full Name *</label>
+                                <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customerPhone">Phone Number *</label>
+                                <input type="tel" id="customerPhone" name="Phone" placeholder="01XXXXXXXXX" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="customerAddress">Full Address *</label>
+                                <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
+                        </form>
+
+                        <!-- Success Confirmation Note -->
+                        <div id="successMessage" class="success-message" style="display: none;">
+                            ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
+                            আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE: Order Items Summary & Total Calculation -->
                 <div class="checkout-summary-side">
                     <div class="checkout-card">
                         <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
@@ -104,38 +134,6 @@
                             <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
                             <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
                             <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Side: Customer Info (Name, Address, Phone Number) -->
-                <div class="checkout-form-side">
-                    <div class="checkout-card">
-                        <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
-                        <form id="orderForm">
-                            <div class="form-group">
-                                <label for="customerName">Full Name *</label>
-                                <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="customerPhone">Phone Number *</label>
-                                <input type="tel" id="customerPhone" name="Phone" placeholder="01XXXXXXXXX" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="customerAddress">Full Address *</label>
-                                <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
-                            </div>
-
-                            <!-- Green background with Black Text Submit Button -->
-                            <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
-                        </form>
-
-                        <!-- Success Note -->
-                        <div id="successMessage" class="success-message" style="display: none;">
-                            ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
-                            আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
                         </div>
                     </div>
                 </div>
