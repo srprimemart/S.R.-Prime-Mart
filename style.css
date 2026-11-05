@@ -24,7 +24,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-weight: 500;
 }
 
-/* Top Announcement Bar */
+/* Top Bar */
 .top-bar {
     background-color: #000000;
     color: #ffffff;
@@ -33,7 +33,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-size: 13px;
 }
 
-/* Header Styling */
+/* Main Header */
 .main-header {
     background-color: #ffffff;
     padding: 12px 0;
@@ -68,7 +68,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     white-space: nowrap;
 }
 
-/* Search Area */
+/* Mobile Search Bar */
 .search-area {
     display: flex;
     width: 40%;
@@ -96,7 +96,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     cursor: pointer;
 }
 
-/* Header Cart Button */
+/* Cart Button */
 .header-cart-btn {
     background-color: #27ae60;
     color: #000000;
@@ -137,7 +137,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     border-bottom: 3px solid #27ae60;
 }
 
-/* Main Products Grid */
+/* Main Grid */
 .main-container {
     max-width: 1200px;
     margin: 25px auto;
@@ -229,7 +229,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     background-color: #27ae60;
 }
 
-/* SIDE CART DRAWER (Screenshot Rounded Box Style) */
+/* SIDE CART DRAWER */
 .cart-drawer {
     position: fixed;
     top: 0;
@@ -292,7 +292,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     padding: 16px;
 }
 
-/* Rounded Box Cart Items */
+/* SCREENSHOT-STYLE ROUNDED ITEM BOX (Used in Cart & Checkout) */
 .cart-item-card {
     border: 1px solid #e5e7eb;
     border-radius: 16px;
@@ -300,15 +300,16 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     margin-bottom: 12px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
 
 .cart-item-img {
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .cart-item-details {
@@ -316,9 +317,11 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 }
 
 .cart-item-title {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
     color: #1f2937;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+    line-height: 1.3;
 }
 
 .cart-item-bottom {
@@ -336,13 +339,13 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .cart-qty-controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .delete-btn {
     color: #6b7280;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .delete-btn:hover {
@@ -364,7 +367,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     background-color: #ffffff;
 }
 
-/* Subtotal & Total Box (Screenshot Style) */
 .cart-calc-card {
     border: 1px solid #e5e7eb;
     border-radius: 16px;
@@ -415,7 +417,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     background-color: #219653;
 }
 
-/* FULL-SCREEN CHECKOUT MODAL */
+/* CHECKOUT MODAL */
 .modal {
     display: none;
     position: fixed;
@@ -496,7 +498,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 }
 
 .checkout-items-list {
-    max-height: 250px;
+    max-height: 280px;
     overflow-y: auto;
     margin-bottom: 15px;
 }
@@ -548,7 +550,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-weight: 700;
 }
 
-/* Payment Options */
 .payment-options {
     display: flex;
     flex-direction: column;
@@ -599,17 +600,17 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     border-color: #27ae60;
 }
 
-/* Button Wrapper for Bottom Right Alignment */
+/* Align Submit Button to Bottom Right */
 .submit-btn-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .confirm-order-btn {
     width: 100%;
     max-width: 250px;
-    padding: 12px;
+    padding: 13px;
     background-color: #27ae60;
     color: #ffffff;
     border: none;
