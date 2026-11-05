@@ -46,7 +46,7 @@ function renderProducts(items) {
         <div class="product-card">
             <div>
                 <div class="image-box">
-                    <img src="${product.image}" alt="${product.name}">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Product+Image';">
                 </div>
                 <div class="product-title">${product.name}</div>
                 <div class="price-stock-row">
@@ -125,7 +125,7 @@ function updateCartUI() {
     if (drawerContainer) {
         drawerContainer.innerHTML = cart.map(item => `
             <div class="cart-item-row">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/50';">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">BDT ${item.price}</div>
@@ -142,7 +142,7 @@ function updateCartUI() {
     if (checkoutListContainer) {
         checkoutListContainer.innerHTML = cart.map(item => `
             <div class="cart-item-row">
-                <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+                <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/50';">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">BDT ${item.price}</div>
