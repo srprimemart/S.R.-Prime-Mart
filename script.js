@@ -120,7 +120,6 @@ function updateCartUI() {
     const drawerContainer = document.getElementById('drawerItemsContainer');
     const checkoutListContainer = document.getElementById('checkoutItemsList');
 
-    // Subtotal and Items total Update
     document.getElementById('drawerSubtotal').innerText = `৳${subtotal}`;
     document.getElementById('drawerItemsTotal').innerText = `৳${subtotal}`;
     if (document.getElementById('modalSubtotal')) document.getElementById('modalSubtotal').innerText = `BDT ${subtotal}`;
@@ -132,7 +131,6 @@ function updateCartUI() {
         return;
     }
 
-    // 1. Drawer Items rendering with Rounded Box Card
     if (drawerContainer) {
         drawerContainer.innerHTML = cart.map(item => `
             <div class="cart-item-card">
@@ -153,7 +151,6 @@ function updateCartUI() {
         `).join('');
     }
 
-    // 2. Checkout Items rendering with SAME Rounded Box Card Structure
     if (checkoutListContainer) {
         checkoutListContainer.innerHTML = cart.map(item => `
             <div class="cart-item-card">
