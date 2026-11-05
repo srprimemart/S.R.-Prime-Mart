@@ -104,10 +104,10 @@ function decreaseQty(productId) {
 function updateCartUI() {
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartBadge = document.getElementById('cartCount');
-    const summaryItemCount = document.getElementById('summaryItemCount');
+    const summaryTotalQty = document.getElementById('summaryTotalQty');
     
     if (cartBadge) cartBadge.innerText = totalCount;
-    if (summaryItemCount) summaryItemCount.innerText = totalCount;
+    if (summaryTotalQty) summaryTotalQty.innerText = totalCount;
 
     const drawerContainer = document.getElementById('drawerItemsContainer');
     const checkoutListContainer = document.getElementById('checkoutItemsList');
@@ -145,12 +145,7 @@ function updateCartUI() {
                 <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/50';">
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">BDT ${item.price}</div>
-                    <div class="qty-box">
-                        <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="q-btn" onclick="increaseQty(${item.id})">+</button>
-                    </div>
+                    <div class="cart-item-price">BDT ${item.price} × ${item.quantity}</div>
                 </div>
             </div>
         `).join('');
@@ -242,7 +237,7 @@ if (orderForm) {
 
         function showSuccess() {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Place Order';
+            submitBtn.textContent = 'Confirm Place Order';
             orderForm.reset();
             cart = [];
             updateCartUI();
@@ -253,7 +248,7 @@ if (orderForm) {
             
             setTimeout(() => {
                 closeCheckoutModal();
-            }, 5000);
+            }, 6000);
         }
     });
 }
