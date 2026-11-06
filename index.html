@@ -1,214 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S.R. Prime Mart</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Welcome to SR Prime Mart
-    </div>
-
-    <!-- Header Section -->
-    <header class="main-header">
-        <div class="header-container">
-            <div class="logo-area">
-                <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-                <span class="brand-name">S.R. Prime Mart</span>
-            </div>
-
-            <!-- Mobile Search Bar -->
-            <div class="search-area">
-                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
-                <button class="search-btn" onclick="searchProducts()"><i class="fa-solid fa-magnifying-glass"></i></button>
-            </div>
-
-            <div class="header-right">
-                <button class="header-cart-btn" onclick="toggleCartDrawer()">
-                    <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Navigation Bar -->
-    <nav class="nav-bar">
-        <div class="nav-container">
-            <a href="#products-section" class="nav-link active">PRODUCTS</a>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-container">
-        <section id="products-section" class="products-section">
-            <h2 class="section-title">Our Products</h2>
-            <div id="product-container" class="product-grid"></div>
-        </section>
-    </main>
-
-    <!-- Side Cart Drawer -->
-    <div id="cartDrawer" class="cart-drawer">
-        <div class="drawer-header">
-            <div class="drawer-header-title">
-                <i class="fa-solid fa-arrow-left close-drawer-icon" onclick="toggleCartDrawer()"></i>
-                <div>
-                    <h3>Cart</h3>
-                    <small id="drawerItemHeaderSub">0 items</small>
-                </div>
-            </div>
-            <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
-        </div>
+<!-- Payment Method Cards -->
+<div class="form-group" style="margin-top: 20px;">
+    <label style="font-weight: 700; font-size: 15px; margin-bottom: 12px; display: block; color: #1f2937;">
+        <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment *
+    </label>
+    
+    <div class="payment-stack">
         
-        <div class="drawer-items" id="drawerItemsContainer"></div>
-
-        <div class="drawer-footer">
-            <div class="cart-calc-card">
-                <div class="calc-row">
-                    <span>Subtotal</span>
-                    <span id="drawerSubtotal">৳0</span>
-                </div>
-                <div class="calc-row text-muted">
-                    <span>Delivery</span>
-                    <span>Calculated at checkout</span>
-                </div>
-                <hr class="calc-divider">
-                <div class="calc-row calc-total">
-                    <span>Items total</span>
-                    <span id="drawerItemsTotal">৳0</span>
-                </div>
+        <!-- 1. Cash on Delivery -->
+        <label class="pay-row-card">
+            <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
+            <div class="pay-img-box cod-bg">
+                <i class="fa-solid fa-money-bill-wave"></i>
             </div>
-
-            <button class="drawer-place-order-btn" onclick="openCheckoutModal()">Checkout</button>
-        </div>
-    </div>
-
-    <!-- Full-Screen Checkout Modal -->
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
-            
-            <div class="checkout-header-bar">
-                <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
-                <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
+            <div class="pay-details">
+                <div class="pay-title">Cash on delivery</div>
+                <div class="pay-sub">Pay with cash upon delivery.</div>
             </div>
-            
-            <form id="orderForm">
-                <div class="checkout-grid">
-                    <!-- বাম পাশ: কাস্টমার ইনফরমেশন ও পেমেন্ট অপশন -->
-                    <div class="checkout-form-side">
-                        <div class="checkout-card">
-                            <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
-                            
-                            <div class="form-group">
-                                <label for="customerName">Full Name *</label>
-                                <input type="text" id="customerName" name="Name" placeholder="Enter your full name" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="customerPhone">Phone Number *</label>
-                                <input type="tel" id="customerPhone" name="Phone" placeholder="01XXXXXXXXX" required>
-                            </div>
+        </label>
 
-                            <div class="form-group">
-                                <label for="customerAddress">Full Address *</label>
-                                <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
-                            </div>
+        <!-- 2. bKash Payment -->
+        <label class="pay-row-card">
+            <input type="radio" name="PaymentMethod" value="bKash">
+            <div class="pay-img-box bkash-bg">
+                <img src="bkash.jpg" alt="bKash" onerror="this.src='bkash.JPG'">
+            </div>
+            <div class="pay-details">
+                <div class="pay-title">bKash Payment Gateway</div>
+            </div>
+        </label>
 
-                            <!-- Payment Method Cards -->
-                            <div class="form-group" style="margin-top: 20px;">
-                                <label style="font-weight: 700; font-size: 15px; margin-bottom: 12px; display: block; color: #1f2937;">
-                                    <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment *
-                                </label>
-                                
-                                <div class="payment-stack">
-                                    
-                                    <!-- 1. Cash on Delivery -->
-                                    <label class="pay-row-card">
-                                        <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <div class="pay-img-box cod-bg">
-                                            <i class="fa-solid fa-money-bill-wave"></i>
-                                        </div>
-                                        <div class="pay-details">
-                                            <div class="pay-title">Cash on delivery</div>
-                                            <div class="pay-sub">Pay with cash upon delivery.</div>
-                                        </div>
-                                    </label>
+        <!-- 3. Nagad Payment -->
+        <label class="pay-row-card">
+            <input type="radio" name="PaymentMethod" value="Nagad">
+            <div class="pay-img-box nagad-bg">
+                <img src="nagad.jpg" alt="Nagad" onerror="this.src='nagad.JPG'">
+            </div>
+            <div class="pay-details">
+                <div class="pay-title">Nagad</div>
+                <div class="pay-sub">Pay Through Nagad</div>
+            </div>
+        </label>
 
-                                    <!-- 2. bKash Payment -->
-                                    <label class="pay-row-card">
-                                        <input type="radio" name="PaymentMethod" value="bKash">
-                                        <div class="pay-img-box bkash-bg">
-                                            <img src="Bkash.PNG" alt="bKash">
-                                        </div>
-                                        <div class="pay-details">
-                                            <div class="pay-title">bKash Payment Gateway</div>
-                                        </div>
-                                    </label>
-
-                                    <!-- 3. Nagad Payment -->
-                                    <label class="pay-row-card">
-                                        <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <div class="pay-img-box nagad-bg">
-                                            <img src="Nagad.PNG" alt="Nagad">
-                                        </div>
-                                        <div class="pay-details">
-                                            <div class="pay-title">Nagad</div>
-                                            <div class="pay-sub">Pay Through Nagad</div>
-                                        </div>
-                                    </label>
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- ডান পাশ: অর্ডার সামারি ও নিচে কনফার্ম অর্ডার বাটন -->
-                    <div class="checkout-summary-side">
-                        <div class="checkout-card">
-                            <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
-                            <div id="checkoutItemsList" class="checkout-items-list"></div>
-
-                            <div class="delivery-method-section">
-                                <label for="deliveryLocation">Select Delivery Location:</label>
-                                <div class="delivery-box">
-                                    <select id="deliveryLocation" onchange="calculateFinalTotal()">
-                                        <option value="70">Inside Dhaka - 70 BDT</option>
-                                        <option value="120">Outside Dhaka - 120 BDT</option>
-                                        <option value="90">Sub Area - 90 BDT</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="final-calc-box">
-                                <div class="f-row"><span>Total Items (Quantity):</span> <span id="summaryTotalQty">0</span></div>
-                                <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
-                                <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
-                                <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
-                            </div>
-
-                            <!-- Confirm Place Order Button at Bottom Right Side -->
-                            <div class="submit-btn-wrapper">
-                                <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
-                            </div>
-
-                            <div id="successMessage" class="success-message" style="display: none;">
-                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
-                                আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+</div>
