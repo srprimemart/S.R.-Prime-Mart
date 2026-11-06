@@ -101,7 +101,7 @@
             
             <form id="orderForm">
                 <div class="checkout-grid">
-                    <!-- বাম পাশ (LEFT SIDE): কাস্টমার ইনফরমেশন ও ছোট কমপ্যাক্ট পেমেন্ট অপশন -->
+                    <!-- বাম পাশ (LEFT SIDE): কাস্টমার ইনফরমেশন ও পেমেন্ট মেথড (স্ক্রিনশটের মতো হুহু ডিজাইন) -->
                     <div class="checkout-form-side">
                         <div class="checkout-card">
                             <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
@@ -121,33 +121,46 @@
                                 <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                             </div>
 
-                            <!-- Tiny Compact Payment Options with Official bKash, Nagad & Cash Apps Logos -->
+                            <!-- Screenshot Matching Payment Options -->
                             <div class="form-group">
-                                <label>Payment Method *</label>
-                                <div class="payment-options-grid">
-                                    <label class="pay-card">
+                                <label class="payment-main-label"><i class="fa-solid fa-wallet"></i> Payment *</label>
+                                <div class="payment-options-stack">
+                                    
+                                    <!-- 1. Cash on Delivery -->
+                                    <label class="pay-box">
                                         <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <div class="pay-content">
-                                            <img src="https://cdn-icons-png.flaticon.com/512/2489/2489756.png" alt="Cash" class="pay-logo">
-                                            <span>Cash on Delivery</span>
+                                        <div class="pay-icon-box cod-bg">
+                                            <i class="fa-solid fa-money-bill-wave"></i>
+                                        </div>
+                                        <div class="pay-text-area">
+                                            <div class="pay-title">Cash on delivery</div>
+                                            <div class="pay-desc">Pay with cash upon delivery.</div>
                                         </div>
                                     </label>
-                                    
-                                    <label class="pay-card">
+
+                                    <!-- 2. bKash Payment -->
+                                    <label class="pay-box">
                                         <input type="radio" name="PaymentMethod" value="bKash">
-                                        <div class="pay-content">
-                                            <img src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg" alt="bKash" class="pay-logo">
-                                            <span>bKash</span>
+                                        <div class="pay-icon-box bkash-bg">
+                                            <img src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg" alt="bKash">
+                                        </div>
+                                        <div class="pay-text-area">
+                                            <div class="pay-title">bKash Payment Gateway</div>
                                         </div>
                                     </label>
-                                    
-                                    <label class="pay-card">
+
+                                    <!-- 3. Nagad Payment -->
+                                    <label class="pay-box">
                                         <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <div class="pay-content">
-                                            <img src="https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg" alt="Nagad" class="pay-logo">
-                                            <span>Nagad</span>
+                                        <div class="pay-icon-box nagad-bg">
+                                            <img src="https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg" alt="Nagad">
+                                        </div>
+                                        <div class="pay-text-area">
+                                            <div class="pay-title">Nagad</div>
+                                            <div class="pay-desc">Pay Through Nagad</div>
                                         </div>
                                     </label>
+
                                 </div>
                             </div>
                         </div>
