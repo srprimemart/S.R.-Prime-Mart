@@ -177,6 +177,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .image-box img {
@@ -191,6 +192,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     margin-bottom: 8px;
     height: 38px;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .price-stock-row {
@@ -424,7 +426,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 10000;
     overflow-y: auto;
 }
@@ -588,7 +590,6 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-size: 16px !important;
 }
 
-/* STRICT SMALL LOGO SIZING (PREVENTS GIGANTIC IMAGE DISPLAY) */
 .payment-logo-fixed {
     max-width: 32px !important;
     max-height: 24px !important;
@@ -691,6 +692,20 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     text-align: center;
     font-size: 13px;
     line-height: 1.5;
+}
+
+/* PRODUCT DETAILS MODAL STYLING */
+#productDetailModal {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10001;
+}
+
+#productDetailModal .modal-content {
+    background: #ffffff;
+    width: 90%;
+    max-width: 650px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
 /* MOBILE FIXES */
