@@ -518,7 +518,7 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 }
 
 .delivery-method-section label {
-    display block;
+    display: block;
     font-size: 13px;
     color: #4b5563;
     margin-bottom: 6px;
@@ -558,27 +558,71 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-weight: 700;
 }
 
+/* SMART COMPACT PAYMENT OPTIONS WITH LOGOS */
 .payment-options {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     margin-top: 6px;
 }
 
 .payment-radio {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     background-color: #f9fafb;
-    padding: 10px;
+    padding: 8px 12px;
     border: 1px solid #e5e7eb;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 13px;
+    transition: 0.2s;
+}
+
+.payment-radio:hover {
+    border-color: #27ae60;
+    background-color: #ffffff;
 }
 
 .payment-radio input {
     accent-color: #27ae60;
+    cursor: pointer;
+}
+
+.pay-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Cash Icon */
+.cod-icon {
+    color: #27ae60;
+    font-size: 15px;
+}
+
+/* bKash Icon Badge */
+.bkash-badge {
+    background-color: #e2136e;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+/* Nagad Icon Badge */
+.nagad-badge {
+    background-color: #f7921e;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
 }
 
 .form-group {
