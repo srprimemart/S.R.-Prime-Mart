@@ -66,12 +66,9 @@
             <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
         </div>
         
-        <div class="drawer-items" id="drawerItemsContainer">
-            <!-- Items rendered in rounded boxes -->
-        </div>
+        <div class="drawer-items" id="drawerItemsContainer"></div>
 
         <div class="drawer-footer">
-            <!-- Subtotal & Total Box -->
             <div class="cart-calc-card">
                 <div class="calc-row">
                     <span>Subtotal</span>
@@ -124,21 +121,30 @@
                                 <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                             </div>
 
-                            <!-- Payment Method Selection -->
+                            <!-- compact Payment Options with Icons -->
                             <div class="form-group">
                                 <label>Payment Method *</label>
                                 <div class="payment-options">
                                     <label class="payment-radio">
                                         <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <span>Cash on Delivery</span>
+                                        <span class="pay-label">
+                                            <i class="fa-solid fa-hand-holding-dollar pay-icon cod-icon"></i>
+                                            Cash on Delivery
+                                        </span>
                                     </label>
                                     <label class="payment-radio">
                                         <input type="radio" name="PaymentMethod" value="bKash">
-                                        <span>bKash Payment</span>
+                                        <span class="pay-label">
+                                            <span class="bkash-badge">bKash</span>
+                                            bKash Payment
+                                        </span>
                                     </label>
                                     <label class="payment-radio">
                                         <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <span>Nagad Payment</span>
+                                        <span class="pay-label">
+                                            <span class="nagad-badge">Nagad</span>
+                                            Nagad Payment
+                                        </span>
                                     </label>
                                 </div>
                             </div>
