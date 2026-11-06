@@ -557,18 +557,18 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     font-weight: 700;
 }
 
-/* COMPACT SMALL PAYMENT CARDS WITH REAL APP LOGOS */
+/* TINY COMPACT PAYMENT CARDS WITH OFFICIAL LOGOS */
 .payment-options-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 6px;
     margin-top: 6px;
 }
 
 .pay-card {
     border: 1px solid #e5e7eb;
     border-radius: 8px;
-    padding: 8px 6px;
+    padding: 6px 4px;
     background-color: #f9fafb;
     cursor: pointer;
     display: flex;
@@ -585,29 +585,30 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 
 .pay-card input[type="radio"] {
     position: absolute;
-    top: 6px;
-    left: 6px;
+    top: 4px;
+    left: 4px;
     accent-color: #27ae60;
     cursor: pointer;
+    transform: scale(0.85);
 }
 
 .pay-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    margin-top: 8px;
+    gap: 4px;
+    margin-top: 4px;
     text-align: center;
 }
 
 .pay-logo {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
 }
 
 .pay-content span {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: #1f2937;
 }
@@ -708,22 +709,5 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     }
     .confirm-order-btn {
         width: 100%;
-    }
-    .payment-options-grid {
-        grid-template-columns: 1fr;
-    }
-    .pay-card {
-        flex-direction: row;
-        justify-content: flex-start;
-        padding: 8px 12px;
-        gap: 12px;
-    }
-    .pay-card input[type="radio"] {
-        position: static;
-    }
-    .pay-content {
-        flex-direction: row;
-        margin-top: 0;
-        gap: 10px;
     }
 }
