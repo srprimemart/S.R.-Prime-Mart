@@ -473,12 +473,10 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     gap: 25px;
 }
 
-/* LEFT SIDE: Customer Info & Payment Options */
 .checkout-form-side {
     order: 1;
 }
 
-/* RIGHT SIDE: Order Items, Delivery & Total */
 .checkout-summary-side {
     order: 2;
 }
@@ -507,40 +505,40 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 }
 
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .form-group label {
     display: block;
     font-size: 13px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     color: #374151;
     font-weight: 500;
 }
 
 .form-control {
     width: 100% !important;
-    padding: 10px 14px !important;
+    padding: 9px 12px !important;
     background-color: #ffffff !important;
     border: 1px solid #d1d5db !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     color: #1f2937 !important;
     outline: none !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-family: 'Hind Siliguri', 'Poppins', sans-serif !important;
     box-sizing: border-box !important;
 }
 
 .form-control:focus {
     border-color: #27ae60 !important;
-    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15) !important;
+    box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.1) !important;
 }
 
-/* STACKED PAYMENT CARDS WITH LOGOS */
+/* COMPACT & SLIM PAYMENT BOXES WITH SMALL FIXED LOGOS */
 .payment-stack {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important;
+    gap: 8px !important;
     width: 100% !important;
 }
 
@@ -548,34 +546,34 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 14px !important;
+    gap: 10px !important;
     width: 100% !important;
     background-color: #ffffff !important;
     border: 1px solid #e5e7eb !important;
-    border-radius: 12px !important;
-    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
     cursor: pointer !important;
     box-sizing: border-box !important;
     transition: all 0.2s ease !important;
 }
 
 .pay-row-card:hover {
-    border-color: #ea580c !important;
+    border-color: #27ae60 !important;
 }
 
 .pay-row-card input[type="radio"] {
-    accent-color: #ea580c !important;
-    width: 18px !important;
-    height: 18px !important;
+    accent-color: #27ae60 !important;
+    width: 16px !important;
+    height: 16px !important;
     cursor: pointer !important;
     margin: 0 !important;
     flex-shrink: 0 !important;
 }
 
 .pay-img-box {
-    width: 50px !important;
-    height: 40px !important;
-    border-radius: 8px !important;
+    width: 36px !important;
+    height: 28px !important;
+    border-radius: 4px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -587,13 +585,13 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .cod-bg {
     background-color: #ecfdf5 !important;
     color: #059669 !important;
-    font-size: 20px !important;
+    font-size: 16px !important;
 }
 
-.payment-logo-fixed, 
-.pay-img-box img {
-    max-width: 45px !important;
-    max-height: 30px !important;
+/* STRICT SMALL LOGO SIZING (PREVENTS GIGANTIC IMAGE DISPLAY) */
+.payment-logo-fixed {
+    max-width: 32px !important;
+    max-height: 24px !important;
     width: auto !important;
     height: auto !important;
     object-fit: contain !important;
@@ -603,59 +601,59 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .pay-details {
     display: flex !important;
     flex-direction: column !important;
-    gap: 2px !important;
+    gap: 1px !important;
 }
 
 .pay-title {
-    font-size: 15px !important;
-    font-weight: 700 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
     color: #111827 !important;
 }
 
 .pay-sub {
-    font-size: 12px !important;
+    font-size: 11px !important;
     color: #6b7280 !important;
 }
 
 .checkout-items-list {
     max-height: 280px;
     overflow-y: auto;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .delivery-method-section {
-    margin-top: 14px;
+    margin-top: 12px;
     border-top: 1px solid #e5e7eb;
-    padding-top: 14px;
+    padding-top: 12px;
 }
 
 .delivery-method-section label {
     display: block;
     font-size: 13px;
     color: #4b5563;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .final-calc-box {
-    margin-top: 14px;
+    margin-top: 12px;
     border-top: 1px solid #e5e7eb;
-    padding-top: 10px;
+    padding-top: 8px;
 }
 
 .f-row {
     display: flex;
     justify-content: space-between;
     font-size: 13px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
     color: #4b5563;
 }
 
 .f-total {
     color: #1f2937;
-    font-size: 17px;
+    font-size: 16px;
     border-top: 1px solid #e5e7eb;
-    padding-top: 8px;
-    margin-top: 8px;
+    padding-top: 6px;
+    margin-top: 6px;
     font-weight: 700;
 }
 
@@ -663,18 +661,18 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 .submit-btn-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
 .confirm-order-btn {
     width: 100% !important;
-    padding: 13px 20px !important;
+    padding: 12px 18px !important;
     background-color: #27ae60 !important;
     color: #ffffff !important;
     border: none !important;
     border-radius: 8px !important;
     cursor: pointer !important;
-    font-size: 16px !important;
+    font-size: 15px !important;
     font-weight: 600 !important;
     transition: 0.2s !important;
 }
@@ -684,15 +682,15 @@ button, .btn, .add-cart-btn, .search-btn, .header-cart-btn, .drawer-place-order-
 }
 
 .success-message {
-    margin-top: 15px;
-    padding: 14px;
+    margin-top: 12px;
+    padding: 12px;
     background-color: rgba(39, 174, 96, 0.1);
     border: 1px solid #27ae60;
     color: #1e7e44;
     border-radius: 6px;
     text-align: center;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 /* MOBILE FIXES */
