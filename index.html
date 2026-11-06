@@ -101,7 +101,7 @@
             
             <form id="orderForm">
                 <div class="checkout-grid">
-                    <!-- বাম পাশ (LEFT SIDE): কাস্টমার ইনফরমেশন ও পেমেন্ট মেথড -->
+                    <!-- বাম পাশ (LEFT SIDE): কাস্টমার ইনফরমেশন ও ছোট কমপ্যাক্ট পেমেন্ট অপশন -->
                     <div class="checkout-form-side">
                         <div class="checkout-card">
                             <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
@@ -121,30 +121,32 @@
                                 <textarea id="customerAddress" name="Address" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                             </div>
 
-                            <!-- compact Payment Options with Icons -->
+                            <!-- Compact Payment Options with Real App Logos & Cash Image -->
                             <div class="form-group">
                                 <label>Payment Method *</label>
-                                <div class="payment-options">
-                                    <label class="payment-radio">
+                                <div class="payment-options-grid">
+                                    <label class="pay-card">
                                         <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <span class="pay-label">
-                                            <i class="fa-solid fa-hand-holding-dollar pay-icon cod-icon"></i>
-                                            Cash on Delivery
-                                        </span>
+                                        <div class="pay-content">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/2489/2489756.png" alt="Cash" class="pay-logo">
+                                            <span>Cash on Delivery</span>
+                                        </div>
                                     </label>
-                                    <label class="payment-radio">
+                                    
+                                    <label class="pay-card">
                                         <input type="radio" name="PaymentMethod" value="bKash">
-                                        <span class="pay-label">
-                                            <span class="bkash-badge">bKash</span>
-                                            bKash Payment
-                                        </span>
+                                        <div class="pay-content">
+                                            <img src="https://images.seeklogo.com/logo-png/51/2/bkash-logo-png_seeklogo-515732.png" alt="bKash" class="pay-logo">
+                                            <span>bKash</span>
+                                        </div>
                                     </label>
-                                    <label class="payment-radio">
+                                    
+                                    <label class="pay-card">
                                         <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <span class="pay-label">
-                                            <span class="nagad-badge">Nagad</span>
-                                            Nagad Payment
-                                        </span>
+                                        <div class="pay-content">
+                                            <img src="https://images.seeklogo.com/logo-png/43/1/nagad-logo-png_seeklogo-431872.png" alt="Nagad" class="pay-logo">
+                                            <span>Nagad</span>
+                                        </div>
                                     </label>
                                 </div>
                             </div>
