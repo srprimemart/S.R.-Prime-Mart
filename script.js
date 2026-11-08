@@ -1,25 +1,56 @@
-// ডিফল্ট কাজ করার মতো অনলাইন ইমেজ লিংক
+// ডিফল্ট স্ক্রিনশটের মতো ৪টি Featured প্রোডাক্ট
 const defaultProducts = [
     {
         id: 1,
-        name: "Men's Bar Bracelet",
-        price: 200,
-        description: "High quality stylish bar bracelet for everyday use.",
-        image: "https://images.unsplash.com/photo-1611591475179-42b78a9c3fb4?w=500&auto=format&fit=crop"
+        name: "Aurora Wireless Headphones",
+        category: "ELECTRONICS",
+        price: 199.00,
+        oldPrice: 249.00,
+        discount: "-20%",
+        featured: true,
+        description: "Studio-grade sound with active noise cancellation, 40-hour battery life and plush memory-foam cushions. Fold flat for travel.",
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop"
     },
     {
         id: 2,
-        name: "Luxury Islamic Ayatul Kursi Cuff Bracelet",
-        price: 200,
-        description: "Elegant Ayatul Kursi engraved cuff bracelet.",
-        image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500&auto=format&fit=crop"
+        name: "Midnight Runner Sneakers",
+        category: "FOOTWEAR",
+        price: 89.00,
+        oldPrice: 110.00,
+        discount: "-19%",
+        featured: true,
+        description: "Lightweight running sneakers for everyday athletic performance.",
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop"
+    },
+    {
+        id: 3,
+        name: "Pure White Classics",
+        category: "FOOTWEAR",
+        price: 99.00,
+        oldPrice: null,
+        discount: null,
+        featured: true,
+        description: "Minimalist classic sneakers with soft leather padding.",
+        image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&auto=format&fit=crop"
+    },
+    {
+        id: 4,
+        name: "Heritage Leather Watch",
+        category: "ACCESSORIES",
+        price: 349.00,
+        oldPrice: 399.00,
+        discount: "-13%",
+        featured: true,
+        description: "Premium analog watch with genuine leather strap.",
+        image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop"
     }
 ];
 
-// ব্রাউজারের পুরোনো ব্রোকেন ডেটা ক্লিয়ার করে ফ্রেশ ডেটা রেন্ডার করা
-let stored = localStorage.getItem('sr_products_v2');
+// Local Storage Control
+let stored = localStorage.getItem('sr_products_v4');
 let products = stored ? JSON.parse(stored) : defaultProducts;
 let cart = [];
+let uploadedImageBase64 = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     saveProductsToStorage();
@@ -28,10 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function saveProductsToStorage() {
-    localStorage.setItem('sr_products_v2', JSON.stringify(products));
+    localStorage.setItem('sr_products_v4', JSON.stringify(products));
 }
 
-// প্রোডাক্ট রেন্ডার ফাংশন
+// Render Products (Featured Layout)
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -43,28 +74,37 @@ function renderProducts(items) {
 
     container.innerHTML = items.map(product => `
         <div class="product-card">
-            <div>
+            <div class="image-box-wrapper">
+                ${product.discount ? `<span class="discount-badge">${product.discount}</span>` : ''}
                 <div class="image-box" onclick="openProductModal(${product.id})" title="Click for details">
-                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=SR+Prime+Mart';">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Product+Image';">
                 </div>
-                <div class="product-title" onclick="openProductModal(${product.id})">${product.name}</div>
-                <div class="price-buy-row">
+            </div>
+            <div class="product-category">${product.category || 'GENERAL'}</div>
+            <div class="product-title" onclick="openProductModal(${product.id})" title="${product.name}">${product.name}</div>
+            <div class="rating-row">★ 4.8</div>
+            <div class="price-buy-row">
+                <div>
                     <span class="product-price">৳${product.price}</span>
-                    <button class="buy-btn" onclick="openProductModal(${product.id})">Buy</button>
+                    ${product.oldPrice ? `<span class="product-old-price">৳${product.oldPrice}</span>` : ''}
                 </div>
+                <button class="buy-btn" onclick="openProductModal(${product.id})">Buy</button>
             </div>
         </div>
     `).join('');
 }
 
-// প্রোডাক্ট সার্চ ফাংশন
+// Search Function
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+    const filtered = products.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        (p.category && p.category.toLowerCase().includes(query))
+    );
     renderProducts(filtered);
 }
 
-// কার্টে প্রোডাক্ট যোগ করা
+// Cart Handlers
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -195,7 +235,7 @@ function calculateFinalTotal() {
     if (modalGrandTotal) modalGrandTotal.innerText = `BDT ${subtotal + deliveryFee}`;
 }
 
-// প্রোডাক্ট ডিটেইলস মোডাল
+// Modal Product View
 function openProductModal(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -203,6 +243,7 @@ function openProductModal(productId) {
     document.getElementById('modalProductImg').src = product.image;
     document.getElementById('modalProductName').innerText = product.name;
     document.getElementById('modalProductPrice').innerText = `৳${product.price}`;
+    document.getElementById('modalCategory').innerText = product.category || "GENERAL";
     document.getElementById('modalProductDesc').innerText = product.description || "প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।";
     
     const modalBtn = document.getElementById('modalAddToCartBtn');
@@ -220,7 +261,7 @@ function closeProductModal() {
 }
 
 /* ============================================================
-   ADMIN SYSTEM FUNCTIONS
+   ADMIN SYSTEM & FILE UPLOAD HANDLER
    ============================================================ */
 
 function openAdminAuthModal() {
@@ -233,7 +274,7 @@ function closeAdminAuthModal() {
 
 function verifyAdminPassword() {
     const pass = document.getElementById('adminPassInput').value;
-    if (pass === '1234') { 
+    if (pass === '1234') { // Default password: 1234
         closeAdminAuthModal();
         document.getElementById('adminPassInput').value = '';
         openAdminDashboard();
@@ -251,37 +292,101 @@ function closeAdminDashboard() {
     document.getElementById('adminDashboardModal').style.display = 'none';
 }
 
-function updateAdminPreview() {
-    const name = document.getElementById('adminPName').value || 'Product Title';
-    const price = document.getElementById('adminPPrice').value || '0.00';
-    const image = document.getElementById('adminPImage').value || 'https://via.placeholder.com/200?text=Image+Preview';
-
-    document.getElementById('prevName').innerText = name;
-    document.getElementById('prevPrice').innerText = `৳${price}`;
-    document.getElementById('prevImg').src = image;
+// File Input Reader
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            uploadedImageBase64 = e.target.result;
+            updateAdminPreview();
+        };
+        reader.readAsDataURL(file);
+    }
 }
 
+// Live Admin Preview
+function updateAdminPreview() {
+    const name = document.getElementById('adminPName').value || 'Product Title';
+    const category = (document.getElementById('adminPCategory').value || 'CATEGORY').toUpperCase();
+    const price = document.getElementById('adminPPrice').value || '0.00';
+    const comparePrice = document.getElementById('adminPComparePrice').value;
+    
+    const prevImg = document.getElementById('prevImg');
+    const prevBadge = document.getElementById('prevBadge');
+    const prevOldPrice = document.getElementById('prevOldPrice');
+
+    document.getElementById('prevName').innerText = name;
+    document.getElementById('prevCategory').innerText = category;
+    document.getElementById('prevPrice').innerText = `৳${price}`;
+
+    if (uploadedImageBase64) {
+        prevImg.src = uploadedImageBase64;
+    }
+
+    if (comparePrice && parseFloat(comparePrice) > parseFloat(price)) {
+        const discountPercent = Math.round(((parseFloat(comparePrice) - parseFloat(price)) / parseFloat(comparePrice)) * 100);
+        prevBadge.innerText = `-${discountPercent}%`;
+        prevBadge.style.display = 'inline-block';
+        prevOldPrice.innerText = `৳${comparePrice}`;
+    } else {
+        prevBadge.style.display = 'none';
+        prevOldPrice.innerText = '';
+    }
+}
+
+// Save Product from Admin
 function handleSaveProduct(e) {
     e.preventDefault();
 
     const idInput = document.getElementById('adminProductId').value;
     const name = document.getElementById('adminPName').value;
+    const category = (document.getElementById('adminPCategory').value || 'GENERAL').toUpperCase();
     const price = parseFloat(document.getElementById('adminPPrice').value);
+    const comparePrice = document.getElementById('adminPComparePrice').value ? parseFloat(document.getElementById('adminPComparePrice').value) : null;
     const description = document.getElementById('adminPDesc').value;
-    const image = document.getElementById('adminPImage').value;
+    const isFeatured = document.getElementById('adminPFeatured').checked;
+
+    let discountStr = null;
+    if (comparePrice && comparePrice > price) {
+        const discountPercent = Math.round(((comparePrice - price) / comparePrice) * 100);
+        discountStr = `-${discountPercent}%`;
+    }
 
     if (idInput) {
+        // Edit Existing
         const index = products.findIndex(p => p.id == idInput);
         if (index !== -1) {
-            products[index] = { ...products[index], name, price, description, image };
+            const finalImage = uploadedImageBase64 || products[index].image;
+            products[index] = { 
+                ...products[index], 
+                name, 
+                category, 
+                price, 
+                oldPrice: comparePrice, 
+                discount: discountStr, 
+                featured: isFeatured,
+                description, 
+                image: finalImage 
+            };
         }
     } else {
+        // Add New
+        if (!uploadedImageBase64) {
+            alert('Please select an image file from your device first!');
+            return;
+        }
+
         const newProduct = {
             id: Date.now(),
             name,
+            category,
             price,
+            oldPrice: comparePrice,
+            discount: discountStr,
+            featured: isFeatured,
             description,
-            image
+            image: uploadedImageBase64
         };
         products.push(newProduct);
     }
@@ -299,9 +404,13 @@ function editProductInAdmin(productId) {
 
     document.getElementById('adminProductId').value = product.id;
     document.getElementById('adminPName').value = product.name;
+    document.getElementById('adminPCategory').value = product.category || '';
     document.getElementById('adminPPrice').value = product.price;
+    document.getElementById('adminPComparePrice').value = product.oldPrice || '';
     document.getElementById('adminPDesc').value = product.description || '';
-    document.getElementById('adminPImage').value = product.image;
+    document.getElementById('adminPFeatured').checked = product.featured !== false;
+    
+    uploadedImageBase64 = product.image;
 
     document.getElementById('adminFormTitle').innerText = 'Edit Product';
     updateAdminPreview();
@@ -319,7 +428,9 @@ function deleteProductInAdmin(productId) {
 function resetAdminForm() {
     document.getElementById('adminProductForm').reset();
     document.getElementById('adminProductId').value = '';
+    uploadedImageBase64 = null;
     document.getElementById('adminFormTitle').innerText = 'Add / Edit product';
+    document.getElementById('prevImg').src = 'https://via.placeholder.com/200?text=Image+Preview';
     updateAdminPreview();
 }
 
@@ -343,7 +454,7 @@ function renderAdminProductManageList() {
     `).join('');
 }
 
-// অর্ডার সাবমিট
+// Order Form Handler
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function(e) {
