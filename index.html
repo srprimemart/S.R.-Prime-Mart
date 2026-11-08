@@ -20,7 +20,7 @@
         <div class="header-container">
             <div class="logo-area">
                 <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
-                <span class="brand-name">S.R. Prime Mart</span>
+                <span class="brand-name">S.R. PRIME MART</span>
             </div>
 
             <!-- Search Bar -->
@@ -47,10 +47,13 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- Main Content: Featured Products Section -->
     <main class="main-container">
         <section id="products-section" class="products-section">
-            <h2 class="section-title">Our Products</h2>
+            <div class="section-header">
+                <h2 class="section-title">Featured products</h2>
+                <a href="#products-section" class="shop-all-link">Shop all &rarr;</a>
+            </div>
             <div id="product-container" class="product-grid"></div>
         </section>
     </main>
@@ -104,7 +107,7 @@
             <form id="orderForm">
                 <div class="checkout-grid">
                     
-                    <!-- বাম পাশ: কাস্টমার ইনফরমেশন এবং পেমেন্ট অপশন -->
+                    <!-- Customer Info & Payment -->
                     <div class="checkout-form-side">
                         <div class="checkout-card">
                             <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
@@ -169,7 +172,7 @@
                         </div>
                     </div>
 
-                    <!-- ডান পাশ: অর্ডার লিস্ট ও ডেলিভারি চার্জ -->
+                    <!-- Order Summary -->
                     <div class="checkout-summary-side">
                         <div class="checkout-card">
                             <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
@@ -221,10 +224,11 @@
                 
                 <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <h2 id="modalProductName" style="font-size: 20px; color: #111827; margin-bottom: 10px;"></h2>
+                        <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600;">ELECTRONICS</span>
+                        <h2 id="modalProductName" style="font-size: 20px; color: #111827; margin: 4px 0 10px 0;"></h2>
                         <div style="font-size: 22px; font-weight: 700; color: #27ae60; margin-bottom: 12px;" id="modalProductPrice"></div>
                         <p id="modalProductDesc" style="font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 15px;">
-                            প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই। দৈনন্দিন ব্যবহার কিংবা গিফট দেওয়ার জন্য এটি একদম পারফেক্ট।
+                            প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।
                         </p>
                         <div style="font-size: 12px; color: #059669; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; display: inline-block; margin-bottom: 15px;">
                             ✔ স্টক অ্যাভেলেবল (In Stock) • ক্যাশ অন ডেলিভারি উপলব্ধ
@@ -250,7 +254,7 @@
         </div>
     </div>
 
-    <!-- ADMIN DASHBOARD MODAL (MATCHING YOUR SCREENSHOT) -->
+    <!-- ADMIN DASHBOARD MODAL WITH FEATURED CHECKBOX & FILE UPLOAD -->
     <div id="adminDashboardModal" class="modal">
         <div class="modal-content admin-modal-content">
             <div class="admin-header-bar">
@@ -263,7 +267,7 @@
             </div>
 
             <div class="admin-body-grid">
-                <!-- বাম পাশ: প্রোডাক্ট এডিট/অ্যাড ফর্ম -->
+                <!-- Admin Form -->
                 <div class="admin-form-side">
                     <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px;" id="adminFormTitle">Add / Edit product</h3>
 
@@ -283,7 +287,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                             <div class="form-group">
                                 <label>Category</label>
-                                <input type="text" id="adminPCategory" class="form-control" placeholder="Electronics">
+                                <input type="text" id="adminPCategory" class="form-control" placeholder="ELECTRONICS" oninput="updateAdminPreview()">
                             </div>
                             <div class="form-group">
                                 <label>Stock quantity</label>
@@ -298,14 +302,23 @@
                             </div>
                             <div class="form-group">
                                 <label>Compare-at price (৳) — optional</label>
-                                <input type="number" id="adminPComparePrice" class="form-control" placeholder="249.00">
+                                <input type="number" id="adminPComparePrice" class="form-control" placeholder="249.00" oninput="updateAdminPreview()">
                             </div>
                         </div>
 
+                        <!-- Image File Upload -->
                         <div class="form-group">
-                            <label>Image URL</label>
-                            <input type="text" id="adminPImage" class="form-control" placeholder="https://images.pexels.com/..." required oninput="updateAdminPreview()">
-                            <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Paste a link to a photo (JPG or PNG).</small>
+                            <label>Product Image File (Upload from device)</label>
+                            <input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
+                            <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Select a photo directly from your device storage.</small>
+                        </div>
+
+                        <!-- Show as Featured Product Checkbox -->
+                        <div class="form-group" style="margin-top: 15px; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="adminPFeatured" checked style="width: 16px; height: 16px; accent-color: #27ae60; cursor: pointer;">
+                            <label for="adminPFeatured" style="margin-bottom: 0; cursor: pointer; font-size: 13px; color: #111827; font-weight: 500;">
+                                Show on home page as a featured product
+                            </label>
                         </div>
 
                         <div style="margin-top: 25px; display: flex; gap: 12px;">
@@ -314,22 +327,32 @@
                         </div>
                     </form>
 
-                    <!-- প্রোডাক্ট ম্যানেজমেন্ট লিস্ট (ডিলেট অপশন) -->
                     <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
                         <h4 style="font-size: 16px; margin-bottom: 12px; color: #1f2937;">Manage Existing Products</h4>
                         <div id="adminProductManageList" style="max-height: 200px; overflow-y: auto;"></div>
                     </div>
                 </div>
 
-                <!-- ডান পাশ: লাইভ প্রিভিউ (স্ক্রিনশটের মতো) -->
+                <!-- Admin Preview -->
                 <div class="admin-preview-side">
                     <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Preview</span>
-                    <div class="preview-card">
-                        <div class="preview-img-box">
-                            <img id="prevImg" src="https://via.placeholder.com/200?text=Image+Preview" alt="Preview">
+                    <div class="preview-card product-card">
+                        <div class="image-box-wrapper">
+                            <span id="prevBadge" class="discount-badge" style="display: none;">-0%</span>
+                            <div class="image-box">
+                                <img id="prevImg" src="https://via.placeholder.com/200?text=Image+Preview" alt="Preview">
+                            </div>
                         </div>
-                        <div id="prevName" style="font-size: 14px; font-weight: 600; color: #111827; margin: 10px 0 6px 0;">Product Title</div>
-                        <div id="prevPrice" style="font-size: 16px; font-weight: 700; color: #27ae60;">৳0.00</div>
+                        <div id="prevCategory" class="product-category">CATEGORY</div>
+                        <div id="prevName" class="product-title">Product Title</div>
+                        <div class="rating-row">★ 4.9</div>
+                        <div class="price-buy-row">
+                            <div>
+                                <span id="prevPrice" class="product-price">৳0.00</span>
+                                <span id="prevOldPrice" class="product-old-price"></span>
+                            </div>
+                            <button type="button" class="buy-btn">Buy</button>
+                        </div>
                     </div>
                 </div>
             </div>
