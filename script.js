@@ -1,4 +1,4 @@
-// ডিফল্ট প্রোডাক্ট তালিকা
+// ডিফল্ট প্রোডাক্ট তালিকা (শুধুমাত্র ১টি প্রাইস, কোনো রেটিং নেই)
 const defaultProducts = [
     {
         id: 1,
@@ -53,10 +53,11 @@ const defaultOrders = [
     }
 ];
 
-let storedProducts = localStorage.getItem('sr_products_v8');
+// ভার্সন v9 দিয়ে লোকাল স্টোরেজের পুরানো ডেটা সম্পূর্ণ ফ্লাশ/রিসেট করা হয়েছে
+let storedProducts = localStorage.getItem('sr_products_v9');
 let products = storedProducts ? JSON.parse(storedProducts) : defaultProducts;
 
-let storedOrders = localStorage.getItem('sr_orders_v8');
+let storedOrders = localStorage.getItem('sr_orders_v9');
 let orders = storedOrders ? JSON.parse(storedOrders) : defaultOrders;
 
 let cart = [];
@@ -70,14 +71,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function saveProductsToStorage() {
-    localStorage.setItem('sr_products_v8', JSON.stringify(products));
+    localStorage.setItem('sr_products_v9', JSON.stringify(products));
 }
 
 function saveOrdersToStorage() {
-    localStorage.setItem('sr_orders_v8', JSON.stringify(orders));
+    localStorage.setItem('sr_orders_v9', JSON.stringify(orders));
 }
 
-// Render Main Storefront Products (No Rating, No Old Price)
+// Render Main Storefront Products (একটিমাত্র প্রাইস)
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -96,7 +97,7 @@ function renderProducts(items) {
             </div>
             <div class="product-category">${product.category || 'GENERAL'}</div>
             <div class="product-title" onclick="openProductModal(${product.id})" title="${product.name}">${product.name}</div>
-            <div class="price-buy-row" style="margin-top: 8px;">
+            <div class="price-buy-row" style="margin-top: 10px;">
                 <div>
                     <span class="product-price">৳${product.price}</span>
                 </div>
