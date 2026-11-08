@@ -172,12 +172,12 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     border-bottom: 3px solid #27ae60;
 }
 
-/* HERO BANNER SECTION (19.jpeg background) */
+/* HERO BANNER SECTION (19.jpg background) */
 .hero-banner {
     position: relative;
     width: 100%;
     min-height: 480px;
-    background-image: url('19.jpeg');
+    background-image: url('19.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
