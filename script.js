@@ -1,26 +1,26 @@
-// ডিফল্ট প্রোডাক্ট লিস্ট (যদি লোকাল স্টোরেজে কিছু না থাকে)
+// ডিফল্ট কাজ করার মতো অনলাইন ইমেজ লিংক
 const defaultProducts = [
     {
         id: 1,
         name: "Men's Bar Bracelet",
         price: 200,
         description: "High quality stylish bar bracelet for everyday use.",
-        image: "bracelet.jpg"
+        image: "https://images.unsplash.com/photo-1611591475179-42b78a9c3fb4?w=500&auto=format&fit=crop"
     },
     {
         id: 2,
         name: "Luxury Islamic Ayatul Kursi Cuff Bracelet",
         price: 200,
         description: "Elegant Ayatul Kursi engraved cuff bracelet.",
-        image: "cuff.jpg"
+        image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=500&auto=format&fit=crop"
     }
 ];
 
-// লোকাল স্টোরেজ থেকে প্রোডাক্ট লোড বা ডিফল্ট প্রোডাক্ট সেট করা
-let products = JSON.parse(localStorage.getItem('sr_products')) || defaultProducts;
+// ব্রাউজারের পুরোনো ব্রোকেন ডেটা ক্লিয়ার করে ফ্রেশ ডেটা রেন্ডার করা
+let stored = localStorage.getItem('sr_products_v2');
+let products = stored ? JSON.parse(stored) : defaultProducts;
 let cart = [];
 
-// পেজ লোড হলে প্রোডাক্ট ও কার্ট আপডেট করা
 document.addEventListener('DOMContentLoaded', () => {
     saveProductsToStorage();
     renderProducts(products);
@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function saveProductsToStorage() {
-    localStorage.setItem('sr_products', JSON.stringify(products));
+    localStorage.setItem('sr_products_v2', JSON.stringify(products));
 }
 
-// প্রোডাক্ট হোমপেজে রেন্ডার করার ফাংশন
+// প্রোডাক্ট রেন্ডার ফাংশন
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -45,7 +45,7 @@ function renderProducts(items) {
         <div class="product-card">
             <div>
                 <div class="image-box" onclick="openProductModal(${product.id})" title="Click for details">
-                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Product+Image';">
+                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=SR+Prime+Mart';">
                 </div>
                 <div class="product-title" onclick="openProductModal(${product.id})">${product.name}</div>
                 <div class="price-buy-row">
@@ -57,14 +57,14 @@ function renderProducts(items) {
     `).join('');
 }
 
-// সার্চ ফাংশন
+// প্রোডাক্ট সার্চ ফাংশন
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query));
     renderProducts(filtered);
 }
 
-// কার্টে আইটেম যোগ করা
+// কার্টে প্রোডাক্ট যোগ করা
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -220,7 +220,7 @@ function closeProductModal() {
 }
 
 /* ============================================================
-   ADMIN SYSTEM & PRODUCT MANAGEMENT FUNCTIONS (MATCHING SCREENSHOT)
+   ADMIN SYSTEM FUNCTIONS
    ============================================================ */
 
 function openAdminAuthModal() {
@@ -233,7 +233,7 @@ function closeAdminAuthModal() {
 
 function verifyAdminPassword() {
     const pass = document.getElementById('adminPassInput').value;
-    if (pass === '1234') { // Admin password: 1234
+    if (pass === '1234') { 
         closeAdminAuthModal();
         document.getElementById('adminPassInput').value = '';
         openAdminDashboard();
@@ -251,7 +251,6 @@ function closeAdminDashboard() {
     document.getElementById('adminDashboardModal').style.display = 'none';
 }
 
-// ফর্মে টাইপ করার সাথে সাথে পাশে লাইভ প্রিভিউ দেখানোর ফাংশন
 function updateAdminPreview() {
     const name = document.getElementById('adminPName').value || 'Product Title';
     const price = document.getElementById('adminPPrice').value || '0.00';
@@ -262,7 +261,6 @@ function updateAdminPreview() {
     document.getElementById('prevImg').src = image;
 }
 
-// নতুন প্রোডাক্ট সেভ বা এডিট করা
 function handleSaveProduct(e) {
     e.preventDefault();
 
@@ -273,13 +271,11 @@ function handleSaveProduct(e) {
     const image = document.getElementById('adminPImage').value;
 
     if (idInput) {
-        // এডিট প্রোডাক্ট
         const index = products.findIndex(p => p.id == idInput);
         if (index !== -1) {
             products[index] = { ...products[index], name, price, description, image };
         }
     } else {
-        // নতুন প্রোডাক্ট যোগ
         const newProduct = {
             id: Date.now(),
             name,
@@ -340,8 +336,8 @@ function renderAdminProductManageList() {
         <div class="admin-prod-item">
             <span><strong>${product.name}</strong> (৳${product.price})</span>
             <div>
-                <button onclick="editProductInAdmin(${product.id})" style="background: none; border: none; color: #2563eb; cursor: pointer; margin-right: 10px;">Edit</button>
-                <button onclick="deleteProductInAdmin(${product.id})" style="background: none; border: none; color: #ef4444; cursor: pointer;">Delete</button>
+                <button onclick="editProductInAdmin(${product.id})" style="background: none; border: none; color: #27ae60; cursor: pointer; margin-right: 10px; font-weight: 600;">Edit</button>
+                <button onclick="deleteProductInAdmin(${product.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 600;">Delete</button>
             </div>
         </div>
     `).join('');
