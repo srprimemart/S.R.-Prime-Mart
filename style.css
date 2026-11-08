@@ -182,13 +182,12 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     background-position: center center;
     background-repeat: no-repeat;
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* বাটনটি ছবির একদম নিচের বাম কোণে পজিশন করার জন্য */
+    padding-bottom: 50px;
 }
 
 .hero-overlay {
     width: 100%;
-    height: 100%;
-    padding: 60px 0;
     display: flex;
     align-items: center;
 }
@@ -201,31 +200,6 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     text-align: left;
 }
 
-.hero-tagline {
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #4b5563;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 10px;
-}
-
-.hero-title {
-    font-size: 42px;
-    line-height: 1.15;
-    color: #111827;
-    font-weight: 700;
-    margin-bottom: 12px;
-}
-
-.hero-description {
-    font-size: 15px;
-    color: #4b5563;
-    margin-bottom: 25px;
-    max-width: 480px;
-}
-
 .hero-btn-wrapper {
     display: flex;
     gap: 15px;
@@ -235,12 +209,12 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     display: inline-block;
     background-color: #ffffff;
     color: #111827;
-    padding: 12px 30px;
+    padding: 12px 32px;
     border-radius: 30px;
     font-weight: 600;
     font-size: 14px;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     transition: all 0.2s ease;
     border: 1px solid #e5e7eb;
 }
@@ -624,9 +598,8 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 
 @media(max-width: 768px) {
     .checkout-grid { grid-template-columns: 1fr; }
-    .hero-banner { min-height: 380px; }
+    .hero-banner { min-height: 320px; padding-bottom: 30px; }
     .hero-content { padding: 0 20px; }
-    .hero-title { font-size: 30px; }
 }
 
 .checkout-card {
