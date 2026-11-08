@@ -31,7 +31,7 @@
 
             <div class="header-right">
                 <button class="admin-top-btn" onclick="openAdminAuthModal()">
-                    <i class="fa-solid fa-user-gear"></i> Admin
+                    <i class="fa-solid fa-user-gear"></i> Admin Panel
                 </button>
                 <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
@@ -219,7 +219,7 @@
             
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
                 <div style="flex: 1; min-width: 250px;">
-                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; height: 260px; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb;">
+                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb;">
                 </div>
                 
                 <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between;">
@@ -254,7 +254,7 @@
         </div>
     </div>
 
-    <!-- FULL ADMIN DASHBOARD MODAL (EXACT SCREENSHOT LAYOUT) -->
+    <!-- FULL CONTROL ADMIN DASHBOARD MODAL -->
     <div id="adminDashboardModal" class="modal">
         <div class="modal-content admin-full-modal">
             <!-- Admin Top Navigation Bar -->
@@ -262,7 +262,7 @@
                 <div class="admin-logo-tabs">
                     <span class="brand-name" style="font-size: 16px; margin-right: 25px;">S.R. PRIME MART</span>
                     <button class="admin-nav-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
-                    <button class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products</button>
+                    <button class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
                 </div>
                 <button class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
             </div>
@@ -271,34 +271,35 @@
             <div id="adminDashboardView" class="admin-view-section">
                 <h1 class="dash-main-title">S.R. PRIME MART — Dashboard</h1>
 
-                <!-- 3 Summary Metrics Cards -->
+                <!-- Summary Metrics Cards -->
                 <div class="metrics-grid">
                     <div class="metric-card">
-                        <span class="metric-label">Revenue</span>
-                        <div class="metric-value" id="dashRevenue">$0.00</div>
+                        <span class="metric-label">Total Revenue</span>
+                        <div class="metric-value" id="dashRevenue">৳0.00</div>
                     </div>
                     <div class="metric-card">
-                        <span class="metric-label">Orders</span>
+                        <span class="metric-label">Total Orders</span>
                         <div class="metric-value" id="dashOrdersCount">0</div>
                     </div>
                     <div class="metric-card">
-                        <span class="metric-label">Products</span>
+                        <span class="metric-label">Listed Products</span>
                         <div class="metric-value" id="dashProductsCount">0</div>
                     </div>
                 </div>
 
                 <!-- Recent Orders Section -->
                 <div class="dash-section">
-                    <h2 class="dash-sec-title">Recent orders</h2>
+                    <h2 class="dash-sec-title">Recent Customer Orders</h2>
                     <div class="table-responsive">
                         <table class="dash-table">
                             <thead>
                                 <tr>
-                                    <th>Order</th>
-                                    <th>Customer</th>
+                                    <th>Order ID</th>
+                                    <th>Customer Info</th>
                                     <th>Date</th>
-                                    <th>Total</th>
+                                    <th>Total Amount</th>
                                     <th>Status</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="dashOrdersTbody">
@@ -312,20 +313,21 @@
                 <div class="dash-section" style="margin-top: 35px;">
                     <div class="dash-sec-header">
                         <div>
-                            <h2 class="dash-sec-title">Inventory</h2>
+                            <h2 class="dash-sec-title">Inventory & Stock Control</h2>
                             <span class="low-stock-alert" id="dashLowStockText">0 product(s) low on stock.</span>
                         </div>
-                        <button class="manage-prod-btn" onclick="switchAdminTab('products')">Manage products</button>
+                        <button class="manage-prod-btn" onclick="switchAdminTab('products')">+ Add / Setup Products</button>
                     </div>
 
                     <div class="table-responsive">
                         <table class="dash-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 45%;">Product</th>
+                                    <th style="width: 40%;">Product Name</th>
                                     <th>Category</th>
                                     <th>Price</th>
-                                    <th>Stock</th>
+                                    <th>Stock Level</th>
+                                    <th>Quick Stock Edit</th>
                                 </tr>
                             </thead>
                             <tbody id="dashInventoryTbody">
@@ -340,14 +342,14 @@
             <div id="adminProductsView" class="admin-view-section" style="display: none;">
                 <div class="admin-body-grid">
                     <div class="admin-form-side">
-                        <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px;" id="adminFormTitle">Add / Edit product</h3>
+                        <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px;" id="adminFormTitle">Add / Edit Product</h3>
 
                         <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
                             <input type="hidden" id="adminProductId">
 
                             <div class="form-group">
-                                <label>Product name</label>
-                                <input type="text" id="adminPName" class="form-control" placeholder="e.g. Aurora Wireless Headphones" required oninput="updateAdminPreview()">
+                                <label>Product Name *</label>
+                                <input type="text" id="adminPName" class="form-control" placeholder="e.g. Premium Leather Bag" required oninput="updateAdminPreview()">
                             </div>
 
                             <div class="form-group">
@@ -361,43 +363,37 @@
                                     <input type="text" id="adminPCategory" class="form-control" placeholder="ELECTRONICS" oninput="updateAdminPreview()">
                                 </div>
                                 <div class="form-group">
-                                    <label>Stock quantity</label>
-                                    <input type="number" id="adminPStock" class="form-control" placeholder="23" value="10" required>
-                                </div>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div class="form-group">
-                                    <label>Price (৳)</label>
-                                    <input type="number" id="adminPPrice" class="form-control" placeholder="199.00" required oninput="updateAdminPreview()">
-                                </div>
-                                <div class="form-group">
-                                    <label>Compare-at price (৳) — optional</label>
-                                    <input type="number" id="adminPComparePrice" class="form-control" placeholder="249.00" oninput="updateAdminPreview()">
+                                    <label>Stock Quantity *</label>
+                                    <input type="number" id="adminPStock" class="form-control" placeholder="25" value="10" required>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label>Product Image File (Upload from device)</label>
+                                <label>Price (৳) *</label>
+                                <input type="number" id="adminPPrice" class="form-control" placeholder="1200" required oninput="updateAdminPreview()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Product Image (Select from Gallery/Storage)</label>
                                 <input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
-                                <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Select a photo directly from your device storage.</small>
+                                <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Upload image file directly from your mobile/PC.</small>
                             </div>
 
                             <div style="margin-top: 25px; display: flex; gap: 12px;">
-                                <button type="submit" class="save-changes-btn">Save changes</button>
-                                <button type="button" class="cancel-admin-btn" onclick="resetAdminForm()">Reset / New</button>
+                                <button type="submit" class="save-changes-btn">Save Product</button>
+                                <button type="button" class="cancel-admin-btn" onclick="resetAdminForm()">Reset Form</button>
                             </div>
                         </form>
 
                         <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                            <h4 style="font-size: 16px; margin-bottom: 12px; color: #1f2937;">Manage Existing Products</h4>
+                            <h4 style="font-size: 16px; margin-bottom: 12px; color: #1f2937;">Website Listed Products</h4>
                             <div id="adminProductManageList" style="max-height: 250px; overflow-y: auto;"></div>
                         </div>
                     </div>
 
                     <!-- Live Preview -->
                     <div class="admin-preview-side">
-                        <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Preview</span>
+                        <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Card Preview</span>
                         <div class="preview-card product-card">
                             <div class="image-box-wrapper">
                                 <div class="image-box">
@@ -406,11 +402,9 @@
                             </div>
                             <div id="prevCategory" class="product-category">CATEGORY</div>
                             <div id="prevName" class="product-title">Product Title</div>
-                            <div class="rating-row">★ 4.8</div>
-                            <div class="price-buy-row">
+                            <div class="price-buy-row" style="margin-top: 10px;">
                                 <div>
                                     <span id="prevPrice" class="product-price">৳0.00</span>
-                                    <span id="prevOldPrice" class="product-old-price"></span>
                                 </div>
                                 <button type="button" class="buy-btn">Buy</button>
                             </div>
@@ -419,6 +413,37 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- EDIT CUSTOMER INFO MODAL -->
+    <div id="editCustomerModal" class="modal">
+        <div class="admin-auth-box" style="width: 450px;">
+            <span class="close-btn" onclick="closeEditCustomerModal()">&times;</span>
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Edit Customer Information</h3>
+            <input type="hidden" id="editOrderIndex">
+            
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" id="editCustomerName" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="editCustomerPhone" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Full Address</label>
+                <textarea id="editCustomerAddress" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Order Total Amount (৳)</label>
+                <input type="number" id="editOrderTotal" class="form-control" required>
+            </div>
+
+            <button class="confirm-order-btn" onclick="saveCustomerInfoEdit()" style="width: 100%; margin-top: 10px;">Save Customer Info</button>
         </div>
     </div>
 
