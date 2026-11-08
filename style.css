@@ -219,7 +219,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-weight: 500;
 }
 
-/* PRICE & BUY BUTTON ROW */
+/* PRICE & BUY BUTTON ROW (GREEN BUY BUTTON) */
 .price-buy-row {
     display: flex;
     justify-content: space-between;
@@ -234,7 +234,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 }
 
 .buy-btn {
-    background-color: #111827;
+    background-color: #27ae60;
     color: #ffffff;
     border: none;
     padding: 6px 18px;
@@ -246,7 +246,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 }
 
 .buy-btn:hover {
-    background-color: #27ae60;
+    background-color: #219653;
 }
 
 /* SIDE CART DRAWER */
@@ -712,7 +712,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     line-height: 1.5;
 }
 
-/* ADMIN SYSTEM STYLING (MATCHING SCREENSHOT WITH GREEN ACCENTS) */
+/* ADMIN SYSTEM STYLING (ALL GREEN BUTTONS) */
 .admin-auth-box {
     background-color: #ffffff;
     width: 340px;
@@ -781,7 +781,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 }
 
 .save-changes-btn {
-    background-color: #111827;
+    background-color: #27ae60;
     color: #ffffff;
     border: none;
     padding: 10px 24px;
@@ -792,7 +792,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 }
 
 .save-changes-btn:hover {
-    background-color: #27ae60;
+    background-color: #219653;
 }
 
 .cancel-admin-btn {
