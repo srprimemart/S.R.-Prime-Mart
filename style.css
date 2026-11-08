@@ -69,7 +69,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     white-space: nowrap;
 }
 
-/* Search Bar */
+/* Search Bar (সবুজ আইকন) */
 .search-area {
     display: flex;
     width: 38%;
@@ -93,9 +93,14 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     padding: 8px 15px;
     background-color: transparent;
     border: none;
-    color: #6b7280;
-    font-size: 14px;
+    color: #27ae60; /* কাঙ্ক্ষিত সবুজ কালার */
+    font-size: 15px;
     cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.search-btn:hover {
+    transform: scale(1.1);
 }
 
 /* Header Right Area */
@@ -183,7 +188,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-weight: 700;
 }
 
-/* PRODUCT GRID & CARDS */
+/* PRODUCT GRID & CARDS (1080x1080 SQUARE ASPECT RATIO) */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -215,9 +220,10 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     margin-bottom: 12px;
 }
 
+/* 1080 x 1080 Square Fit (Aspect Ratio 1:1) */
 .image-box {
     width: 100%;
-    height: 220px;
+    aspect-ratio: 1 / 1;
     background-color: #f3f4f6;
     display: flex;
     justify-content: center;
@@ -264,12 +270,6 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     color: #27ae60;
 }
 
-.rating-row {
-    font-size: 11px;
-    color: #f59e0b;
-    margin-bottom: 10px;
-}
-
 .price-buy-row {
     display: flex;
     justify-content: space-between;
@@ -280,13 +280,6 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-size: 15px;
     font-weight: 700;
     color: #111827;
-}
-
-.product-old-price {
-    font-size: 12px;
-    color: #9ca3af;
-    text-decoration: line-through;
-    margin-left: 4px;
 }
 
 .buy-btn {
@@ -321,9 +314,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     flex-direction: column;
 }
 
-.cart-drawer.open {
-    right: 0;
-}
+.cart-drawer.open { right: 0; }
 
 .drawer-header {
     padding: 16px 20px;
@@ -388,9 +379,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     border-radius: 8px;
 }
 
-.cart-item-details {
-    flex-grow: 1;
-}
+.cart-item-details { flex-grow: 1; }
 
 .cart-item-title {
     font-size: 14px;
@@ -424,9 +413,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-size: 15px;
 }
 
-.delete-btn:hover {
-    color: #ef4444;
-}
+.delete-btn:hover { color: #ef4444; }
 
 .q-btn {
     background: transparent;
@@ -489,9 +476,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     transition: 0.2s;
 }
 
-.drawer-place-order-btn:hover {
-    background-color: #219653;
-}
+.drawer-place-order-btn:hover { background-color: #219653; }
 
 /* CHECKOUT MODAL */
 .modal {
@@ -574,9 +559,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     gap: 8px;
 }
 
-.form-group {
-    margin-bottom: 14px;
-}
+.form-group { margin-bottom: 14px; }
 
 .form-group label {
     display: block;
@@ -604,7 +587,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.1) !important;
 }
 
-/* COMPACT PAYMENT BOXES */
+/* PAYMENT BOXES */
 .payment-stack {
     display: flex !important;
     flex-direction: column !important;
@@ -627,9 +610,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     transition: all 0.2s ease !important;
 }
 
-.pay-row-card:hover {
-    border-color: #27ae60 !important;
-}
+.pay-row-card:hover { border-color: #27ae60 !important; }
 
 .pay-row-card input[type="radio"] {
     accent-color: #27ae60 !important;
@@ -745,9 +726,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     transition: 0.2s !important;
 }
 
-.confirm-order-btn:hover {
-    background-color: #219653 !important;
-}
+.confirm-order-btn:hover { background-color: #219653 !important; }
 
 .success-message {
     margin-top: 12px;
@@ -761,9 +740,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     line-height: 1.5;
 }
 
-/* ============================================================
-   ADMIN DASHBOARD STYLING (EXACT MATCH WITH SCREENSHOT)
-   ============================================================ */
+/* ADMIN DASHBOARD STYLING */
 .admin-auth-box {
     background-color: #ffffff;
     width: 340px;
@@ -828,9 +805,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     cursor: pointer;
 }
 
-.logout-btn:hover {
-    background-color: #f3f4f6;
-}
+.logout-btn:hover { background-color: #f3f4f6; }
 
 .admin-view-section {
     padding: 30px;
@@ -844,7 +819,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-weight: 700;
 }
 
-/* 3 Metrics Grid */
+/* Metrics Grid */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -873,9 +848,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 }
 
 /* Table Section */
-.dash-section {
-    margin-bottom: 20px;
-}
+.dash-section { margin-bottom: 20px; }
 
 .dash-sec-header {
     display: flex;
@@ -939,33 +912,44 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     vertical-align: middle;
 }
 
-.dash-table tr:last-child td {
-    border-bottom: none;
-}
+.dash-table tr:last-child td { border-bottom: none; }
 
-/* Status Dropdown inside Table */
 .status-select {
-    padding: 6px 10px;
+    padding: 5px 8px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 12px;
     color: #111827;
     outline: none;
     background-color: #ffffff;
 }
 
 .status-save-btn {
-    background-color: #000000;
+    background-color: #27ae60;
     color: #ffffff;
     border: none;
-    padding: 6px 14px;
+    padding: 5px 10px;
     border-radius: 6px;
     font-size: 12px;
     cursor: pointer;
-    margin-left: 8px;
+    margin-left: 6px;
 }
 
-/* Low Stock Color Indicator */
+.stock-control-btn {
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stock-control-btn:hover { background-color: #e5e7eb; }
+
 .text-low-stock {
     color: #ea580c !important;
     font-weight: 700;
@@ -984,7 +968,14 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     align-items: center;
 }
 
-/* Admin Manage Products Side */
+.action-icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0 4px;
+}
+
 .admin-body-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
