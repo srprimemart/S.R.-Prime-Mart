@@ -1,66 +1,70 @@
-// প্রোডাক্ট লিস্ট
-const products = [
+// ডিফল্ট প্রোডাক্ট লিস্ট (যদি লোকাল স্টোরেজে কিছু না থাকে)
+const defaultProducts = [
     {
         id: 1,
         name: "Men's Bar Bracelet",
         price: 200,
-        image: "bracelet.jpg" // বা আপনার প্রোডাক্টের ছবির নাম
+        description: "High quality stylish bar bracelet for everyday use.",
+        image: "bracelet.jpg"
     },
     {
         id: 2,
         name: "Luxury Islamic Ayatul Kursi Cuff Bracelet",
         price: 200,
-        image: "cuff.jpg" // বা আপনার প্রোডাক্টের ছবির নাম
+        description: "Elegant Ayatul Kursi engraved cuff bracelet.",
+        image: "cuff.jpg"
     }
 ];
 
-// কার্ট বা শপিং ব্যাগ ডাটা
+// লোকাল স্টোরেজ থেকে প্রোডাক্ট লোড বা ডিফল্ট প্রোডাক্ট সেট করা
+let products = JSON.parse(localStorage.getItem('sr_products')) || defaultProducts;
 let cart = [];
 
-// পেজ লোড হলে প্রোডাক্ট রেন্ডার করা
+// পেজ লোড হলে প্রোডাক্ট ও কার্ট আপডেট করা
 document.addEventListener('DOMContentLoaded', () => {
+    saveProductsToStorage();
     renderProducts(products);
     updateCartUI();
 });
 
-// প্রোডাক্ট স্ক্রিনে শো করার ফাংশন (ছবির ওপর ক্লিক করলে ডিটেইলস পপআপ আসবে)
+function saveProductsToStorage() {
+    localStorage.setItem('sr_products', JSON.stringify(products));
+}
+
+// প্রোডাক্ট হোমপেজে রেন্ডার করার ফাংশন
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
 
     if (items.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products found!</p>`;
+        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products available!</p>`;
         return;
     }
 
     container.innerHTML = items.map(product => `
         <div class="product-card">
             <div>
-                <!-- ছবির ওপর ক্লিক করলে ডিটেইলস পপআপ আসবে -->
-                <div class="image-box" onclick="openProductModal(${product.id})" title="Click for details" style="cursor: pointer;">
+                <div class="image-box" onclick="openProductModal(${product.id})" title="Click for details">
                     <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Product+Image';">
                 </div>
-                <div class="product-title" onclick="openProductModal(${product.id})" style="cursor: pointer;" title="Click for details">${product.name}</div>
-                <div class="price-stock-row">
+                <div class="product-title" onclick="openProductModal(${product.id})">${product.name}</div>
+                <div class="price-buy-row">
                     <span class="product-price">৳${product.price}</span>
-                    <span class="stock-badge">In stock</span>
+                    <button class="buy-btn" onclick="openProductModal(${product.id})">Buy</button>
                 </div>
             </div>
-            <button class="add-cart-btn" onclick="addToCart(${product.id})">
-                <i class="fa-solid fa-cart-plus"></i> Add to cart
-            </button>
         </div>
     `).join('');
 }
 
-// প্রোডাক্ট সার্চ ফাংশন
+// সার্চ ফাংশন
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query));
     renderProducts(filtered);
 }
 
-// কার্টে প্রোডাক্ট যোগ করার ফাংশন
+// কার্টে আইটেম যোগ করা
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -74,7 +78,6 @@ function addToCart(productId) {
     updateCartUI();
 }
 
-// কার্টের পরিমাণ কমানো
 function decreaseQty(productId) {
     const item = cart.find(i => i.id === productId);
     if (item) {
@@ -86,21 +89,16 @@ function decreaseQty(productId) {
     updateCartUI();
 }
 
-// কার্ট থেকে আইটেম রিমোভ করা
 function removeFromCart(productId) {
     cart = cart.filter(i => i.id !== productId);
     updateCartUI();
 }
 
-// কার্ট ড্রয়ার ওপেন/ক্লোজ টগল
 function toggleCartDrawer() {
     const drawer = document.getElementById('cartDrawer');
-    if (drawer) {
-        drawer.classList.toggle('open');
-    }
+    if (drawer) drawer.classList.toggle('open');
 }
 
-// কার্টের ইউআই এবং ক্যালকুলেশন আপডেট করা
 function updateCartUI() {
     const cartCount = document.getElementById('cartCount');
     const drawerItemsContainer = document.getElementById('drawerItemsContainer');
@@ -145,14 +143,12 @@ function updateCartUI() {
         }
     }
 
-    // চেকআউট পেজের আইটেম লিস্ট আপডেট করা
     updateCheckoutUI(subtotal, totalCount);
 }
 
-// চেকআউট মোডাল ওপেন/ক্লোজ করা
 function openCheckoutModal() {
     if (cart.length === 0) {
-        alert('আপনার কার্ট খালি! দয়া করে প্রথমে কিছু কার্টে যোগ করুন।');
+        alert('আপনার কার্ট খালি!');
         return;
     }
     toggleCartDrawer();
@@ -163,7 +159,6 @@ function closeCheckoutModal() {
     document.getElementById('checkoutModal').style.display = 'none';
 }
 
-// চেকআউট পেজের আইটেম ও টোটাল হিসাব আপডেট করা
 function updateCheckoutUI(subtotal, totalCount) {
     const checkoutItemsList = document.getElementById('checkoutItemsList');
     const summaryTotalQty = document.getElementById('summaryTotalQty');
@@ -188,7 +183,6 @@ function updateCheckoutUI(subtotal, totalCount) {
     calculateFinalTotal();
 }
 
-// ডেলিভারি চার্জ সহ গ্র্যান্ড টোটাল হিসাব করা
 function calculateFinalTotal() {
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliverySelect = document.getElementById('deliveryLocation');
@@ -201,7 +195,7 @@ function calculateFinalTotal() {
     if (modalGrandTotal) modalGrandTotal.innerText = `BDT ${subtotal + deliveryFee}`;
 }
 
-// ---- নতুন ফিচার: প্রোডাক্ট ডিটেইলস মোডাল ওপেন/ক্লোজ ফাংশন ----
+// প্রোডাক্ট ডিটেইলস মোডাল
 function openProductModal(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -209,8 +203,8 @@ function openProductModal(productId) {
     document.getElementById('modalProductImg').src = product.image;
     document.getElementById('modalProductName').innerText = product.name;
     document.getElementById('modalProductPrice').innerText = `৳${product.price}`;
+    document.getElementById('modalProductDesc').innerText = product.description || "প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।";
     
-    // মোডালের এড টু কার্ট বাটন সেটআপ
     const modalBtn = document.getElementById('modalAddToCartBtn');
     modalBtn.onclick = function() {
         addToCart(product.id);
@@ -225,7 +219,135 @@ function closeProductModal() {
     document.getElementById('productDetailModal').style.display = 'none';
 }
 
-// অর্ডার ফর্ম সাবমিট হ্যান্ডলার
+/* ============================================================
+   ADMIN SYSTEM & PRODUCT MANAGEMENT FUNCTIONS (MATCHING SCREENSHOT)
+   ============================================================ */
+
+function openAdminAuthModal() {
+    document.getElementById('adminAuthModal').style.display = 'block';
+}
+
+function closeAdminAuthModal() {
+    document.getElementById('adminAuthModal').style.display = 'none';
+}
+
+function verifyAdminPassword() {
+    const pass = document.getElementById('adminPassInput').value;
+    if (pass === '1234') { // Admin password: 1234
+        closeAdminAuthModal();
+        document.getElementById('adminPassInput').value = '';
+        openAdminDashboard();
+    } else {
+        alert('Incorrect Password!');
+    }
+}
+
+function openAdminDashboard() {
+    document.getElementById('adminDashboardModal').style.display = 'block';
+    renderAdminProductManageList();
+}
+
+function closeAdminDashboard() {
+    document.getElementById('adminDashboardModal').style.display = 'none';
+}
+
+// ফর্মে টাইপ করার সাথে সাথে পাশে লাইভ প্রিভিউ দেখানোর ফাংশন
+function updateAdminPreview() {
+    const name = document.getElementById('adminPName').value || 'Product Title';
+    const price = document.getElementById('adminPPrice').value || '0.00';
+    const image = document.getElementById('adminPImage').value || 'https://via.placeholder.com/200?text=Image+Preview';
+
+    document.getElementById('prevName').innerText = name;
+    document.getElementById('prevPrice').innerText = `৳${price}`;
+    document.getElementById('prevImg').src = image;
+}
+
+// নতুন প্রোডাক্ট সেভ বা এডিট করা
+function handleSaveProduct(e) {
+    e.preventDefault();
+
+    const idInput = document.getElementById('adminProductId').value;
+    const name = document.getElementById('adminPName').value;
+    const price = parseFloat(document.getElementById('adminPPrice').value);
+    const description = document.getElementById('adminPDesc').value;
+    const image = document.getElementById('adminPImage').value;
+
+    if (idInput) {
+        // এডিট প্রোডাক্ট
+        const index = products.findIndex(p => p.id == idInput);
+        if (index !== -1) {
+            products[index] = { ...products[index], name, price, description, image };
+        }
+    } else {
+        // নতুন প্রোডাক্ট যোগ
+        const newProduct = {
+            id: Date.now(),
+            name,
+            price,
+            description,
+            image
+        };
+        products.push(newProduct);
+    }
+
+    saveProductsToStorage();
+    renderProducts(products);
+    renderAdminProductManageList();
+    resetAdminForm();
+    alert('✅ Product saved successfully!');
+}
+
+function editProductInAdmin(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    document.getElementById('adminProductId').value = product.id;
+    document.getElementById('adminPName').value = product.name;
+    document.getElementById('adminPPrice').value = product.price;
+    document.getElementById('adminPDesc').value = product.description || '';
+    document.getElementById('adminPImage').value = product.image;
+
+    document.getElementById('adminFormTitle').innerText = 'Edit Product';
+    updateAdminPreview();
+}
+
+function deleteProductInAdmin(productId) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        products = products.filter(p => p.id !== productId);
+        saveProductsToStorage();
+        renderProducts(products);
+        renderAdminProductManageList();
+    }
+}
+
+function resetAdminForm() {
+    document.getElementById('adminProductForm').reset();
+    document.getElementById('adminProductId').value = '';
+    document.getElementById('adminFormTitle').innerText = 'Add / Edit product';
+    updateAdminPreview();
+}
+
+function renderAdminProductManageList() {
+    const container = document.getElementById('adminProductManageList');
+    if (!container) return;
+
+    if (products.length === 0) {
+        container.innerHTML = `<p style="color: #888;">No products to manage.</p>`;
+        return;
+    }
+
+    container.innerHTML = products.map(product => `
+        <div class="admin-prod-item">
+            <span><strong>${product.name}</strong> (৳${product.price})</span>
+            <div>
+                <button onclick="editProductInAdmin(${product.id})" style="background: none; border: none; color: #2563eb; cursor: pointer; margin-right: 10px;">Edit</button>
+                <button onclick="deleteProductInAdmin(${product.id})" style="background: none; border: none; color: #ef4444; cursor: pointer;">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// অর্ডার সাবমিট
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function(e) {
@@ -237,7 +359,6 @@ if (orderForm) {
         if (submitBtn) submitBtn.style.display = 'none';
         if (successMessage) successMessage.style.display = 'block';
 
-        // ৩ সেকেন্ড পর কার্ট খালি করে মোডাল বন্ধ করা
         setTimeout(() => {
             cart = [];
             updateCartUI();
