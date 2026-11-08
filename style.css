@@ -7,6 +7,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     background-color: #ffffff;
     color: #1f2937;
@@ -69,7 +73,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     white-space: nowrap;
 }
 
-/* Search Bar (সবুজ আইকন) */
+/* Search Bar (Green Icon) */
 .search-area {
     display: flex;
     width: 38%;
@@ -166,6 +170,87 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 .nav-link.active {
     color: #27ae60;
     border-bottom: 3px solid #27ae60;
+}
+
+/* HERO BANNER SECTION (19.jpeg background) */
+.hero-banner {
+    position: relative;
+    width: 100%;
+    min-height: 480px;
+    background-image: url('19.jpeg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+}
+
+.hero-overlay {
+    width: 100%;
+    height: 100%;
+    padding: 60px 0;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 40px;
+    text-align: left;
+}
+
+.hero-tagline {
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #4b5563;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.hero-title {
+    font-size: 42px;
+    line-height: 1.15;
+    color: #111827;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.hero-description {
+    font-size: 15px;
+    color: #4b5563;
+    margin-bottom: 25px;
+    max-width: 480px;
+}
+
+.hero-btn-wrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.hero-shop-btn {
+    display: inline-block;
+    background-color: #ffffff;
+    color: #111827;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.hero-shop-btn:hover {
+    background-color: #27ae60;
+    color: #ffffff;
+    border-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(39, 174, 96, 0.25);
 }
 
 /* Main Container & Section Title */
@@ -539,6 +624,9 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
 
 @media(max-width: 768px) {
     .checkout-grid { grid-template-columns: 1fr; }
+    .hero-banner { min-height: 380px; }
+    .hero-content { padding: 0 20px; }
+    .hero-title { font-size: 30px; }
 }
 
 .checkout-card {
