@@ -1,938 +1,460 @@
-/* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #ffffff;
-    color: #1f2937;
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-    font-weight: 400;
-}
-
-h1, h2, h3, h4, h5, h6, .section-title, .brand-name, .card-subtitle {
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-    font-weight: 600;
-}
-
-button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-order-btn, .q-btn, .buy-btn, .admin-top-btn, .save-changes-btn {
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif;
-    font-weight: 500;
-}
-
-/* Top Bar */
-.top-bar {
-    background-color: #000000;
-    color: #ffffff;
-    text-align: left;
-    padding: 8px 20px;
-    font-size: 13px;
-}
-
-/* Main Header */
-.main-header {
-    background-color: #ffffff;
-    padding: 14px 0;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-}
-
-.logo-area {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-}
-
-.logo-img {
-    height: 32px;
-    width: auto;
-}
-
-.brand-name {
-    font-size: 20px;
-    color: #000000;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    white-space: nowrap;
-}
-
-/* Search Bar */
-.search-area {
-    display: flex;
-    width: 38%;
-    border: 1px solid #e5e7eb;
-    border-radius: 20px;
-    overflow: hidden;
-    background-color: #f9fafb;
-}
-
-.search-area input {
-    width: 100%;
-    padding: 8px 16px;
-    border: none;
-    outline: none;
-    font-size: 13px;
-    color: #000000;
-    background: transparent;
-}
-
-.search-btn {
-    padding: 8px 15px;
-    background-color: transparent;
-    border: none;
-    color: #6b7280;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-/* Header Right Area */
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.admin-top-btn {
-    background-color: transparent;
-    color: #4b5563;
-    border: 1px solid #d1d5db;
-    padding: 7px 14px;
-    font-size: 13px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.admin-top-btn:hover {
-    color: #27ae60;
-    border-color: #27ae60;
-}
-
-/* Cart Button */
-.header-cart-btn {
-    background-color: #27ae60;
-    color: #ffffff;
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* Nav Bar */
-.nav-bar {
-    background-color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.nav-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    padding: 0 15px;
-}
-
-.nav-link {
-    color: #000000;
-    text-decoration: none;
-    padding: 12px 20px 10px 20px;
-    font-weight: 600;
-    font-size: 14px;
-    display: inline-block;
-}
-
-.nav-link.active {
-    color: #27ae60;
-    border-bottom: 3px solid #27ae60;
-}
-
-/* Main Container & Section Title (Matching Screenshot) */
-.main-container {
-    max-width: 1200px;
-    margin: 30px auto;
-    padding: 0 15px;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.section-title {
-    color: #111827;
-    font-size: 26px;
-    font-weight: 700;
-}
-
-.shop-all-link {
-    font-size: 13px;
-    color: #4b5563;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.shop-all-link:hover {
-    color: #27ae60;
-}
-
-/* PRODUCT GRID & CARDS (SCREENSHOT DESIGN + HOVER ANIMATION) */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-}
-
-@media (max-width: 992px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-.product-card {
-    background-color: #ffffff;
-    border: none;
-    border-radius: 16px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Smooth Card & Image Animation */
-.image-box-wrapper {
-    position: relative;
-    width: 100%;
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 12px;
-}
-
-.discount-badge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background-color: #ea580c;
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 12px;
-    z-index: 2;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-}
-
-.image-box {
-    width: 100%;
-    height: 220px;
-    background-color: #f3f4f6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    overflow: hidden;
-    border-radius: 16px;
-}
-
-/* IMAGE HOVER ZOOM ANIMATION */
-.image-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.product-card:hover .image-box img {
-    transform: scale(1.08); /* ছবির সুন্দর স্মুথ জুম ইফেক্ট */
-}
-
-.product-category {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #6b7280;
-    font-weight: 600;
-    margin-bottom: 3px;
-}
-
-.product-title {
-    font-size: 14px;
-    color: #111827;
-    margin-bottom: 4px;
-    height: 20px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    cursor: pointer;
-    font-weight: 600;
-    transition: color 0.2s;
-}
-
-.product-card:hover .product-title {
-    color: #27ae60;
-}
-
-.rating-row {
-    font-size: 11px;
-    color: #f59e0b;
-    margin-bottom: 10px;
-}
-
-/* PRICE & BUY BUTTON ROW (GREEN BUY BUTTON) */
-.price-buy-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.product-price {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111827;
-}
-
-.product-old-price {
-    font-size: 12px;
-    color: #9ca3af;
-    text-decoration: line-through;
-    margin-left: 4px;
-}
-
-.buy-btn {
-    background-color: #27ae60;
-    color: #ffffff;
-    border: none;
-    padding: 5px 16px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.buy-btn:hover {
-    background-color: #219653;
-    transform: scale(1.03);
-}
-
-/* SIDE CART DRAWER */
-.cart-drawer {
-    position: fixed;
-    top: 0;
-    right: -420px;
-    width: 400px;
-    height: 100vh;
-    background-color: #ffffff;
-    box-shadow: -5px 0 20px rgba(0,0,0,0.15);
-    z-index: 9999;
-    transition: 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-}
-
-.cart-drawer.open {
-    right: 0;
-}
-
-.drawer-header {
-    padding: 16px 20px;
-    background-color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.drawer-header-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.close-drawer-icon {
-    font-size: 18px;
-    cursor: pointer;
-    color: #1f2937;
-}
-
-.drawer-header h3 {
-    color: #000000;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-#drawerItemHeaderSub {
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.close-drawer {
-    font-size: 24px;
-    cursor: pointer;
-    color: #6b7280;
-}
-
-.drawer-items {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding: 16px;
-}
-
-.cart-item-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 14px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-}
-
-.cart-item-img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.cart-item-details {
-    flex-grow: 1;
-}
-
-.cart-item-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: #1f2937;
-    margin-bottom: 6px;
-    line-height: 1.3;
-}
-
-.cart-item-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cart-item-price {
-    font-weight: 700;
-    font-size: 15px;
-    color: #000000;
-}
-
-.cart-qty-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.delete-btn {
-    color: #6b7280;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.delete-btn:hover {
-    color: #ef4444;
-}
-
-.q-btn {
-    background: transparent;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    color: #000000;
-    padding: 0 4px;
-}
-
-.drawer-footer {
-    padding: 16px 20px;
-    border-top: 1px solid #f0f0f0;
-    background-color: #ffffff;
-}
-
-.cart-calc-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 14px;
-    margin-bottom: 14px;
-}
-
-.calc-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    margin-bottom: 6px;
-    color: #1f2937;
-}
-
-.text-muted {
-    color: #6b7280;
-    font-size: 13px;
-}
-
-.calc-divider {
-    border: none;
-    border-top: 1px solid #f0f0f0;
-    margin: 8px 0;
-}
-
-.calc-total {
-    font-weight: 700;
-    font-size: 16px;
-    color: #000000;
-    margin-bottom: 0;
-}
-
-.drawer-place-order-btn {
-    width: 100%;
-    padding: 13px;
-    background-color: #27ae60;
-    color: #ffffff;
-    border: none;
-    border-radius: 25px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.drawer-place-order-btn:hover {
-    background-color: #219653;
-}
-
-/* CHECKOUT MODAL */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 10000;
-    overflow-y: auto;
-}
-
-.modal-content {
-    background-color: #ffffff;
-    width: 100%;
-    max-width: 1150px;
-    min-height: 100vh;
-    margin: 0 auto;
-    padding: 25px 20px;
-    position: relative;
-}
-
-.close-btn {
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    font-size: 26px;
-    color: #6b7280;
-    cursor: pointer;
-}
-
-.checkout-header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.checkout-header-bar h2 {
-    font-size: 20px;
-    color: #1f2937;
-}
-
-.secure-badge {
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.checkout-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-.checkout-form-side {
-    order: 1;
-}
-
-.checkout-summary-side {
-    order: 2;
-}
-
-@media(max-width: 768px) {
-    .checkout-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.checkout-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 22px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-
-.card-subtitle {
-    font-size: 16px;
-    color: #1f2937;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.form-group {
-    margin-bottom: 14px;
-}
-
-.form-group label {
-    display: block;
-    font-size: 13px;
-    margin-bottom: 5px;
-    color: #374151;
-    font-weight: 500;
-}
-
-.form-control {
-    width: 100% !important;
-    padding: 9px 12px !important;
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 6px !important;
-    color: #1f2937 !important;
-    outline: none !important;
-    font-size: 13px !important;
-    font-family: 'Hind Siliguri', 'Poppins', sans-serif !important;
-    box-sizing: border-box !important;
-}
-
-.form-control:focus {
-    border-color: #27ae60 !important;
-    box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.1) !important;
-}
-
-/* COMPACT PAYMENT BOXES */
-.payment-stack {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    width: 100% !important;
-}
-
-.pay-row-card {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 10px !important;
-    width: 100% !important;
-    background-color: #ffffff !important;
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
-    padding: 8px 12px !important;
-    cursor: pointer !important;
-    box-sizing: border-box !important;
-    transition: all 0.2s ease !important;
-}
-
-.pay-row-card:hover {
-    border-color: #27ae60 !important;
-}
-
-.pay-row-card input[type="radio"] {
-    accent-color: #27ae60 !important;
-    width: 16px !important;
-    height: 16px !important;
-    cursor: pointer !important;
-    margin: 0 !important;
-    flex-shrink: 0 !important;
-}
-
-.pay-img-box {
-    width: 36px !important;
-    height: 28px !important;
-    border-radius: 4px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-    overflow: hidden !important;
-    background-color: #ffffff !important;
-}
-
-.cod-bg {
-    background-color: #ecfdf5 !important;
-    color: #059669 !important;
-    font-size: 16px !important;
-}
-
-.payment-logo-fixed {
-    max-width: 32px !important;
-    max-height: 24px !important;
-    width: auto !important;
-    height: auto !important;
-    object-fit: contain !important;
-    display: block !important;
-}
-
-.pay-details {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 1px !important;
-}
-
-.pay-title {
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    color: #111827 !important;
-}
-
-.pay-sub {
-    font-size: 11px !important;
-    color: #6b7280 !important;
-}
-
-.checkout-items-list {
-    max-height: 280px;
-    overflow-y: auto;
-    margin-bottom: 12px;
-}
-
-.delivery-method-section {
-    margin-top: 12px;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 12px;
-}
-
-.delivery-method-section label {
-    display: block;
-    font-size: 13px;
-    color: #4b5563;
-    margin-bottom: 5px;
-}
-
-.final-calc-box {
-    margin-top: 12px;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 8px;
-}
-
-.f-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    margin-bottom: 5px;
-    color: #4b5563;
-}
-
-.f-total {
-    color: #1f2937;
-    font-size: 16px;
-    border-top: 1px solid #e5e7eb;
-    padding-top: 6px;
-    margin-top: 6px;
-    font-weight: 700;
-}
-
-/* CONFIRM ORDER BUTTON */
-.submit-btn-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 16px;
-}
-
-.confirm-order-btn {
-    width: 100% !important;
-    padding: 12px 18px !important;
-    background-color: #27ae60 !important;
-    color: #ffffff !important;
-    border: none !important;
-    border-radius: 8px !important;
-    cursor: pointer !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    transition: 0.2s !important;
-}
-
-.confirm-order-btn:hover {
-    background-color: #219653 !important;
-}
-
-.success-message {
-    margin-top: 12px;
-    padding: 12px;
-    background-color: rgba(39, 174, 96, 0.1);
-    border: 1px solid #27ae60;
-    color: #1e7e44;
-    border-radius: 6px;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-/* ADMIN SYSTEM STYLING */
-.admin-auth-box {
-    background-color: #ffffff;
-    width: 340px;
-    margin: 15vh auto;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    position: relative;
-}
-
-.admin-modal-content {
-    max-width: 1050px !important;
-    min-height: auto !important;
-    border-radius: 12px !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-}
-
-.admin-header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 25px;
-    border-bottom: 1px solid #e5e7eb;
-    background-color: #ffffff;
-}
-
-.admin-tab {
-    font-size: 14px;
-    color: #4b5563;
-    font-weight: 500;
-    cursor: pointer;
-    padding-bottom: 4px;
-}
-
-.admin-tab.active {
-    color: #27ae60;
-    border-bottom: 2px solid #27ae60;
-}
-
-.logout-btn {
-    background-color: #f3f4f6;
-    color: #374151;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.logout-btn:hover {
-    background-color: #e5e7eb;
-}
-
-.admin-body-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 30px;
-    padding: 25px;
-}
-
-@media(max-width: 768px) {
-    .admin-body-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.save-changes-btn {
-    background-color: #27ae60;
-    color: #ffffff;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.save-changes-btn:hover {
-    background-color: #219653;
-}
-
-.cancel-admin-btn {
-    background-color: #ffffff;
-    color: #374151;
-    border: 1px solid #d1d5db;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.preview-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 0;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-
-.admin-prod-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid #f3f4f6;
-    font-size: 13px;
-}
-
-/* MOBILE FIXES */
-@media (max-width: 600px) {
-    .header-container {
-        padding: 0 10px;
-        gap: 6px;
-    }
-    .brand-name {
-        font-size: 15px;
-    }
-    .logo-img {
-        height: 24px;
-    }
-    .search-area {
-        width: 40%;
-    }
-    .cart-text {
-        display: none;
-    }
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px;
-    }
-    .image-box {
-        height: 150px;
-    }
-    .cart-drawer {
-        width: 100%;
-        right: -100%;
-    }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.R. Prime Mart</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Top Announcement Bar -->
+    <div class="top-bar">
+        Welcome to SR Prime Mart
+    </div>
+
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
+                <span class="brand-name">S.R. PRIME MART</span>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-area">
+                <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+                <button class="search-btn" onclick="searchProducts()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
+            <div class="header-right">
+                <button class="admin-top-btn" onclick="openAdminAuthModal()">
+                    <i class="fa-solid fa-user-gear"></i> Admin Panel
+                </button>
+                <button class="header-cart-btn" onclick="toggleCartDrawer()">
+                    <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="#products-section" class="nav-link active">Shop all</a>
+            <a href="#products-section" class="nav-link">Products</a>
+        </div>
+    </nav>
+
+    <!-- Main Content: Featured Products Section -->
+    <main class="main-container">
+        <section id="products-section" class="products-section">
+            <div class="section-header">
+                <h2 class="section-title">Featured products</h2>
+            </div>
+            <div id="product-container" class="product-grid"></div>
+        </section>
+    </main>
+
+    <!-- Side Cart Drawer -->
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="drawer-header">
+            <div class="drawer-header-title">
+                <i class="fa-solid fa-arrow-left close-drawer-icon" onclick="toggleCartDrawer()"></i>
+                <div>
+                    <h3>Cart</h3>
+                    <small id="drawerItemHeaderSub">0 items</small>
+                </div>
+            </div>
+            <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
+        </div>
+        
+        <div class="drawer-items" id="drawerItemsContainer"></div>
+
+        <div class="drawer-footer">
+            <div class="cart-calc-card">
+                <div class="calc-row">
+                    <span>Subtotal</span>
+                    <span id="drawerSubtotal">৳0</span>
+                </div>
+                <div class="calc-row text-muted">
+                    <span>Delivery</span>
+                    <span>Calculated at checkout</span>
+                </div>
+                <hr class="calc-divider">
+                <div class="calc-row calc-total">
+                    <span>Items total</span>
+                    <span id="drawerItemsTotal">৳0</span>
+                </div>
+            </div>
+
+            <button class="drawer-place-order-btn" onclick="openCheckoutModal()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Full-Screen Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
+            
+            <div class="checkout-header-bar">
+                <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
+                <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
+            </div>
+            
+            <form id="orderForm">
+                <div class="checkout-grid">
+                    
+                    <!-- Customer Info & Payment -->
+                    <div class="checkout-form-side">
+                        <div class="checkout-card">
+                            <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
+                            
+                            <div class="form-group">
+                                <label for="customerName">Full Name *</label>
+                                <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customerPhone">Phone Number *</label>
+                                <input type="tel" id="customerPhone" name="Phone" class="form-control" placeholder="01XXXXXXXXX" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="customerAddress">Full Address *</label>
+                                <textarea id="customerAddress" name="Address" class="form-control" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
+                            </div>
+
+                            <!-- Payment Methods -->
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 8px; display: block; color: #1f2937;">
+                                    <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment Method *
+                                </label>
+                                
+                                <div class="payment-stack">
+                                    <label class="pay-row-card">
+                                        <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
+                                        <div class="pay-img-box cod-bg">
+                                            <i class="fa-solid fa-money-bill-wave"></i>
+                                        </div>
+                                        <div class="pay-details">
+                                            <div class="pay-title">Cash on Delivery</div>
+                                            <div class="pay-sub">Pay with cash upon delivery.</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="pay-row-card">
+                                        <input type="radio" name="PaymentMethod" value="bKash">
+                                        <div class="pay-img-box">
+                                            <img src="Bkash.PNG" alt="bKash" class="payment-logo-fixed" onerror="this.src='bkash.png';">
+                                        </div>
+                                        <div class="pay-details">
+                                            <div class="pay-title">bKash</div>
+                                            <div class="pay-sub">Pay via bKash</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="pay-row-card">
+                                        <input type="radio" name="PaymentMethod" value="Nagad">
+                                        <div class="pay-img-box">
+                                            <img src="Nagad.PNG" alt="Nagad" class="payment-logo-fixed" onerror="this.src='nagad.png';">
+                                        </div>
+                                        <div class="pay-details">
+                                            <div class="pay-title">Nagad</div>
+                                            <div class="pay-sub">Pay via Nagad</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="checkout-summary-side">
+                        <div class="checkout-card">
+                            <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
+                            <div id="checkoutItemsList" class="checkout-items-list"></div>
+
+                            <div class="delivery-method-section">
+                                <label for="deliveryLocation">Select Delivery Location:</label>
+                                <div class="delivery-box">
+                                    <select id="deliveryLocation" class="form-control" onchange="calculateFinalTotal()">
+                                        <option value="70">Inside Dhaka - 70 BDT</option>
+                                        <option value="120">Outside Dhaka - 120 BDT</option>
+                                        <option value="90">Sub Area - 90 BDT</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="final-calc-box">
+                                <div class="f-row"><span>Total Items (Quantity):</span> <span id="summaryTotalQty">0</span></div>
+                                <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
+                                <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
+                                <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
+                            </div>
+
+                            <div class="submit-btn-wrapper">
+                                <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
+                            </div>
+
+                            <div id="successMessage" class="success-message" style="display: none;">
+                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
+                                আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Details Popup Modal -->
+    <div id="productDetailModal" class="modal" style="display: none; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 650px; min-height: auto; border-radius: 16px; padding: 25px;">
+            <span class="close-btn" onclick="closeProductModal()">&times;</span>
+            
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+                <div style="flex: 1; min-width: 250px;">
+                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; height: 260px; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb;">
+                </div>
+                
+                <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600;">ELECTRONICS</span>
+                        <h2 id="modalProductName" style="font-size: 20px; color: #111827; margin: 4px 0 10px 0;"></h2>
+                        <div style="font-size: 22px; font-weight: 700; color: #27ae60; margin-bottom: 12px;" id="modalProductPrice"></div>
+                        <p id="modalProductDesc" style="font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 15px;">
+                            প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।
+                        </p>
+                        <div style="font-size: 12px; color: #059669; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; display: inline-block; margin-bottom: 15px;">
+                            ✔ স্টক অ্যাভেলেবল (In Stock) • ক্যাশ অন ডেলিভারি উপলব্ধ
+                        </div>
+                    </div>
+
+                    <button class="confirm-order-btn" id="modalAddToCartBtn" style="padding: 10px; font-size: 14px;">
+                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminAuthModal" class="modal">
+        <div class="admin-auth-box">
+            <span class="close-btn" onclick="closeAdminAuthModal()">&times;</span>
+            <h3><i class="fa-solid fa-lock"></i> Admin Login</h3>
+            <p style="font-size: 12px; color: #6b7280; margin-bottom: 15px;">Enter admin password (Default: 1234)</p>
+            <input type="password" id="adminPassInput" class="form-control" placeholder="Password" style="margin-bottom: 12px;">
+            <button class="confirm-order-btn" onclick="verifyAdminPassword()" style="width: 100%;">Login</button>
+        </div>
+    </div>
+
+    <!-- FULL CONTROL ADMIN DASHBOARD MODAL -->
+    <div id="adminDashboardModal" class="modal">
+        <div class="modal-content admin-full-modal">
+            <!-- Admin Top Navigation Bar -->
+            <div class="admin-top-nav">
+                <div class="admin-logo-tabs">
+                    <span class="brand-name" style="font-size: 16px; margin-right: 25px;">S.R. PRIME MART</span>
+                    <button class="admin-nav-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
+                    <button class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
+                </div>
+                <button class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+            </div>
+
+            <!-- DASHBOARD VIEW -->
+            <div id="adminDashboardView" class="admin-view-section">
+                <h1 class="dash-main-title">S.R. PRIME MART — Dashboard</h1>
+
+                <!-- Summary Metrics Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Total Revenue</span>
+                        <div class="metric-value" id="dashRevenue">৳0.00</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Total Orders</span>
+                        <div class="metric-value" id="dashOrdersCount">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Listed Products</span>
+                        <div class="metric-value" id="dashProductsCount">0</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Section -->
+                <div class="dash-section">
+                    <h2 class="dash-sec-title">Recent Customer Orders</h2>
+                    <div class="table-responsive">
+                        <table class="dash-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer Info</th>
+                                    <th>Date</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashOrdersTbody">
+                                <!-- Order rows generated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inventory Section -->
+                <div class="dash-section" style="margin-top: 35px;">
+                    <div class="dash-sec-header">
+                        <div>
+                            <h2 class="dash-sec-title">Inventory & Stock Control</h2>
+                            <span class="low-stock-alert" id="dashLowStockText">0 product(s) low on stock.</span>
+                        </div>
+                        <button class="manage-prod-btn" onclick="switchAdminTab('products')">+ Add / Setup Products</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="dash-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%;">Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock Level</th>
+                                    <th>Quick Stock Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashInventoryTbody">
+                                <!-- Inventory rows generated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTS MANAGEMENT VIEW -->
+            <div id="adminProductsView" class="admin-view-section" style="display: none;">
+                <div class="admin-body-grid">
+                    <div class="admin-form-side">
+                        <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px;" id="adminFormTitle">Add / Edit Product</h3>
+
+                        <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
+                            <input type="hidden" id="adminProductId">
+
+                            <div class="form-group">
+                                <label>Product Name *</label>
+                                <input type="text" id="adminPName" class="form-control" placeholder="e.g. Premium Leather Bag" required oninput="updateAdminPreview()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="adminPDesc" class="form-control" rows="3" placeholder="Write product details..." oninput="updateAdminPreview()"></textarea>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <input type="text" id="adminPCategory" class="form-control" placeholder="ELECTRONICS" oninput="updateAdminPreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock Quantity *</label>
+                                    <input type="number" id="adminPStock" class="form-control" placeholder="25" value="10" required>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Price (৳) *</label>
+                                    <input type="number" id="adminPPrice" class="form-control" placeholder="1200" required oninput="updateAdminPreview()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Old Price (৳) — Optional</label>
+                                    <input type="number" id="adminPComparePrice" class="form-control" placeholder="1500" oninput="updateAdminPreview()">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Product Image (Select from Gallery/Storage)</label>
+                                <input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
+                                <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Upload image file directly from your mobile/PC.</small>
+                            </div>
+
+                            <div style="margin-top: 25px; display: flex; gap: 12px;">
+                                <button type="submit" class="save-changes-btn">Save Product</button>
+                                <button type="button" class="cancel-admin-btn" onclick="resetAdminForm()">Reset Form</button>
+                            </div>
+                        </form>
+
+                        <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                            <h4 style="font-size: 16px; margin-bottom: 12px; color: #1f2937;">Website Listed Products</h4>
+                            <div id="adminProductManageList" style="max-height: 250px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview -->
+                    <div class="admin-preview-side">
+                        <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Card Preview</span>
+                        <div class="preview-card product-card">
+                            <div class="image-box-wrapper">
+                                <div class="image-box">
+                                    <img id="prevImg" src="https://via.placeholder.com/200?text=Image+Preview" alt="Preview">
+                                </div>
+                            </div>
+                            <div id="prevCategory" class="product-category">CATEGORY</div>
+                            <div id="prevName" class="product-title">Product Title</div>
+                            <div class="rating-row">★ 4.8</div>
+                            <div class="price-buy-row">
+                                <div>
+                                    <span id="prevPrice" class="product-price">৳0.00</span>
+                                    <span id="prevOldPrice" class="product-old-price"></span>
+                                </div>
+                                <button type="button" class="buy-btn">Buy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- EDIT CUSTOMER INFO MODAL -->
+    <div id="editCustomerModal" class="modal">
+        <div class="admin-auth-box" style="width: 450px;">
+            <span class="close-btn" onclick="closeEditCustomerModal()">&times;</span>
+            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Edit Customer Information</h3>
+            <input type="hidden" id="editOrderIndex">
+            
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" id="editCustomerName" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="editCustomerPhone" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Full Address</label>
+                <textarea id="editCustomerAddress" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Order Total Amount (৳)</label>
+                <input type="number" id="editOrderTotal" class="form-control" required>
+            </div>
+
+            <button class="confirm-order-btn" onclick="saveCustomerInfoEdit()" style="width: 100%; margin-top: 10px;">Save Customer Info</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
