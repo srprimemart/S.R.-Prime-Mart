@@ -93,7 +93,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     padding: 8px 15px;
     background-color: transparent;
     border: none;
-    color: #27ae60; /* কাঙ্ক্ষিত সবুজ কালার */
+    color: #27ae60;
     font-size: 15px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -188,7 +188,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-weight: 700;
 }
 
-/* PRODUCT GRID & CARDS (1080x1080 SQUARE ASPECT RATIO) */
+/* PRODUCT GRID & CARDS (1080x1080 SQUARE FIT) */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -220,7 +220,6 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     margin-bottom: 12px;
 }
 
-/* 1080 x 1080 Square Fit (Aspect Ratio 1:1) */
 .image-box {
     width: 100%;
     aspect-ratio: 1 / 1;
