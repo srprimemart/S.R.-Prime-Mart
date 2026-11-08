@@ -5,9 +5,8 @@ const defaultProducts = [
         name: "Aurora Wireless Headphones",
         category: "Electronics",
         price: 199.00,
-        oldPrice: 249.00,
         stock: 23,
-        description: "Studio-grade sound with active noise cancellation, 40-hour battery life and plush memory-foam cushions. Fold flat for travel.",
+        description: "Studio-grade sound with active noise cancellation, 40-hour battery life and plush memory-foam cushions.",
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop"
     },
     {
@@ -15,7 +14,6 @@ const defaultProducts = [
         name: "Midnight Runner Sneakers",
         category: "Footwear",
         price: 89.00,
-        oldPrice: 110.00,
         stock: 30,
         description: "Lightweight running sneakers for everyday athletic performance.",
         image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop"
@@ -25,7 +23,6 @@ const defaultProducts = [
         name: "Pure White Classics",
         category: "Footwear",
         price: 99.00,
-        oldPrice: null,
         stock: 22,
         description: "Minimalist classic sneakers with soft leather padding.",
         image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&auto=format&fit=crop"
@@ -35,29 +32,31 @@ const defaultProducts = [
         name: "Heritage Leather Watch",
         category: "Accessories",
         price: 349.00,
-        oldPrice: 399.00,
         stock: 8,
         description: "Premium analog watch with genuine leather strap.",
         image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop"
     }
 ];
 
-// নমুনা অর্ডার (ডিফল্ট)
+// নমুনা অর্ডার
 const defaultOrders = [
     {
         orderId: "#00001",
-        customerName: "Jane",
-        customerContact: "j@x.com",
-        date: "11/6/2026",
-        total: 398.00,
+        customerName: "Jane Doe",
+        customerPhone: "01700000000",
+        customerAddress: "Dhaka, Bangladesh",
+        payMethod: "Cash on Delivery",
+        itemsSummary: "Aurora Wireless Headphones (x1)",
+        date: "11/8/2026",
+        total: 269.00,
         status: "Paid"
     }
 ];
 
-let storedProducts = localStorage.getItem('sr_products_v6');
+let storedProducts = localStorage.getItem('sr_products_v8');
 let products = storedProducts ? JSON.parse(storedProducts) : defaultProducts;
 
-let storedOrders = localStorage.getItem('sr_orders_v6');
+let storedOrders = localStorage.getItem('sr_orders_v8');
 let orders = storedOrders ? JSON.parse(storedOrders) : defaultOrders;
 
 let cart = [];
@@ -71,14 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function saveProductsToStorage() {
-    localStorage.setItem('sr_products_v6', JSON.stringify(products));
+    localStorage.setItem('sr_products_v8', JSON.stringify(products));
 }
 
 function saveOrdersToStorage() {
-    localStorage.setItem('sr_orders_v6', JSON.stringify(orders));
+    localStorage.setItem('sr_orders_v8', JSON.stringify(orders));
 }
 
-// Main Storefront Render
+// Render Main Storefront Products (No Rating, No Old Price)
 function renderProducts(items) {
     const container = document.getElementById('product-container');
     if (!container) return;
@@ -97,11 +96,9 @@ function renderProducts(items) {
             </div>
             <div class="product-category">${product.category || 'GENERAL'}</div>
             <div class="product-title" onclick="openProductModal(${product.id})" title="${product.name}">${product.name}</div>
-            <div class="rating-row">★ 4.8</div>
-            <div class="price-buy-row">
+            <div class="price-buy-row" style="margin-top: 8px;">
                 <div>
                     <span class="product-price">৳${product.price}</span>
-                    ${product.oldPrice ? `<span class="product-old-price">৳${product.oldPrice}</span>` : ''}
                 </div>
                 <button class="buy-btn" onclick="directBuyNow(${product.id})">Buy</button>
             </div>
@@ -126,7 +123,7 @@ function searchProducts() {
     renderProducts(filtered);
 }
 
-// Cart Management
+// Cart System
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
@@ -281,9 +278,7 @@ function closeProductModal() {
     document.getElementById('productDetailModal').style.display = 'none';
 }
 
-/* ============================================================
-   CUSTOMER ORDER SUBMISSION (AUTOMATICALLY ADDS TO DASHBOARD)
-   ============================================================ */
+/* AUTOMATIC CUSTOMER ORDER SUBMISSION */
 const orderForm = document.getElementById('orderForm');
 if (orderForm) {
     orderForm.addEventListener('submit', function(e) {
@@ -300,17 +295,21 @@ if (orderForm) {
         let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         let grandTotal = subtotal + deliveryFee;
 
-        // Create New Order Entry
+        let itemsSummaryStr = cart.map(i => `${i.name} (x${i.quantity})`).join(', ');
+
         const newOrder = {
             orderId: `#${String(orders.length + 1).padStart(5, '0')}`,
             customerName: customerName,
-            customerContact: `${customerPhone} | ${customerAddress} (${payMethod})`,
+            customerPhone: customerPhone,
+            customerAddress: customerAddress,
+            payMethod: payMethod,
+            itemsSummary: itemsSummaryStr,
             date: new Date().toLocaleDateString('en-US'),
             total: grandTotal,
-            status: "Paid"
+            status: "Pending"
         };
 
-        // Deduct Stock Quantities automatically
+        // Deduct Stock
         cart.forEach(cartItem => {
             const p = products.find(prod => prod.id === cartItem.id);
             if (p) {
@@ -320,7 +319,7 @@ if (orderForm) {
         saveProductsToStorage();
         renderProducts(products);
 
-        orders.unshift(newOrder); // Add to beginning of array
+        orders.unshift(newOrder);
         saveOrdersToStorage();
 
         const submitBtn = document.getElementById('submitBtn');
@@ -339,10 +338,7 @@ if (orderForm) {
     });
 }
 
-/* ============================================================
-   ADMIN DASHBOARD SYSTEM (SCREENSHOT ENGINE)
-   ============================================================ */
-
+/* ADMIN DASHBOARD ENGINE */
 function openAdminAuthModal() {
     document.getElementById('adminAuthModal').style.display = 'block';
 }
@@ -353,7 +349,7 @@ function closeAdminAuthModal() {
 
 function verifyAdminPassword() {
     const pass = document.getElementById('adminPassInput').value;
-    if (pass === '1234') { // Default password
+    if (pass === '1234') {
         closeAdminAuthModal();
         document.getElementById('adminPassInput').value = '';
         openAdminDashboard();
@@ -393,53 +389,52 @@ function switchAdminTab(tab) {
     }
 }
 
-// Render Dashboard Data (Metrics, Orders, Inventory)
 function renderDashboardView() {
-    // 1. Calculate Metrics
     let totalRevenue = orders.reduce((sum, ord) => sum + ord.total, 0);
-    let totalOrdersCount = orders.length;
-    let totalProductsCount = products.length;
+    document.getElementById('dashRevenue').innerText = `৳${totalRevenue.toFixed(2)}`;
+    document.getElementById('dashOrdersCount').innerText = orders.length;
+    document.getElementById('dashProductsCount').innerText = products.length;
 
-    document.getElementById('dashRevenue').innerText = `$${totalRevenue.toFixed(2)}`;
-    document.getElementById('dashOrdersCount').innerText = totalOrdersCount;
-    document.getElementById('dashProductsCount').innerText = totalProductsCount;
-
-    // 2. Render Orders Table
     const ordersTbody = document.getElementById('dashOrdersTbody');
     if (ordersTbody) {
         if (orders.length === 0) {
-            ordersTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">No recent orders.</td></tr>`;
+            ordersTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No orders recorded yet.</td></tr>`;
         } else {
             ordersTbody.innerHTML = orders.map((ord, idx) => `
                 <tr>
                     <td><strong>${ord.orderId}</strong></td>
                     <td>
-                        <div><strong>${ord.customerName}</strong></div>
-                        <small style="color: #6b7280;">${ord.customerContact}</small>
+                        <div><strong>${ord.customerName}</strong> (${ord.customerPhone})</div>
+                        <small style="color: #6b7280; display: block;">📍 ${ord.customerAddress}</small>
+                        <small style="color: #059669; font-weight: 500;">🛒 ${ord.itemsSummary || 'Items'} [${ord.payMethod || 'COD'}]</small>
                     </td>
                     <td>${ord.date}</td>
-                    <td>$${parseFloat(ord.total).toFixed(2)}</td>
+                    <td><strong>৳${parseFloat(ord.total).toFixed(2)}</strong></td>
                     <td>
                         <select class="status-select" id="statusSelect_${idx}">
-                            <option value="Paid" ${ord.status === 'Paid' ? 'selected' : ''}>Paid</option>
                             <option value="Pending" ${ord.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Paid" ${ord.status === 'Paid' ? 'selected' : ''}>Paid</option>
                             <option value="Delivered" ${ord.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                             <option value="Cancelled" ${ord.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
                         <button class="status-save-btn" onclick="saveOrderStatus(${idx})">Save</button>
+                    </td>
+                    <td>
+                        <button class="action-icon-btn" onclick="openEditCustomerModal(${idx})" title="Edit Customer Info" style="color: #27ae60;"><i class="fa-solid fa-pen"></i></button>
+                        <button class="action-icon-btn" onclick="deleteOrder(${idx})" title="Delete Order" style="color: #ef4444;"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
     }
 
-    // 3. Render Inventory Table & Low Stock Alert
     const invTbody = document.getElementById('dashInventoryTbody');
     let lowStockCount = 0;
 
     if (invTbody) {
-        invTbody.innerHTML = products.map(p => {
-            const isLow = (p.stock || 0) <= 10;
+        invTbody.innerHTML = products.map((p, idx) => {
+            const currentStock = p.stock !== undefined ? p.stock : 10;
+            const isLow = currentStock <= 10;
             if (isLow) lowStockCount++;
 
             return `
@@ -451,8 +446,13 @@ function renderDashboardView() {
                         </div>
                     </td>
                     <td>${p.category || 'General'}</td>
-                    <td>$${parseFloat(p.price).toFixed(2)}</td>
-                    <td class="${isLow ? 'text-low-stock' : ''}">${p.stock !== undefined ? p.stock : 10}</td>
+                    <td>৳${parseFloat(p.price).toFixed(2)}</td>
+                    <td class="${isLow ? 'text-low-stock' : ''}"><strong>${currentStock}</strong></td>
+                    <td>
+                        <button class="stock-control-btn" onclick="adjustStock(${idx}, -1)">-</button>
+                        <span style="margin: 0 8px; font-weight: 600;">${currentStock}</span>
+                        <button class="stock-control-btn" onclick="adjustStock(${idx}, 1)">+</button>
+                    </td>
                 </tr>
             `;
         }).join('');
@@ -464,16 +464,66 @@ function renderDashboardView() {
     }
 }
 
+function adjustStock(productIndex, amount) {
+    if (products[productIndex]) {
+        let current = products[productIndex].stock !== undefined ? products[productIndex].stock : 10;
+        products[productIndex].stock = Math.max(0, current + amount);
+        saveProductsToStorage();
+        renderProducts(products);
+        renderDashboardView();
+    }
+}
+
 function saveOrderStatus(orderIndex) {
     const select = document.getElementById(`statusSelect_${orderIndex}`);
-    if (select) {
+    if (select && orders[orderIndex]) {
         orders[orderIndex].status = select.value;
         saveOrdersToStorage();
         alert(`Order status updated to "${select.value}"!`);
     }
 }
 
-/* PRODUCTS MANAGEMENT (ADMIN FORM & UPLOAD) */
+function deleteOrder(orderIndex) {
+    if (confirm('Are you sure you want to delete this order record?')) {
+        orders.splice(orderIndex, 1);
+        saveOrdersToStorage();
+        renderDashboardView();
+    }
+}
+
+function openEditCustomerModal(orderIndex) {
+    const ord = orders[orderIndex];
+    if (!ord) return;
+
+    document.getElementById('editOrderIndex').value = orderIndex;
+    document.getElementById('editCustomerName').value = ord.customerName || '';
+    document.getElementById('editCustomerPhone').value = ord.customerPhone || '';
+    document.getElementById('editCustomerAddress').value = ord.customerAddress || '';
+    document.getElementById('editOrderTotal').value = ord.total || 0;
+
+    document.getElementById('editCustomerModal').style.display = 'block';
+}
+
+function closeEditCustomerModal() {
+    document.getElementById('editCustomerModal').style.display = 'none';
+}
+
+function saveCustomerInfoEdit() {
+    const idx = document.getElementById('editOrderIndex').value;
+    if (orders[idx]) {
+        orders[idx].customerName = document.getElementById('editCustomerName').value;
+        orders[idx].customerPhone = document.getElementById('editCustomerPhone').value;
+        orders[idx].customerAddress = document.getElementById('editCustomerAddress').value;
+        orders[idx].total = parseFloat(document.getElementById('editOrderTotal').value) || orders[idx].total;
+
+        saveOrdersToStorage();
+        closeEditCustomerModal();
+        renderDashboardView();
+        alert('✅ Customer information updated successfully!');
+    }
+}
+
+/* PRODUCT LISTING & SETUP */
 function handleFileSelect(event) {
     const file = event.target.files[0];
     if (file) {
@@ -490,10 +540,8 @@ function updateAdminPreview() {
     const name = document.getElementById('adminPName').value || 'Product Title';
     const category = (document.getElementById('adminPCategory').value || 'CATEGORY').toUpperCase();
     const price = document.getElementById('adminPPrice').value || '0.00';
-    const comparePrice = document.getElementById('adminPComparePrice').value;
     
     const prevImg = document.getElementById('prevImg');
-    const prevOldPrice = document.getElementById('prevOldPrice');
 
     document.getElementById('prevName').innerText = name;
     document.getElementById('prevCategory').innerText = category;
@@ -501,12 +549,6 @@ function updateAdminPreview() {
 
     if (uploadedImageBase64) {
         prevImg.src = uploadedImageBase64;
-    }
-
-    if (comparePrice && parseFloat(comparePrice) > parseFloat(price)) {
-        prevOldPrice.innerText = `৳${comparePrice}`;
-    } else {
-        prevOldPrice.innerText = '';
     }
 }
 
@@ -517,7 +559,6 @@ function handleSaveProduct(e) {
     const name = document.getElementById('adminPName').value;
     const category = document.getElementById('adminPCategory').value || 'General';
     const price = parseFloat(document.getElementById('adminPPrice').value);
-    const comparePrice = document.getElementById('adminPComparePrice').value ? parseFloat(document.getElementById('adminPComparePrice').value) : null;
     const stock = parseInt(document.getElementById('adminPStock').value) || 10;
     const description = document.getElementById('adminPDesc').value;
 
@@ -530,7 +571,6 @@ function handleSaveProduct(e) {
                 name, 
                 category, 
                 price, 
-                oldPrice: comparePrice, 
                 stock,
                 description, 
                 image: finalImage 
@@ -547,7 +587,6 @@ function handleSaveProduct(e) {
             name,
             category,
             price,
-            oldPrice: comparePrice,
             stock,
             description,
             image: uploadedImageBase64
@@ -559,7 +598,7 @@ function handleSaveProduct(e) {
     renderProducts(products);
     renderAdminProductManageList();
     resetAdminForm();
-    alert('✅ Product saved successfully!');
+    alert('✅ Product setup saved successfully!');
 }
 
 function editProductInAdmin(productId) {
@@ -570,7 +609,6 @@ function editProductInAdmin(productId) {
     document.getElementById('adminPName').value = product.name;
     document.getElementById('adminPCategory').value = product.category || '';
     document.getElementById('adminPPrice').value = product.price;
-    document.getElementById('adminPComparePrice').value = product.oldPrice || '';
     document.getElementById('adminPStock').value = product.stock !== undefined ? product.stock : 10;
     document.getElementById('adminPDesc').value = product.description || '';
     
@@ -593,7 +631,7 @@ function resetAdminForm() {
     document.getElementById('adminProductForm').reset();
     document.getElementById('adminProductId').value = '';
     uploadedImageBase64 = null;
-    document.getElementById('adminFormTitle').innerText = 'Add / Edit product';
+    document.getElementById('adminFormTitle').innerText = 'Add / Edit Product';
     document.getElementById('prevImg').src = 'https://via.placeholder.com/200?text=Image+Preview';
     updateAdminPreview();
 }
@@ -603,7 +641,7 @@ function renderAdminProductManageList() {
     if (!container) return;
 
     if (products.length === 0) {
-        container.innerHTML = `<p style="color: #888;">No products to manage.</p>`;
+        container.innerHTML = `<p style="color: #888;">No products listed yet.</p>`;
         return;
     }
 
