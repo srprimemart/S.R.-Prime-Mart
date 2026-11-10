@@ -182,7 +182,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     background-position: center center;
     background-repeat: no-repeat;
     display: flex;
-    align-items: flex-end; /* বাটনটি ছবির একদম নিচের বাম কোণে পজিশন করার জন্য */
+    align-items: flex-end;
     padding-bottom: 50px;
 }
 
@@ -1082,7 +1082,76 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     font-size: 13px;
 }
 
+/* SITE FOOTER STYLING (3 Columns) */
+.site-footer {
+    background-color: #fafafa;
+    border-top: 1px solid #e5e7eb;
+    padding: 60px 20px;
+    margin-top: 60px;
+    color: #1f2937;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 50px;
+}
+
+.footer-col h3.footer-brand {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.footer-dot {
+    color: #d97706;
+}
+
+.footer-col h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 16px;
+}
+
+.footer-col p.footer-desc {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    max-width: 350px;
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col ul li {
+    margin-bottom: 10px;
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: #4b5563;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.footer-col ul li a:hover {
+    color: #27ae60;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
     .metrics-grid { grid-template-columns: 1fr; }
     .admin-body-grid { grid-template-columns: 1fr; }
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
 }
