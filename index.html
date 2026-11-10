@@ -31,7 +31,12 @@
             </div>
 
             <div class="header-right">
-                <!-- সাধারণ ভিজিটরদের থেকে এডমিন বাটনটি গোপন রাখা হয়েছে -->
+                <!-- Customer Account Button -->
+                <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()">
+                    <i class="fa-solid fa-user"></i> <span id="userAuthText">Login / Register</span>
+                </button>
+
+                <!-- Cart Button -->
                 <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
                 </button>
@@ -104,7 +109,47 @@
         </div>
     </div>
 
-    <!-- Full-Screen Checkout Modal (Email Mandatory) -->
+    <!-- CUSTOMER LOGIN & REGISTER MODAL (Google & Email/Pass) -->
+    <div id="customerAuthModal" class="modal">
+        <div class="admin-auth-box" style="width: 400px; text-align: center;">
+            <span class="close-btn" onclick="closeCustomerAuthModal()">&times;</span>
+            <h3 style="margin-bottom: 5px; color: #111827;"><i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> Customer Login</h3>
+            <p style="font-size: 13px; color: #6b7280; margin-bottom: 18px;">Sign in to place orders and manage your account</p>
+
+            <!-- Google Login Button -->
+            <button onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style="width: 18px; height: 18px;">
+                Continue with Google
+            </button>
+
+            <div style="display: flex; align-items: center; margin: 15px 0; color: #9ca3af; font-size: 12px;">
+                <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                <span style="padding: 0 10px;">OR</span>
+                <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+            </div>
+
+            <!-- Email & Password Form -->
+            <form onsubmit="handleCustomerEmailLogin(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address *</label>
+                    <input type="email" id="custModalEmail" class="form-control" placeholder="yourname@gmail.com" required>
+                </div>
+                
+                <div class="form-group" style="text-align: left;">
+                    <label>Password *</label>
+                    <input type="password" id="custModalPass" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="confirm-order-btn" style="width: 100%; margin-top: 5px;">Login with Email</button>
+            </form>
+
+            <p style="font-size: 12px; color: #6b7280; margin-top: 15px;">
+                Don't have an account? <a href="javascript:void(0)" onclick="alert('Google দিয়ে ক্লিক করুন অথবা ইমেইল দিয়ে সরাসরি সাইন-ইন সম্পন্ন করুন!')" style="color: #27ae60; font-weight: 600;">Register Now</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Full-Screen Checkout Modal (Requires Login) -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
@@ -127,10 +172,9 @@
                                 <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
                             </div>
 
-                            <!-- বাধ্যতামূলক ইমেইল ইনপুট -->
                             <div class="form-group">
-                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address (Required to place order) *</label>
-                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required>
+                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address *</label>
+                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required readonly>
                             </div>
                             
                             <div class="form-group">
@@ -273,7 +317,7 @@
         </div>
     </div>
 
-    <!-- ADMIN LOGIN MODAL -->
+    <!-- SECRET ADMIN LOGIN MODAL -->
     <div id="adminAuthModal" class="modal">
         <div class="admin-auth-box">
             <span class="close-btn" onclick="closeAdminAuthModal()">&times;</span>
@@ -287,7 +331,6 @@
     <!-- FULL CONTROL ADMIN DASHBOARD MODAL -->
     <div id="adminDashboardModal" class="modal">
         <div class="modal-content admin-full-modal">
-            <!-- Admin Top Navigation Bar -->
             <div class="admin-top-nav">
                 <div class="admin-logo-tabs">
                     <span class="brand-name" style="font-size: 16px; margin-right: 25px;">S.R. PRIME MART</span>
@@ -297,11 +340,9 @@
                 <button class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
             </div>
 
-            <!-- DASHBOARD VIEW -->
             <div id="adminDashboardView" class="admin-view-section">
                 <h1 class="dash-main-title">S.R. PRIME MART — Dashboard</h1>
 
-                <!-- Summary Metrics Cards -->
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <span class="metric-label">Total Revenue</span>
@@ -317,7 +358,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Orders Section -->
                 <div class="dash-section">
                     <h2 class="dash-sec-title">Recent Customer Orders</h2>
                     <div class="table-responsive">
@@ -332,14 +372,11 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="dashOrdersTbody">
-                                <!-- Order rows generated dynamically -->
-                            </tbody>
+                            <tbody id="dashOrdersTbody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Inventory Section -->
                 <div class="dash-section" style="margin-top: 35px;">
                     <div class="dash-sec-header">
                         <div>
@@ -360,15 +397,12 @@
                                     <th>Quick Stock Edit</th>
                                 </tr>
                             </thead>
-                            <tbody id="dashInventoryTbody">
-                                <!-- Inventory rows generated dynamically -->
-                            </tbody>
+                            <tbody id="dashInventoryTbody"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- PRODUCTS MANAGEMENT VIEW -->
             <div id="adminProductsView" class="admin-view-section" style="display: none;">
                 <div class="admin-body-grid">
                     <div class="admin-form-side">
@@ -421,7 +455,6 @@
                         </div>
                     </div>
 
-                    <!-- Live Preview -->
                     <div class="admin-preview-side">
                         <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Card Preview</span>
                         <div class="preview-card product-card">
@@ -446,46 +479,9 @@
         </div>
     </div>
 
-    <!-- EDIT CUSTOMER INFO MODAL -->
-    <div id="editCustomerModal" class="modal">
-        <div class="admin-auth-box" style="width: 450px;">
-            <span class="close-btn" onclick="closeEditCustomerModal()">&times;</span>
-            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Edit Customer Information</h3>
-            <input type="hidden" id="editOrderIndex">
-            
-            <div class="form-group">
-                <label>Customer Name</label>
-                <input type="text" id="editCustomerName" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="editCustomerEmail" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" id="editCustomerPhone" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Full Address</label>
-                <textarea id="editCustomerAddress" class="form-control" rows="3" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Order Total Amount (৳)</label>
-                <input type="number" id="editOrderTotal" class="form-control" required>
-            </div>
-
-            <button class="confirm-order-btn" onclick="saveCustomerInfoEdit()" style="width: 100%; margin-top: 10px;">Save Customer Info</button>
-        </div>
-    </div>
-
     <!-- Footer Section -->
     <footer class="site-footer">
         <div class="footer-container">
-            <!-- Col 1: Brand Info & Contact directly below -->
             <div class="footer-col">
                 <h3 class="footer-brand" style="margin-bottom: 4px;" onclick="handleSecretAdminClick()">S.R. PRIME MART<span class="footer-dot">.</span></h3>
                 <p class="footer-desc" style="margin-bottom: 12px;">Thoughtfully designed goods for everyday life. Quality you can feel.</p>
@@ -499,7 +495,6 @@
                 </p>
             </div>
 
-            <!-- Col 2: Shop Links -->
             <div class="footer-col">
                 <h4>Shop</h4>
                 <ul>
@@ -508,7 +503,6 @@
                 </ul>
             </div>
 
-            <!-- Col 3: Support Links -->
             <div class="footer-col">
                 <h4>Support</h4>
                 <ul>
@@ -530,16 +524,80 @@
 
     <script src="script.js"></script>
     <script>
-        function openShippingModal() {
-            document.getElementById('shippingModal').style.display = 'block';
+        // Global User State
+        let loggedInUser = JSON.parse(localStorage.getItem('sr_customer_user')) || null;
+
+        function updateUIForCustomer() {
+            const authText = document.getElementById('userAuthText');
+            const authBtn = document.getElementById('userAuthBtn');
+            if (loggedInUser) {
+                authText.innerText = loggedInUser.email.split('@')[0];
+                authBtn.setAttribute('title', 'Click to logout');
+                authBtn.onclick = handleCustomerLogout;
+            } else {
+                authText.innerText = 'Login / Register';
+                authBtn.onclick = openCustomerAuthModal;
+            }
         }
-        function closeShippingModal() {
-            document.getElementById('shippingModal').style.display = 'none';
+        updateUIForCustomer();
+
+        function openCustomerAuthModal() {
+            document.getElementById('customerAuthModal').style.display = 'block';
+        }
+        function closeCustomerAuthModal() {
+            document.getElementById('customerAuthModal').style.display = 'none';
         }
 
-        // Secret Admin Access via Triple-Clicking Logo/Brand Title
-        let clickCount = 0;
-        let clickTimer = null;
+        // Google One-Tap/Login Simulation
+        function handleGoogleLogin() {
+            const mockGoogleEmail = "customer@gmail.com";
+            loggedInUser = { email: mockGoogleEmail, provider: 'Google' };
+            localStorage.setItem('sr_customer_user', JSON.stringify(loggedInUser));
+            updateUIForCustomer();
+            closeCustomerAuthModal();
+            alert(`Google সফলভাবে লগইন হয়েছে: ${mockGoogleEmail}`);
+        }
+
+        // Email & Password Login
+        function handleCustomerEmailLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('custModalEmail').value;
+            loggedInUser = { email: email, provider: 'Email' };
+            localStorage.setItem('sr_customer_user', JSON.stringify(loggedInUser));
+            updateUIForCustomer();
+            closeCustomerAuthModal();
+            alert(`সফলভাবে লগইন হয়েছে: ${email}`);
+        }
+
+        function handleCustomerLogout() {
+            if (confirm("আপনি কি লগআউট করতে চান?")) {
+                loggedInUser = null;
+                localStorage.removeItem('sr_customer_user');
+                updateUIForCustomer();
+            }
+        }
+
+        // Check if user is logged in before opening checkout
+        const originalOpenCheckoutModal = window.openCheckoutModal;
+        window.openCheckoutModal = function() {
+            if (!loggedInUser) {
+                alert("অর্ডার সম্পন্ন করার পূর্বে অনুগ্রহ করে Google বা Email দিয়ে লগইন করুন!");
+                openCustomerAuthModal();
+                return;
+            }
+            if (originalOpenCheckoutModal) originalOpenCheckoutModal();
+            const emailInput = document.getElementById('customerEmail');
+            if (emailInput && loggedInUser) {
+                emailInput.value = loggedInUser.email;
+            }
+        };
+
+        // Modal close functions
+        function openShippingModal() { document.getElementById('shippingModal').style.display = 'block'; }
+        function closeShippingModal() { document.getElementById('shippingModal').style.display = 'none'; }
+
+        // Secret Triple Click for Admin Login
+        let clickCount = 0, clickTimer = null;
         function handleSecretAdminClick() {
             clickCount++;
             if (clickCount === 3) {
@@ -548,9 +606,7 @@
                 clearTimeout(clickTimer);
             } else {
                 clearTimeout(clickTimer);
-                clickTimer = setTimeout(() => {
-                    clickCount = 0;
-                }, 1000);
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
             }
         }
     </script>
