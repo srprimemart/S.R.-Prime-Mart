@@ -193,9 +193,9 @@
                                 <label for="deliveryLocation">Select Delivery Location:</label>
                                 <div class="delivery-box">
                                     <select id="deliveryLocation" class="form-control" onchange="calculateFinalTotal()">
-                                        <option value="70">Inside Dhaka - 70 BDT</option>
-                                        <option value="120">Outside Dhaka - 120 BDT</option>
-                                        <option value="90">Sub Area - 90 BDT</option>
+                                        <option value="70">Inside Dhaka - 70 BDT (2-3 days)</option>
+                                        <option value="120">Outside Dhaka - 120 BDT (3-4 days)</option>
+                                        <option value="90">Sub Area - 90 BDT (2-3 days)</option>
                                     </select>
                                 </div>
                             </div>
@@ -251,6 +251,20 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Shipping & Delivery Info Modal -->
+    <div id="shippingModal" class="modal">
+        <div class="admin-auth-box" style="width: 450px;">
+            <span class="close-btn" onclick="closeShippingModal()">&times;</span>
+            <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-truck-fast" style="color: #27ae60; margin-right: 8px;"></i> Shipping & Delivery</h3>
+            <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">
+                <p style="margin-bottom: 10px;"><strong>Inside Dhaka:</strong> 2-3 Days (70 BDT)</p>
+                <p style="margin-bottom: 10px;"><strong>Outside Dhaka:</strong> 3-4 Days (120 BDT)</p>
+                <p style="font-size: 13px; color: #6b7280;">Our delivery partner will reach out to you before delivering your package.</p>
+            </div>
+            <button class="confirm-order-btn" onclick="closeShippingModal()" style="width: 100%; margin-top: 20px;">Got it</button>
         </div>
     </div>
 
@@ -480,15 +494,42 @@
             <div class="footer-col">
                 <h4>Support</h4>
                 <ul>
-                    <li><a href="#">Shipping & delivery</a></li>
-                    <li><a href="#">Returns & exchanges</a></li>
+                    <li>
+                        <a href="javascript:void(0)" onclick="openShippingModal()">
+                            Shipping & delivery <span class="delivery-badge-sub">Inside Dhaka: 2-3 days | Outside Dhaka: 3-4 days</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)">
+                            Returns & exchanges <span class="delivery-badge-sub">Within 7 days</span>
+                        </a>
+                    </li>
                     <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Contact us</a></li>
+                    <li><a href="tel:01600445389">Contact us: 01600445389</a></li>
                 </ul>
+            </div>
+
+            <!-- Col 4: Contact & WhatsApp Info -->
+            <div class="footer-col">
+                <h4>Contact & WhatsApp</h4>
+                <p class="footer-desc" style="margin-bottom: 6px;">
+                    <i class="fa-solid fa-phone" style="color: #27ae60; margin-right: 6px;"></i> Call / WhatsApp: <a href="tel:01600445389" style="color: #27ae60; font-weight: 600; text-decoration: none;">01600445389</a>
+                </p>
+                <p class="footer-desc">
+                    <i class="fa-solid fa-envelope" style="color: #27ae60; margin-right: 6px;"></i> Email: <a href="mailto:srprimemart2026@gmail.com" style="color: #4b5563; text-decoration: none;">srprimemart2026@gmail.com</a>
+                </p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        function openShippingModal() {
+            document.getElementById('shippingModal').style.display = 'block';
+        }
+        function closeShippingModal() {
+            document.getElementById('shippingModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
