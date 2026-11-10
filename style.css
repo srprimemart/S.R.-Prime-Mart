@@ -1095,7 +1095,7 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1.2fr;
     gap: 50px;
 }
 
@@ -1140,10 +1140,18 @@ button, .btn, .search-btn, .header-cart-btn, .drawer-place-order-btn, .confirm-o
     color: #4b5563;
     font-size: 14px;
     transition: color 0.2s;
+    display: inline-flex;
+    flex-direction: column;
 }
 
 .footer-col ul li a:hover {
     color: #27ae60;
+}
+
+.delivery-badge-sub {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
 }
 
 /* Responsive Styles */
