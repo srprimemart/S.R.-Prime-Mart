@@ -18,7 +18,8 @@
     <!-- Header Section -->
     <header class="main-header">
         <div class="header-container">
-            <div class="logo-area">
+            <!-- S.R. PRIME MART লেখার ওপর ৩ বার ক্লিক করলে গোপনে এডমিন প্যানেল খুলবে -->
+            <div class="logo-area" onclick="handleSecretAdminClick()" style="cursor: pointer;" title="SR Prime Mart">
                 <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
                 <span class="brand-name">S.R. PRIME MART</span>
             </div>
@@ -30,9 +31,7 @@
             </div>
 
             <div class="header-right">
-                <button class="admin-top-btn" onclick="openAdminAuthModal()">
-                    <i class="fa-solid fa-user-gear"></i> Admin Panel
-                </button>
+                <!-- সাধারণ ভিজিটরদের থেকে এডমিন বাটনটি গোপন রাখা হয়েছে -->
                 <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
                 </button>
@@ -105,7 +104,7 @@
         </div>
     </div>
 
-    <!-- Full-Screen Checkout Modal -->
+    <!-- Full-Screen Checkout Modal (Email Mandatory) -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
@@ -126,6 +125,12 @@
                             <div class="form-group">
                                 <label for="customerName">Full Name *</label>
                                 <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
+                            </div>
+
+                            <!-- বাধ্যতামূলক ইমেইল ইনপুট -->
+                            <div class="form-group">
+                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address (Required to place order) *</label>
+                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required>
                             </div>
                             
                             <div class="form-group">
@@ -452,6 +457,11 @@
                 <label>Customer Name</label>
                 <input type="text" id="editCustomerName" class="form-control" required>
             </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="editCustomerEmail" class="form-control" required>
+            </div>
             
             <div class="form-group">
                 <label>Phone Number</label>
@@ -477,7 +487,7 @@
         <div class="footer-container">
             <!-- Col 1: Brand Info & Contact directly below -->
             <div class="footer-col">
-                <h3 class="footer-brand" style="margin-bottom: 4px;">S.R. PRIME MART<span class="footer-dot">.</span></h3>
+                <h3 class="footer-brand" style="margin-bottom: 4px;" onclick="handleSecretAdminClick()">S.R. PRIME MART<span class="footer-dot">.</span></h3>
                 <p class="footer-desc" style="margin-bottom: 12px;">Thoughtfully designed goods for everyday life. Quality you can feel.</p>
 
                 <h4 style="font-size: 15px; margin-bottom: 6px;">Contact & WhatsApp</h4>
@@ -525,6 +535,23 @@
         }
         function closeShippingModal() {
             document.getElementById('shippingModal').style.display = 'none';
+        }
+
+        // Secret Admin Access via Triple-Clicking Logo/Brand Title
+        let clickCount = 0;
+        let clickTimer = null;
+        function handleSecretAdminClick() {
+            clickCount++;
+            if (clickCount === 3) {
+                openAdminAuthModal();
+                clickCount = 0;
+                clearTimeout(clickTimer);
+            } else {
+                clearTimeout(clickTimer);
+                clickTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, 1000);
+            }
         }
     </script>
 </body>
