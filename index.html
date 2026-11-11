@@ -8,15 +8,23 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Hero Banner Fix for Mobile (Prevents Image Cutting) */
+        /* Hero Banner Perfect Responsive Fit (Not too thin, covers full section nicely without cutting) */
+        .hero-banner {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 380px;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
         @media (max-width: 768px) {
             .hero-banner {
-                height: 45vh !important;
-                min-height: 250px !important;
-                background-size: contain !important;
+                height: 48vh !important;
+                min-height: 300px !important;
+                background-size: cover !important;
                 background-position: center center !important;
-                background-repeat: no-repeat !important;
-                background-color: #f3f4f6;
             }
             .main-header .header-container {
                 flex-direction: column;
@@ -68,7 +76,7 @@
                     <i class="fa-solid fa-user-gear"></i> Admin
                 </button>
 
-                <!-- Customer Login Button (Only Login text, no Register) -->
+                <!-- Customer Login Button (Only Login text) -->
                 <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()" style="padding: 6px 12px; font-size: 13px;">
                     <i class="fa-solid fa-user"></i> <span id="userAuthText">Login</span>
                 </button>
