@@ -7,52 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Hero Banner Perfect Responsive Fit (Not too thin, covers full section nicely without cutting) */
-        .hero-banner {
-            position: relative;
-            width: 100%;
-            height: 60vh;
-            min-height: 380px;
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-        }
-
-        @media (max-width: 768px) {
-            .hero-banner {
-                height: 48vh !important;
-                min-height: 300px !important;
-                background-size: cover !important;
-                background-position: center center !important;
-            }
-            .main-header .header-container {
-                flex-direction: column;
-                gap: 12px;
-                padding: 10px 15px;
-            }
-            .search-area {
-                width: 100%;
-                order: 3;
-                margin-top: 5px;
-            }
-            .search-area input {
-                width: 100% !important;
-            }
-            .header-right {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                order: 2;
-            }
-            .logo-area {
-                order: 1;
-                width: 100%;
-                justify-content: flex-start;
-            }
-        }
-    </style>
 </head>
 <body>
 
@@ -64,7 +18,7 @@
                 <span class="brand-name">S.R. PRIME MART</span>
             </div>
 
-            <!-- Responsive Search Bar -->
+            <!-- Search Bar -->
             <div class="search-area">
                 <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
                 <button class="search-btn" onclick="searchProducts()"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -72,17 +26,17 @@
 
             <div class="header-right">
                 <!-- Admin Panel Button (Dynamically Displayed ONLY for Admin Email) -->
-                <button class="admin-top-btn" id="adminPanelTopBtn" onclick="openAdminDashboardFromTop()" style="display: none; background: #ea580c; color: white; margin-right: 6px; padding: 6px 12px; font-size: 13px;">
+                <button class="admin-top-btn" id="adminPanelTopBtn" onclick="openAdminDashboardFromTop()" style="display: none; background: #ea580c; color: white;">
                     <i class="fa-solid fa-user-gear"></i> Admin
                 </button>
 
-                <!-- Customer Login Button (Only Login text) -->
-                <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()" style="padding: 6px 12px; font-size: 13px;">
+                <!-- Customer Login Button (Only Login) -->
+                <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()">
                     <i class="fa-solid fa-user"></i> <span id="userAuthText">Login</span>
                 </button>
 
                 <!-- Cart Button -->
-                <button class="header-cart-btn" onclick="toggleCartDrawer()" style="padding: 6px 12px; font-size: 13px;">
+                <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
                 </button>
             </div>
@@ -122,29 +76,29 @@
     <div id="cartDrawer" class="cart-drawer">
         <div class="drawer-header">
             <div class="drawer-header-title">
-                <i class="fa-solid fa-arrow-left close-drawer-icon" onclick="toggleCartDrawer()"></i>
+                <i class="fa-solid fa-arrow-left close-drawer-icon" onclick="toggleCartDrawer()" style="cursor: pointer; margin-right: 10px;"></i>
                 <div>
                     <h3>Cart</h3>
                     <small id="drawerItemHeaderSub">0 items</small>
                 </div>
             </div>
-            <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
+            <span class="close-drawer" onclick="toggleCartDrawer()" style="cursor: pointer; font-size: 20px;">&times;</span>
         </div>
         
         <div class="drawer-items" id="drawerItemsContainer"></div>
 
         <div class="drawer-footer">
             <div class="cart-calc-card">
-                <div class="calc-row">
+                <div class="calc-row" style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px;">
                     <span>Subtotal</span>
                     <span id="drawerSubtotal">৳0</span>
                 </div>
-                <div class="calc-row text-muted">
+                <div class="calc-row text-muted" style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: #6b7280;">
                     <span>Delivery</span>
                     <span>Calculated at checkout</span>
                 </div>
-                <hr class="calc-divider">
-                <div class="calc-row calc-total">
+                <hr class="calc-divider" style="border: none; border-top: 1px solid #e5e7eb; margin: 10px 0;">
+                <div class="calc-row calc-total" style="display: flex; justify-content: space-between; font-weight: 700; font-size: 15px;">
                     <span>Items total</span>
                     <span id="drawerItemsTotal">৳0</span>
                 </div>
@@ -198,21 +152,21 @@
 
     <!-- Full-Screen Checkout Modal -->
     <div id="checkoutModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 900px;">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
             
-            <div class="checkout-header-bar">
+            <div class="checkout-header-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
-                <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
+                <span class="secure-badge" style="font-size: 13px; color: #059669; font-weight: 600;"><i class="fa-solid fa-lock"></i> Secure checkout</span>
             </div>
             
             <form id="orderForm">
-                <div class="checkout-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
                     
                     <!-- Customer Info & Payment -->
                     <div class="checkout-form-side">
                         <div class="checkout-card">
-                            <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
+                            <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 700;"><i class="fa-solid fa-user"></i> Customer Information</h3>
                             
                             <div class="form-group">
                                 <label for="customerName">Full Name *</label>
@@ -240,38 +194,18 @@
                                     <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment Method *
                                 </label>
                                 
-                                <div class="payment-stack">
-                                    <label class="pay-row-card">
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <label style="display: flex; align-items: center; gap: 10px; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer;">
                                         <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <div class="pay-img-box cod-bg">
-                                            <i class="fa-solid fa-money-bill-wave"></i>
-                                        </div>
-                                        <div class="pay-details">
-                                            <div class="pay-title">Cash on Delivery</div>
-                                            <div class="pay-sub">Pay with cash upon delivery.</div>
-                                        </div>
+                                        <span>Cash on Delivery</span>
                                     </label>
-
-                                    <label class="pay-row-card">
+                                    <label style="display: flex; align-items: center; gap: 10px; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer;">
                                         <input type="radio" name="PaymentMethod" value="bKash">
-                                        <div class="pay-img-box">
-                                            <img src="Bkash.PNG" alt="bKash" class="payment-logo-fixed" onerror="this.src='bkash.png';">
-                                        </div>
-                                        <div class="pay-details">
-                                            <div class="pay-title">bKash</div>
-                                            <div class="pay-sub">Pay via bKash</div>
-                                        </div>
+                                        <span>bKash</span>
                                     </label>
-
-                                    <label class="pay-row-card">
+                                    <label style="display: flex; align-items: center; gap: 10px; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer;">
                                         <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <div class="pay-img-box">
-                                            <img src="Nagad.PNG" alt="Nagad" class="payment-logo-fixed" onerror="this.src='nagad.png';">
-                                        </div>
-                                        <div class="pay-details">
-                                            <div class="pay-title">Nagad</div>
-                                            <div class="pay-sub">Pay via Nagad</div>
-                                        </div>
+                                        <span>Nagad</span>
                                     </label>
                                 </div>
                             </div>
@@ -281,35 +215,31 @@
 
                     <!-- Order Summary -->
                     <div class="checkout-summary-side">
-                        <div class="checkout-card">
-                            <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
-                            <div id="checkoutItemsList" class="checkout-items-list"></div>
+                        <div class="checkout-card" style="background: #f9fafb; padding: 20px; border-radius: 12px;">
+                            <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 700;"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
+                            <div id="checkoutItemsList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
 
-                            <div class="delivery-method-section">
-                                <label for="deliveryLocation">Select Delivery Location:</label>
-                                <div class="delivery-box">
-                                    <select id="deliveryLocation" class="form-control" onchange="calculateFinalTotal()">
-                                        <option value="70">Inside Dhaka - 70 BDT (2-3 days)</option>
-                                        <option value="120">Outside Dhaka - 120 BDT (3-4 days)</option>
-                                        <option value="90">Sub Area - 90 BDT (2-3 days)</option>
-                                    </select>
-                                </div>
+                            <div class="delivery-method-section" style="margin-bottom: 15px;">
+                                <label for="deliveryLocation" style="font-size: 13px; font-weight: 600; margin-bottom: 5px; display: block;">Select Delivery Location:</label>
+                                <select id="deliveryLocation" class="form-control" onchange="calculateFinalTotal()">
+                                    <option value="70">Inside Dhaka - 70 BDT (2-3 days)</option>
+                                    <option value="120">Outside Dhaka - 120 BDT (3-4 days)</option>
+                                    <option value="90">Sub Area - 90 BDT (2-3 days)</option>
+                                </select>
                             </div>
 
-                            <div class="final-calc-box">
-                                <div class="f-row"><span>Total Items (Quantity):</span> <span id="summaryTotalQty">0</span></div>
-                                <div class="f-row"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
-                                <div class="f-row"><span>Delivery Charge:</span> <span id="modalDeliveryFee">BDT 70</span></div>
-                                <div class="f-row f-total"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
+                            <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 14px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Total Quantity:</span> <span id="summaryTotalQty">0</span></div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Delivery Fee:</span> <span id="modalDeliveryFee">BDT 70</span></div>
+                                <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 8px 0;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: #27ae60;"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
                             </div>
 
-                            <div class="submit-btn-wrapper">
-                                <button type="submit" class="confirm-order-btn" id="submitBtn">Confirm Place Order</button>
-                            </div>
+                            <button type="submit" class="confirm-order-btn">Confirm Place Order</button>
 
-                            <div id="successMessage" class="success-message" style="display: none;">
-                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
-                                আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
+                            <div id="successMessage" style="display: none; margin-top: 15px; background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600;">
+                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!
                             </div>
                         </div>
                     </div>
@@ -319,223 +249,124 @@
         </div>
     </div>
 
-    <!-- Product Details Popup Modal -->
-    <div id="productDetailModal" class="modal" style="display: none; align-items: center; justify-content: center;">
-        <div class="modal-content" style="max-width: 650px; min-height: auto; border-radius: 16px; padding: 25px;">
+    <!-- Product Details Modal -->
+    <div id="productDetailModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
             <span class="close-btn" onclick="closeProductModal()">&times;</span>
-            
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
-                <div style="flex: 1; min-width: 250px;">
-                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb;">
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
+                <div style="flex: 1; min-width: 220px;">
+                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px;">
                 </div>
-                
-                <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="flex: 1; min-width: 220px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600;">ELECTRONICS</span>
+                        <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: 700;"></span>
                         <h2 id="modalProductName" style="font-size: 20px; color: #111827; margin: 4px 0 10px 0;"></h2>
-                        <div style="font-size: 22px; font-weight: 700; color: #27ae60; margin-bottom: 12px;" id="modalProductPrice"></div>
-                        <p id="modalProductDesc" style="font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 15px;">
-                            প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।
-                        </p>
-                        <div style="font-size: 12px; color: #059669; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; display: inline-block; margin-bottom: 15px;">
-                            ✔ স্টক অ্যাভেলেবল (In Stock) • ক্যাশ অন ডেলিভারি উপলব্ধ
-                        </div>
+                        <div style="font-size: 20px; font-weight: 700; color: #27ae60; margin-bottom: 10px;" id="modalProductPrice"></div>
+                        <p id="modalProductDesc" style="font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 15px;"></p>
                     </div>
-
-                    <button class="confirm-order-btn" id="modalAddToCartBtn" style="padding: 10px; font-size: 14px;">
-                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                    </button>
+                    <button class="confirm-order-btn" id="modalAddToCartBtn" style="margin-top: 0;">Add to Cart</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Shipping & Delivery Info Modal -->
+    <!-- Shipping Info Modal -->
     <div id="shippingModal" class="modal">
-        <div class="admin-auth-box" style="width: 450px;">
+        <div class="admin-auth-box" style="width: 420px;">
             <span class="close-btn" onclick="closeShippingModal()">&times;</span>
-            <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-truck-fast" style="color: #27ae60; margin-right: 8px;"></i> Shipping & Delivery</h3>
-            <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">
-                <p style="margin-bottom: 10px;"><strong>Inside Dhaka:</strong> 2-3 Days (70 BDT)</p>
-                <p style="margin-bottom: 10px;"><strong>Outside Dhaka:</strong> 3-4 Days (120 BDT)</p>
-                <p style="font-size: 13px; color: #6b7280;">Our delivery partner will reach out to you before delivering your package.</p>
-            </div>
-            <button class="confirm-order-btn" onclick="closeShippingModal()" style="width: 100%; margin-top: 20px;">Got it</button>
+            <h3 style="margin-bottom: 12px;"><i class="fa-solid fa-truck-fast" style="color: #27ae60;"></i> Shipping & Delivery</h3>
+            <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin-bottom: 10px;"><strong>Inside Dhaka:</strong> 2-3 Days (70 BDT)</p>
+            <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin-bottom: 15px;"><strong>Outside Dhaka:</strong> 3-4 Days (120 BDT)</p>
+            <button class="confirm-order-btn" onclick="closeShippingModal()" style="margin-top: 0;">Got it</button>
         </div>
     </div>
 
-    <!-- FULL CONTROL ADMIN DASHBOARD MODAL -->
+    <!-- ADMIN DASHBOARD MODAL -->
     <div id="adminDashboardModal" class="modal">
         <div class="modal-content admin-full-modal">
-            <div class="admin-top-nav">
-                <div class="admin-logo-tabs">
-                    <span class="brand-name" style="font-size: 16px; margin-right: 25px;">S.R. PRIME MART</span>
-                    <button class="admin-nav-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
-                    <button class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
-                    <button class="admin-nav-btn" id="btnTabEmails" onclick="switchAdminTab('emails')">Customer Emails</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 20px;">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <span class="brand-name">ADMIN PANEL</span>
+                    <button class="admin-top-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
+                    <button class="admin-top-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
+                    <button class="admin-top-btn" id="btnTabEmails" onclick="switchAdminTab('emails')">Customer Emails</button>
                 </div>
-                <button class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Close Admin</button>
+                <button class="admin-top-btn" onclick="closeAdminDashboard()" style="background: #ef4444; color: white; border: none;"><i class="fa-solid fa-right-from-bracket"></i> Close</button>
             </div>
 
             <!-- DASHBOARD VIEW -->
-            <div id="adminDashboardView" class="admin-view-section">
-                <h1 class="dash-main-title">S.R. PRIME MART — Dashboard</h1>
-
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <span class="metric-label">Total Revenue</span>
-                        <div class="metric-value" id="dashRevenue">৳0.00</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Total Orders</span>
-                        <div class="metric-value" id="dashOrdersCount">0</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Listed Products</span>
-                        <div class="metric-value" id="dashProductsCount">0</div>
-                    </div>
+            <div id="adminDashboardView">
+                <h2 style="font-size: 18px; margin-bottom: 15px;">Recent Orders & Inventory</h2>
+                <div style="overflow-x: auto; margin-bottom: 30px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead>
+                            <tr style="background: #f3f4f6; border-bottom: 1px solid #d1d5db;">
+                                <th style="padding: 10px;">Order ID</th>
+                                <th style="padding: 10px;">Customer</th>
+                                <th style="padding: 10px;">Amount</th>
+                                <th style="padding: 10px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashOrdersTbody"></tbody>
+                    </table>
                 </div>
 
-                <div class="dash-section">
-                    <h2 class="dash-sec-title">Recent Customer Orders</h2>
-                    <div class="table-responsive">
-                        <table class="dash-table">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer Info</th>
-                                    <th>Date</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashOrdersTbody"></tbody>
-                        </table>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="font-size: 16px;">Inventory Stock List</h3>
+                    <button class="confirm-order-btn" onclick="switchAdminTab('products')" style="width: auto; padding: 6px 14px; margin: 0;">+ Add New Product</button>
                 </div>
-
-                <div class="dash-section" style="margin-top: 35px;">
-                    <div class="dash-sec-header">
-                        <div>
-                            <h2 class="dash-sec-title">Inventory & Stock Control</h2>
-                            <span class="low-stock-alert" id="dashLowStockText">0 product(s) low on stock.</span>
-                        </div>
-                        <button class="manage-prod-btn" onclick="switchAdminTab('products')">+ Add / Setup Products</button>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="dash-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40%;">Product Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>Stock Level</th>
-                                    <th>Quick Stock Edit</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashInventoryTbody"></tbody>
-                        </table>
-                    </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                        <thead>
+                            <tr style="background: #f3f4f6; border-bottom: 1px solid #d1d5db;">
+                                <th style="padding: 10px;">Product Name</th>
+                                <th style="padding: 10px;">Price</th>
+                                <th style="padding: 10px;">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashInventoryTbody"></tbody>
+                    </table>
                 </div>
             </div>
 
             <!-- PRODUCTS MANAGEMENT VIEW -->
-            <div id="adminProductsView" class="admin-view-section" style="display: none;">
-                <div class="admin-body-grid">
-                    <div class="admin-form-side">
-                        <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px;" id="adminFormTitle">Add / Edit Product</h3>
-
-                        <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
-                            <input type="hidden" id="adminProductId">
-
-                            <div class="form-group">
-                                <label>Product Name *</label>
-                                <input type="text" id="adminPName" class="form-control" placeholder="e.g. Premium Leather Bag" required oninput="updateAdminPreview()">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea id="adminPDesc" class="form-control" rows="3" placeholder="Write product details..." oninput="updateAdminPreview()"></textarea>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div class="form-group">
-                                    <label>Category</label>
-                                    <input type="text" id="adminPCategory" class="form-control" placeholder="ELECTRONICS" oninput="updateAdminPreview()">
-                                </div>
-                                <div class="form-group">
-                                    <label>Stock Quantity *</label>
-                                    <input type="number" id="adminPStock" class="form-control" placeholder="25" value="10" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Price (৳) *</label>
-                                <input type="number" id="adminPPrice" class="form-control" placeholder="1200" required oninput="updateAdminPreview()">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Product Image (Select from Gallery/Storage)</label>
-                                <input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
-                                <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Upload image file directly from your mobile/PC.</small>
-                            </div>
-
-                            <div style="margin-top: 25px; display: flex; gap: 12px;">
-                                <button type="submit" class="save-changes-btn">Save Product</button>
-                                <button type="button" class="cancel-admin-btn" onclick="resetAdminForm()">Reset Form</button>
-                            </div>
-                        </form>
-
-                        <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                            <h4 style="font-size: 16px; margin-bottom: 12px; color: #1f2937;">Website Listed Products</h4>
-                            <div id="adminProductManageList" style="max-height: 250px; overflow-y: auto;"></div>
+            <div id="adminProductsView" style="display: none;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
+                    <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
+                        <input type="hidden" id="adminProductId">
+                        <h3 style="font-size: 16px; margin-bottom: 12px;">Add or Edit Product</h3>
+                        <div class="form-group"><label>Product Name *</label><input type="text" id="adminPName" class="form-control" required oninput="updateAdminPreview()"></div>
+                        <div class="form-group"><label>Description</label><textarea id="adminPDesc" class="form-control" rows="2"></textarea></div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="form-group"><label>Category</label><input type="text" id="adminPCategory" class="form-control" value="Accessories" oninput="updateAdminPreview()"></div>
+                            <div class="form-group"><label>Stock *</label><input type="number" id="adminPStock" class="form-control" value="10" required></div>
                         </div>
-                    </div>
+                        <div class="form-group"><label>Price (৳) *</label><input type="number" id="adminPPrice" class="form-control" required oninput="updateAdminPreview()"></div>
+                        <div class="form-group"><label>Product Image File</label><input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)"></div>
+                        <button type="submit" class="confirm-order-btn">Save Product</button>
+                    </form>
 
-                    <div class="admin-preview-side">
-                        <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Card Preview</span>
-                        <div class="preview-card product-card">
-                            <div class="image-box-wrapper">
-                                <div class="image-box">
-                                    <img id="prevImg" src="https://via.placeholder.com/200?text=Image+Preview" alt="Preview">
-                                </div>
-                            </div>
-                            <div id="prevCategory" class="product-category">CATEGORY</div>
-                            <div id="prevName" class="product-title">Product Title</div>
-                            <div class="price-buy-row" style="margin-top: 10px;">
-                                <div>
-                                    <span id="prevPrice" class="product-price">৳0.00</span>
-                                </div>
-                                <button type="button" class="buy-btn">Buy</button>
-                            </div>
-                        </div>
+                    <div>
+                        <h3 style="font-size: 16px; margin-bottom: 12px;">Existing Products List</h3>
+                        <div id="adminProductManageList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;"></div>
                     </div>
                 </div>
             </div>
 
             <!-- CUSTOMER EMAILS VIEW -->
-            <div id="adminEmailsView" class="admin-view-section" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <div>
-                        <h1 class="dash-main-title" style="margin-bottom: 5px;">Registered Customer Emails</h1>
-                        <p style="font-size: 13px; color: #6b7280;">List of all customers who logged in or placed orders on your website.</p>
-                    </div>
-                    <button class="confirm-order-btn" onclick="exportCustomerEmailsCSV()" style="width: auto !important; padding: 8px 18px !important;">
-                        <i class="fa-solid fa-download"></i> Export CSV
-                    </button>
+            <div id="adminEmailsView" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 16px;">Registered Customer Emails</h3>
+                    <button class="confirm-order-btn" onclick="exportCustomerEmailsCSV()" style="width: auto; padding: 6px 14px; margin: 0;"><i class="fa-solid fa-download"></i> Export CSV</button>
                 </div>
-
-                <div class="table-responsive">
-                    <table class="dash-table">
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
                         <thead>
-                            <tr>
-                                <th style="width: 80px;">SL No.</th>
-                                <th>Customer Email</th>
-                                <th>Login Method</th>
-                                <th>Registered Date & Time</th>
-                                <th style="width: 100px;">Action</th>
+                            <tr style="background: #f3f4f6; border-bottom: 1px solid #d1d5db;">
+                                <th style="padding: 10px;">SL</th>
+                                <th style="padding: 10px;">Email</th>
+                                <th style="padding: 10px;">Method</th>
+                                <th style="padding: 10px;">Date</th>
                             </tr>
                         </thead>
                         <tbody id="dashEmailsTbody"></tbody>
@@ -546,49 +377,25 @@
         </div>
     </div>
 
-    <!-- Footer Section -->
+    <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
-                <h3 class="footer-brand" style="margin-bottom: 4px;">S.R. PRIME MART<span class="footer-dot">.</span></h3>
-                <p class="footer-desc" style="margin-bottom: 12px;">Thoughtfully designed goods for everyday life. Quality you can feel.</p>
-
-                <h4 style="font-size: 15px; margin-bottom: 6px;">Contact & WhatsApp</h4>
-                <p class="footer-desc" style="margin-bottom: 4px;">
-                    <i class="fa-solid fa-phone" style="color: #27ae60; margin-right: 6px;"></i> Call / WhatsApp: <a href="tel:01600445389" style="color: #27ae60; font-weight: 600; text-decoration: none;">01600445389</a>
-                </p>
-                <p class="footer-desc" style="margin-bottom: 0;">
-                    <i class="fa-solid fa-envelope" style="color: #27ae60; margin-right: 6px;"></i> Email: <a href="mailto:srprimemart2026@gmail.com" style="color: #4b5563; text-decoration: none;">srprimemart2026@gmail.com</a>
-                </p>
+                <h3 class="footer-brand">S.R. PRIME MART</h3>
+                <p style="font-size: 13px; margin: 10px 0;">Thoughtfully designed goods for everyday life.</p>
+                <p style="font-size: 13px;"><i class="fa-solid fa-phone" style="color: #27ae60;"></i> 01600445389</p>
+                <p style="font-size: 13px;"><i class="fa-solid fa-envelope" style="color: #27ae60;"></i> srprimemart2026@gmail.com</p>
             </div>
-
-            <div class="footer-col">
-                <h4>Shop</h4>
-                <ul>
-                    <li><a href="#products-section">All products</a></li>
-                    <li><a href="#products-section" onclick="filterByCategory('Accessories')">Accessories</a></li>
-                </ul>
-            </div>
-
             <div class="footer-col">
                 <h4>Support</h4>
                 <ul>
-                    <li>
-                        <a href="javascript:void(0)" onclick="openShippingModal()">
-                            Shipping & delivery <span class="delivery-badge-sub" style="display: block;">Inside Dhaka: 2-3 days | Outside Dhaka: 3-4 days</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0)">
-                            Returns & exchanges <span class="delivery-badge-sub" style="display: block;">Within 7 days</span>
-                        </a>
-                    </li>
-                    <li><a href="#">FAQ</a></li>
+                    <li><a href="javascript:void(0)" onclick="openShippingModal()">Shipping & delivery</a></li>
                 </ul>
             </div>
         </div>
     </footer>
 
+    <!-- Script File Integration -->
     <script src="script.js"></script>
     <script>
         const ADMIN_EMAIL = "srprimemart2026@gmail.com";
@@ -600,7 +407,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             const emailInput = document.getElementById('custModalEmail');
             const adminSecContainer = document.getElementById('adminSecKeyContainer');
-            
             if (emailInput && adminSecContainer) {
                 emailInput.addEventListener('input', function() {
                     if (this.value.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
@@ -620,9 +426,7 @@
 
             if (loggedInUser) {
                 authText.innerText = loggedInUser.email.split('@')[0];
-                authBtn.setAttribute('title', 'Click to logout');
                 authBtn.onclick = handleCustomerLogout;
-
                 if (loggedInUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                     if (adminTopBtn) adminTopBtn.style.display = 'inline-flex';
                 } else {
@@ -640,22 +444,17 @@
             const exists = registeredEmails.some(user => user.email.toLowerCase() === email.toLowerCase());
             if (!exists) {
                 const now = new Date();
-                const formattedDate = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 registeredEmails.unshift({
                     email: email,
                     provider: provider || 'Email',
-                    date: formattedDate
+                    date: now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 });
                 localStorage.setItem('sr_registered_emails', JSON.stringify(registeredEmails));
             }
         }
 
-        function openCustomerAuthModal() {
-            document.getElementById('customerAuthModal').style.display = 'block';
-        }
-        function closeCustomerAuthModal() {
-            document.getElementById('customerAuthModal').style.display = 'none';
-        }
+        function openCustomerAuthModal() { document.getElementById('customerAuthModal').style.display = 'block'; }
+        function closeCustomerAuthModal() { document.getElementById('customerAuthModal').style.display = 'none'; }
 
         function handleGoogleLogin() {
             const mockGoogleEmail = "customer@gmail.com";
@@ -664,7 +463,6 @@
             saveCustomerEmailToList(mockGoogleEmail, 'Google');
             updateUIForCustomer();
             closeCustomerAuthModal();
-            alert(`Google সফলভাবে লগইন হয়েছে: ${mockGoogleEmail}`);
         }
 
         function handleCustomerEmailLogin(e) {
@@ -674,14 +472,13 @@
 
             if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                 if (secKey !== ADMIN_MASTER_KEY) {
-                    alert("ভুল অ্যাডমিন সিকিউরিটি কোড! সঠিক কোড প্রদান করুন।");
+                    alert("ভুল অ্যাডমিন সিকিউরিটি কোড!");
                     return;
                 }
                 loggedInUser = { email: email, provider: 'Admin' };
                 localStorage.setItem('sr_customer_user', JSON.stringify(loggedInUser));
                 updateUIForCustomer();
                 closeCustomerAuthModal();
-                alert("অ্যাডমিন হিসেবে সফলভাবে লগইন করেছেন!");
                 openAdminDashboardFromTop();
             } else {
                 loggedInUser = { email: email, provider: 'Email' };
@@ -689,12 +486,11 @@
                 saveCustomerEmailToList(email, 'Email');
                 updateUIForCustomer();
                 closeCustomerAuthModal();
-                alert(`সফলভাবে লগইন হয়েছে: ${email}`);
             }
         }
 
         function handleCustomerLogout() {
-            if (confirm("আপনি কি লগআউট করতে চান?")) {
+            if (confirm("লগআউট করতে চান?")) {
                 loggedInUser = null;
                 localStorage.removeItem('sr_customer_user');
                 updateUIForCustomer();
@@ -702,103 +498,28 @@
         }
 
         function openAdminDashboardFromTop() {
-            const adminModal = document.getElementById('adminDashboardModal');
-            if (adminModal) adminModal.style.display = 'block';
+            document.getElementById('adminDashboardModal').style.display = 'block';
             if (window.loadAdminDashboardData) window.loadAdminDashboardData();
         }
-
-        function closeAdminDashboard() {
-            const adminModal = document.getElementById('adminDashboardModal');
-            if (adminModal) adminModal.style.display = 'none';
-        }
+        function closeAdminDashboard() { document.getElementById('adminDashboardModal').style.display = 'none'; }
 
         window.switchAdminTab = function(tabName) {
-            document.getElementById('btnTabDashboard').classList.remove('active');
-            document.getElementById('btnTabProducts').classList.remove('active');
-            document.getElementById('btnTabEmails').classList.remove('active');
-
-            document.getElementById('adminDashboardView').style.display = 'none';
-            document.getElementById('adminProductsView').style.display = 'none';
-            document.getElementById('adminEmailsView').style.display = 'none';
-
-            if (tabName === 'dashboard') {
-                document.getElementById('btnTabDashboard').classList.add('active');
-                document.getElementById('adminDashboardView').style.display = 'block';
-            } else if (tabName === 'products') {
-                document.getElementById('btnTabProducts').classList.add('active');
-                document.getElementById('adminProductsView').style.display = 'block';
-            } else if (tabName === 'emails') {
-                document.getElementById('btnTabEmails').classList.add('active');
-                document.getElementById('adminEmailsView').style.display = 'block';
-                renderAdminEmailsTable();
-            }
+            document.getElementById('adminDashboardView').style.display = tabName === 'dashboard' ? 'block' : 'none';
+            document.getElementById('adminProductsView').style.display = tabName === 'products' ? 'block' : 'none';
+            document.getElementById('adminEmailsView').style.display = tabName === 'emails' ? 'block' : 'none';
+            if (tabName === 'emails' && window.renderAdminEmailsTable) window.renderAdminEmailsTable();
         };
-
-        function renderAdminEmailsTable() {
-            const tbody = document.getElementById('dashEmailsTbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            if (registeredEmails.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">No registered customer emails yet.</td></tr>`;
-                return;
-            }
-
-            registeredEmails.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${index + 1}</strong></td>
-                    <td><span style="font-weight: 600; color: #111827;">${item.email}</span></td>
-                    <td><span style="background: #f3f4f6; color: #374151; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${item.provider}</span></td>
-                    <td>${item.date}</td>
-                    <td>
-                        <button class="action-icon-btn" onclick="deleteCustomerEmail(${index})" style="color: #ef4444;" title="Delete Email">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function deleteCustomerEmail(index) {
-            if (confirm("আপনি কি এই ইমেইলটি মুছে ফেলতে চান?")) {
-                registeredEmails.splice(index, 1);
-                localStorage.setItem('sr_registered_emails', JSON.stringify(registeredEmails));
-                renderAdminEmailsTable();
-            }
-        }
-
-        function exportCustomerEmailsCSV() {
-            if (registeredEmails.length === 0) {
-                alert("ডাউনলোড করার মতো কোনো ইমেইল নেই!");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,SL No,Email,Provider,Registered Date\n";
-            registeredEmails.forEach((item, idx) => {
-                csvContent += `${idx + 1},${item.email},${item.provider},${item.date}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "SR_Prime_Mart_Customer_Emails.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
 
         const originalOpenCheckoutModal = window.openCheckoutModal;
         window.openCheckoutModal = function() {
             if (!loggedInUser) {
-                alert("অর্ডার সম্পন্ন করার পূর্বে অনুগ্রহ করে Google বা Email দিয়ে লগইন করুন!");
+                alert("অর্ডার করতে অনুগ্রহ করে লগইন করুন!");
                 openCustomerAuthModal();
                 return;
             }
             if (originalOpenCheckoutModal) originalOpenCheckoutModal();
             const emailInput = document.getElementById('customerEmail');
-            if (emailInput && loggedInUser) {
-                emailInput.value = loggedInUser.email;
-            }
+            if (emailInput && loggedInUser) emailInput.value = loggedInUser.email;
         };
 
         function openShippingModal() { document.getElementById('shippingModal').style.display = 'block'; }
