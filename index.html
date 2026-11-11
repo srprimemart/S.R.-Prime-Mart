@@ -25,12 +25,12 @@
             </div>
 
             <div class="header-right">
-                <!-- Admin Panel Button (Dynamically Displayed ONLY for Admin Email) -->
+                <!-- Admin Panel Button -->
                 <button class="admin-top-btn" id="adminPanelTopBtn" onclick="openAdminDashboardFromTop()" style="display: none; background: #ea580c; color: white;">
                     <i class="fa-solid fa-user-gear"></i> Admin
                 </button>
 
-                <!-- Customer Login Button (Only Login) -->
+                <!-- Customer Login Button -->
                 <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()">
                     <i class="fa-solid fa-user"></i> <span id="userAuthText">Login</span>
                 </button>
@@ -115,8 +115,7 @@
             <h3 style="margin-bottom: 5px; color: #111827;"><i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> Customer Login</h3>
             <p style="font-size: 13px; color: #6b7280; margin-bottom: 18px;">Sign in to your account</p>
 
-            <!-- Google Login Button -->
-            <button onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <button onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px;">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style="width: 18px; height: 18px;">
                 Continue with Google
             </button>
@@ -127,7 +126,6 @@
                 <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
             </div>
 
-            <!-- Email & Password Form -->
             <form onsubmit="handleCustomerEmailLogin(event)">
                 <div class="form-group" style="text-align: left;">
                     <label>Email Address *</label>
@@ -139,7 +137,6 @@
                     <input type="password" id="custModalPass" class="form-control" placeholder="••••••••" required>
                 </div>
 
-                <!-- Admin Security Code Input -->
                 <div class="form-group" id="adminSecKeyContainer" style="text-align: left; display: none;">
                     <label style="color: #ea580c; font-weight: 700;"><i class="fa-solid fa-key"></i> Admin Master Security Key *</label>
                     <input type="password" id="adminSecKeyInput" class="form-control" placeholder="Enter Security Code">
@@ -162,88 +159,37 @@
             
             <form id="orderForm">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
-                    
-                    <!-- Customer Info & Payment -->
                     <div class="checkout-form-side">
                         <div class="checkout-card">
                             <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 700;"><i class="fa-solid fa-user"></i> Customer Information</h3>
-                            
-                            <div class="form-group">
-                                <label for="customerName">Full Name *</label>
-                                <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address *</label>
-                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required readonly>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="customerPhone">Phone Number *</label>
-                                <input type="tel" id="customerPhone" name="Phone" class="form-control" placeholder="01XXXXXXXXX" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="customerAddress">Full Address *</label>
-                                <textarea id="customerAddress" name="Address" class="form-control" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
-                            </div>
-
-                            <!-- Payment Methods -->
-                            <div class="form-group" style="margin-top: 15px;">
-                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 8px; display: block; color: #1f2937;">
-                                    <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment Method *
-                                </label>
-                                
-                                <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    <label style="display: flex; align-items: center; gap: 10px; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer;">
-                                        <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <span>Cash on Delivery</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 10px; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer;">
-                                        <input type="radio" name="PaymentMethod" value="bKash">
-                                        <span>bKash</span>
-                                    </label>
-                                    <label style="display: flex; align-items: center; gap: 10px; border: 1px solid #d1d5db; padding: 10px; border-radius: 8px; cursor: pointer;">
-                                        <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <span>Nagad</span>
-                                    </label>
-                                </div>
-                            </div>
-
+                            <div class="form-group"><label>Full Name *</label><input type="text" id="customerName" name="Name" class="form-control" required></div>
+                            <div class="form-group"><label>Email Address *</label><input type="email" id="customerEmail" name="Email" class="form-control" required readonly></div>
+                            <div class="form-group"><label>Phone Number *</label><input type="tel" id="customerPhone" name="Phone" class="form-control" required></div>
+                            <div class="form-group"><label>Full Address *</label><textarea id="customerAddress" name="Address" class="form-control" rows="3" required></textarea></div>
                         </div>
                     </div>
-
-                    <!-- Order Summary -->
                     <div class="checkout-summary-side">
                         <div class="checkout-card" style="background: #f9fafb; padding: 20px; border-radius: 12px;">
                             <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 700;"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
                             <div id="checkoutItemsList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
-
                             <div class="delivery-method-section" style="margin-bottom: 15px;">
-                                <label for="deliveryLocation" style="font-size: 13px; font-weight: 600; margin-bottom: 5px; display: block;">Select Delivery Location:</label>
+                                <label style="font-size: 13px; font-weight: 600; margin-bottom: 5px; display: block;">Select Delivery Location:</label>
                                 <select id="deliveryLocation" class="form-control" onchange="calculateFinalTotal()">
-                                    <option value="70">Inside Dhaka - 70 BDT (2-3 days)</option>
-                                    <option value="120">Outside Dhaka - 120 BDT (3-4 days)</option>
-                                    <option value="90">Sub Area - 90 BDT (2-3 days)</option>
+                                    <option value="70">Inside Dhaka - 70 BDT</option>
+                                    <option value="120">Outside Dhaka - 120 BDT</option>
+                                    <option value="90">Sub Area - 90 BDT</option>
                                 </select>
                             </div>
-
                             <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 14px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Total Quantity:</span> <span id="summaryTotalQty">0</span></div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Delivery Fee:</span> <span id="modalDeliveryFee">BDT 70</span></div>
                                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 8px 0;">
                                 <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: #27ae60;"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
                             </div>
-
                             <button type="submit" class="confirm-order-btn">Confirm Place Order</button>
-
-                            <div id="successMessage" style="display: none; margin-top: 15px; background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600;">
-                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!
-                            </div>
+                            <div id="successMessage" style="display: none; margin-top: 15px; background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600;">✅ অর্ডার সফল হয়েছে!</div>
                         </div>
                     </div>
-
                 </div>
             </form>
         </div>
@@ -254,9 +200,7 @@
         <div class="modal-content" style="max-width: 600px;">
             <span class="close-btn" onclick="closeProductModal()">&times;</span>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
-                <div style="flex: 1; min-width: 220px;">
-                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px;">
-                </div>
+                <div style="flex: 1; min-width: 220px;"><img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px;"></div>
                 <div style="flex: 1; min-width: 220px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: 700;"></span>
@@ -294,7 +238,6 @@
                 <button class="admin-top-btn" onclick="closeAdminDashboard()" style="background: #ef4444; color: white; border: none;"><i class="fa-solid fa-right-from-bracket"></i> Close</button>
             </div>
 
-            <!-- DASHBOARD VIEW -->
             <div id="adminDashboardView">
                 <h2 style="font-size: 18px; margin-bottom: 15px;">Recent Orders & Inventory</h2>
                 <div style="overflow-x: auto; margin-bottom: 30px;">
@@ -310,7 +253,6 @@
                         <tbody id="dashOrdersTbody"></tbody>
                     </table>
                 </div>
-
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <h3 style="font-size: 16px;">Inventory Stock List</h3>
                     <button class="confirm-order-btn" onclick="switchAdminTab('products')" style="width: auto; padding: 6px 14px; margin: 0;">+ Add New Product</button>
@@ -329,7 +271,6 @@
                 </div>
             </div>
 
-            <!-- PRODUCTS MANAGEMENT VIEW -->
             <div id="adminProductsView" style="display: none;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
                     <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
@@ -345,7 +286,6 @@
                         <div class="form-group"><label>Product Image File</label><input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)"></div>
                         <button type="submit" class="confirm-order-btn">Save Product</button>
                     </form>
-
                     <div>
                         <h3 style="font-size: 16px; margin-bottom: 12px;">Existing Products List</h3>
                         <div id="adminProductManageList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;"></div>
@@ -353,7 +293,6 @@
                 </div>
             </div>
 
-            <!-- CUSTOMER EMAILS VIEW -->
             <div id="adminEmailsView" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 style="font-size: 16px;">Registered Customer Emails</h3>
@@ -373,7 +312,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
