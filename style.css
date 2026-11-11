@@ -142,12 +142,12 @@ body {
     background: #111827;
 }
 
-/* Hero Banner - Elegant Jewelry Stories Banner (Full Cover Fit) */
+/* Hero Banner - Full Screen Cover Fit */
 .hero-banner {
     position: relative;
     width: 100%;
-    height: 60vh;
-    min-height: 420px;
+    height: 65vh;
+    min-height: 450px;
     background-image: url('Elegant Jewelry Stories Banner.png');
     background-size: cover !important;
     background-position: center center !important;
@@ -301,7 +301,7 @@ body {
     margin-top: 15px;
 }
 
-/* Modals - Full Screen / Large Modal Fix */
+/* Modals & Full Screen Admin Panel Fix */
 .modal {
     display: none;
     position: fixed;
@@ -309,12 +309,12 @@ body {
     background: rgba(0,0,0,0.6);
     z-index: 1100;
     overflow-y: auto;
-    padding: 20px;
+    padding: 0 !important;
 }
 
 .modal-content, .admin-auth-box {
     background: white;
-    margin: 20px auto;
+    margin: 30px auto;
     padding: 30px;
     border-radius: 16px;
     max-width: 95% !important;
@@ -322,10 +322,22 @@ body {
     position: relative;
 }
 
-.admin-full-modal {
-    max-width: 98% !important;
-    width: 98% !important;
-    min-height: 90vh;
+/* Admin Panel True Full Screen */
+.modal-content.admin-full-modal {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    padding: 30px 40px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    overflow-y: auto !important;
 }
 
 .close-btn {
@@ -358,9 +370,9 @@ body {
     outline: none;
 }
 
-/* Footer - White Background with 19.jpg background details support & Click-to-Call */
+/* Footer - White Background with 19.jpg details & Click-to-Call */
 .site-footer {
-    background: #ffffff url('19.jpg') no-repeat bottom right / 200px auto !important;
+    background: #ffffff url('19.jpg') no-repeat bottom right / 220px auto !important;
     color: #111827 !important;
     border-top: 1px solid #e5e7eb;
     padding: 60px 25px 40px 25px;
