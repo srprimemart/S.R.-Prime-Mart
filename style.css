@@ -100,9 +100,9 @@ body {
 }
 
 .header-cart-btn {
-    background: #111827;
+    background: #27ae60;
     color: white;
-    border-color: #111827;
+    border-color: #27ae60;
 }
 
 /* Nav Bar */
@@ -142,16 +142,17 @@ body {
     background: #111827;
 }
 
-/* Hero Banner - 19.jpg (Full screen cover fit) */
+/* Hero Banner - Elegant Jewelry Stories Banner (Full Cover Fit) */
 .hero-banner {
     position: relative;
-    width: 100% !important;
-    height: 55vh;
-    min-height: 400px;
-    background-image: url('19.jpg');
+    width: 100%;
+    height: 60vh;
+    min-height: 420px;
+    background-image: url('Elegant Jewelry Stories Banner.png');
     background-size: cover !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
+    background-color: #f3f4f6;
 }
 
 .hero-overlay {
@@ -300,12 +301,12 @@ body {
     margin-top: 15px;
 }
 
-/* Modals */
+/* Modals - Full Screen / Large Modal Fix */
 .modal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
     z-index: 1100;
     overflow-y: auto;
     padding: 20px;
@@ -313,22 +314,25 @@ body {
 
 .modal-content, .admin-auth-box {
     background: white;
-    margin: 40px auto;
+    margin: 20px auto;
     padding: 30px;
     border-radius: 16px;
-    max-width: 500px;
+    max-width: 95% !important;
+    width: 1100px;
     position: relative;
 }
 
 .admin-full-modal {
-    max-width: 1100px;
+    max-width: 98% !important;
+    width: 98% !important;
+    min-height: 90vh;
 }
 
 .close-btn {
     position: absolute;
     top: 15px;
     right: 20px;
-    font-size: 22px;
+    font-size: 24px;
     cursor: pointer;
     color: #6b7280;
 }
@@ -354,11 +358,12 @@ body {
     outline: none;
 }
 
-/* Footer */
+/* Footer - White Background with 19.jpg background details support & Click-to-Call */
 .site-footer {
-    background: #111827;
-    color: #9ca3af;
-    padding: 50px 25px 30px 25px;
+    background: #ffffff url('19.jpg') no-repeat bottom right / 200px auto !important;
+    color: #111827 !important;
+    border-top: 1px solid #e5e7eb;
+    padding: 60px 25px 40px 25px;
     margin-top: 60px;
 }
 
@@ -371,13 +376,17 @@ body {
 }
 
 .footer-brand {
-    color: white;
+    color: #111827 !important;
     font-size: 18px;
     font-weight: 800;
 }
 
+.footer-col p {
+    color: #4b5563 !important;
+}
+
 .footer-col h4 {
-    color: white;
+    color: #111827 !important;
     font-size: 15px;
     margin-bottom: 15px;
 }
@@ -391,15 +400,21 @@ body {
 }
 
 .footer-col ul li a {
-    color: #9ca3af;
+    color: #4b5563 !important;
     text-decoration: none;
     font-size: 14px;
+}
+
+.footer-col a[href^="tel:"] {
+    color: #27ae60 !important;
+    font-weight: 700;
+    text-decoration: none;
 }
 
 /* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
     .hero-banner {
-        height: 35vh !important;
+        height: 38vh !important;
         min-height: 250px !important;
         background-size: cover !important;
     }
