@@ -76,29 +76,29 @@
     <div id="cartDrawer" class="cart-drawer">
         <div class="drawer-header">
             <div class="drawer-header-title">
-                <i class="fa-solid fa-arrow-left close-drawer-icon" onclick="toggleCartDrawer()"></i>
+                <i class="fa-solid fa-arrow-left close-drawer-icon" onclick="toggleCartDrawer()" style="cursor: pointer; margin-right: 10px;"></i>
                 <div>
                     <h3>Cart</h3>
                     <small id="drawerItemHeaderSub">0 items</small>
                 </div>
             </div>
-            <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
+            <span class="close-drawer" onclick="toggleCartDrawer()" style="cursor: pointer; font-size: 20px;">&times;</span>
         </div>
         
         <div class="drawer-items" id="drawerItemsContainer"></div>
 
         <div class="drawer-footer">
             <div class="cart-calc-card">
-                <div class="calc-row">
+                <div class="calc-row" style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 14px;">
                     <span>Subtotal</span>
                     <span id="drawerSubtotal">৳0</span>
                 </div>
-                <div class="calc-row text-muted">
+                <div class="calc-row text-muted" style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 12px; color: #6b7280;">
                     <span>Delivery</span>
                     <span>Calculated at checkout</span>
                 </div>
-                <hr class="calc-divider">
-                <div class="calc-row calc-total">
+                <hr class="calc-divider" style="border: none; border-top: 1px solid #e5e7eb; margin: 10px 0;">
+                <div class="calc-row calc-total" style="display: flex; justify-content: space-between; font-weight: 700; font-size: 15px;">
                     <span>Items total</span>
                     <span id="drawerItemsTotal">৳0</span>
                 </div>
@@ -149,94 +149,47 @@
 
     <!-- Full-Screen Checkout Modal -->
     <div id="checkoutModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 1000px;">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
             
-            <div class="checkout-header-bar">
+            <div class="checkout-header-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
-                <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
+                <span class="secure-badge" style="font-size: 13px; color: #059669; font-weight: 600;"><i class="fa-solid fa-lock"></i> Secure checkout</span>
             </div>
             
             <form id="orderForm">
-                <div class="checkout-grid">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
                     <div class="checkout-form-side">
                         <div class="checkout-card">
-                            <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
-                            
-                            <div class="form-group">
-                                <label for="customerName">Full Name *</label>
-                                <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address *</label>
-                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required readonly>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="customerPhone">Phone Number *</label>
-                                <input type="tel" id="customerPhone" name="Phone" class="form-control" placeholder="01XXXXXXXXX" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="customerAddress">Full Address *</label>
-                                <textarea id="customerAddress" name="Address" class="form-control" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
-                            </div>
-
-                            <div class="form-group" style="margin-top: 15px;">
-                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 8px; display: block; color: #1f2937;">
-                                    <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment Method *
-                                </label>
-                                
-                                <div class="payment-stack">
-                                    <label class="pay-row-card">
-                                        <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <span>Cash on Delivery</span>
-                                    </label>
-                                    <label class="pay-row-card">
-                                        <input type="radio" name="PaymentMethod" value="bKash">
-                                        <span>bKash</span>
-                                    </label>
-                                    <label class="pay-row-card">
-                                        <input type="radio" name="PaymentMethod" value="Nagad">
-                                        <span>Nagad</span>
-                                    </label>
-                                </div>
-                            </div>
-
+                            <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 700;"><i class="fa-solid fa-user"></i> Customer Information</h3>
+                            <div class="form-group"><label>Full Name *</label><input type="text" id="customerName" name="Name" class="form-control" required></div>
+                            <div class="form-group"><label>Email Address *</label><input type="email" id="customerEmail" name="Email" class="form-control" required readonly></div>
+                            <div class="form-group"><label>Phone Number *</label><input type="tel" id="customerPhone" name="Phone" class="form-control" required></div>
+                            <div class="form-group"><label>Full Address *</label><textarea id="customerAddress" name="Address" class="form-control" rows="3" required></textarea></div>
                         </div>
                     </div>
-
                     <div class="checkout-summary-side">
                         <div class="checkout-card" style="background: #f9fafb; padding: 20px; border-radius: 12px;">
-                            <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
+                            <h3 style="font-size: 16px; margin-bottom: 12px; font-weight: 700;"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
                             <div id="checkoutItemsList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px;"></div>
-
                             <div class="delivery-method-section" style="margin-bottom: 15px;">
-                                <label for="deliveryLocation" style="font-size: 13px; font-weight: 600; margin-bottom: 5px; display: block;">Select Delivery Location:</label>
+                                <label style="font-size: 13px; font-weight: 600; margin-bottom: 5px; display: block;">Select Delivery Location:</label>
                                 <select id="deliveryLocation" class="form-control" onchange="calculateFinalTotal()">
-                                    <option value="70">Inside Dhaka - 70 BDT (2-3 days)</option>
-                                    <option value="120">Outside Dhaka - 120 BDT (3-4 days)</option>
-                                    <option value="90">Sub Area - 90 BDT (2-3 days)</option>
+                                    <option value="70">Inside Dhaka - 70 BDT</option>
+                                    <option value="120">Outside Dhaka - 120 BDT</option>
+                                    <option value="90">Sub Area - 90 BDT</option>
                                 </select>
                             </div>
-
                             <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; font-size: 14px;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Total Quantity:</span> <span id="summaryTotalQty">0</span></div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Subtotal:</span> <span id="modalSubtotal">BDT 0</span></div>
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;"><span>Delivery Fee:</span> <span id="modalDeliveryFee">BDT 70</span></div>
                                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 8px 0;">
                                 <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: #27ae60;"><span>Grand Total:</span> <span id="modalGrandTotal">BDT 70</span></div>
                             </div>
-
                             <button type="submit" class="confirm-order-btn">Confirm Place Order</button>
-
-                            <div id="successMessage" style="display: none; margin-top: 15px; background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: 600;">
-                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!
-                            </div>
+                            <div id="successMessage" style="display: none; margin-top: 15px; background: #ecfdf5; color: #065f46; padding: 12px; border-radius: 8px; text-align: center; font-weight: 600;">✅ অর্ডার সফল হয়েছে!</div>
                         </div>
                     </div>
-
                 </div>
             </form>
         </div>
@@ -244,13 +197,11 @@
 
     <!-- Product Details Modal -->
     <div id="productDetailModal" class="modal">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="max-width: 650px;">
             <span class="close-btn" onclick="closeProductModal()">&times;</span>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 10px;">
-                <div style="flex: 1; min-width: 220px;">
-                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px;">
-                </div>
-                <div style="flex: 1; min-width: 220px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="flex: 1; min-width: 240px;"><img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px;"></div>
+                <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; color: #6b7280; font-weight: 700;"></span>
                         <h2 id="modalProductName" style="font-size: 20px; color: #111827; margin: 4px 0 10px 0;"></h2>
@@ -265,7 +216,7 @@
 
     <!-- Shipping Info Modal -->
     <div id="shippingModal" class="modal">
-        <div class="admin-auth-box" style="width: 420px;">
+        <div class="admin-auth-box" style="width: 450px;">
             <span class="close-btn" onclick="closeShippingModal()">&times;</span>
             <h3 style="margin-bottom: 12px;"><i class="fa-solid fa-truck-fast" style="color: #27ae60;"></i> Shipping & Delivery</h3>
             <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin-bottom: 10px;"><strong>Inside Dhaka:</strong> 2-3 Days (70 BDT)</p>
@@ -274,7 +225,7 @@
         </div>
     </div>
 
-    <!-- ADMIN DASHBOARD MODAL -->
+    <!-- ADMIN DASHBOARD MODAL (Full Screen) -->
     <div id="adminDashboardModal" class="modal">
         <div class="modal-content admin-full-modal">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 20px;">
@@ -287,7 +238,6 @@
                 <button class="admin-top-btn" onclick="closeAdminDashboard()" style="background: #ef4444; color: white; border: none;"><i class="fa-solid fa-right-from-bracket"></i> Close</button>
             </div>
 
-            <!-- DASHBOARD VIEW -->
             <div id="adminDashboardView">
                 <h2 style="font-size: 18px; margin-bottom: 15px;">Recent Orders & Inventory</h2>
                 <div style="overflow-x: auto; margin-bottom: 30px;">
@@ -298,13 +248,11 @@
                                 <th style="padding: 10px;">Customer</th>
                                 <th style="padding: 10px;">Amount</th>
                                 <th style="padding: 10px;">Status</th>
-                                <th style="padding: 10px;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="dashOrdersTbody"></tbody>
                     </table>
                 </div>
-
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <h3 style="font-size: 16px;">Inventory Stock List</h3>
                     <button class="confirm-order-btn" onclick="switchAdminTab('products')" style="width: auto; padding: 6px 14px; margin: 0;">+ Add New Product</button>
@@ -316,7 +264,6 @@
                                 <th style="padding: 10px;">Product Name</th>
                                 <th style="padding: 10px;">Price</th>
                                 <th style="padding: 10px;">Stock</th>
-                                <th style="padding: 10px;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="dashInventoryTbody"></tbody>
@@ -324,14 +271,13 @@
                 </div>
             </div>
 
-            <!-- PRODUCTS MANAGEMENT VIEW -->
             <div id="adminProductsView" style="display: none;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-wrap: wrap;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; flex-wrap: wrap;">
                     <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
                         <input type="hidden" id="adminProductId">
                         <h3 style="font-size: 16px; margin-bottom: 12px;">Add or Edit Product</h3>
                         <div class="form-group"><label>Product Name *</label><input type="text" id="adminPName" class="form-control" required oninput="updateAdminPreview()"></div>
-                        <div class="form-group"><label>Description</label><textarea id="adminPDesc" class="form-control" rows="2"></textarea></div>
+                        <div class="form-group"><label>Description</label><textarea id="adminPDesc" class="form-control" rows="3"></textarea></div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <div class="form-group"><label>Category</label><input type="text" id="adminPCategory" class="form-control" value="Accessories" oninput="updateAdminPreview()"></div>
                             <div class="form-group"><label>Stock *</label><input type="number" id="adminPStock" class="form-control" value="10" required></div>
@@ -340,15 +286,13 @@
                         <div class="form-group"><label>Product Image File</label><input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)"></div>
                         <button type="submit" class="confirm-order-btn">Save Product</button>
                     </form>
-
                     <div>
                         <h3 style="font-size: 16px; margin-bottom: 12px;">Existing Products List</h3>
-                        <div id="adminProductManageList" style="max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;"></div>
+                        <div id="adminProductManageList" style="max-height: 400px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 15px;"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- CUSTOMER EMAILS VIEW -->
             <div id="adminEmailsView" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 style="font-size: 16px;">Registered Customer Emails</h3>
@@ -368,18 +312,17 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer - White Background with Click-to-Call Phone Number -->
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
                 <h3 class="footer-brand">S.R. PRIME MART</h3>
                 <p style="font-size: 13px; margin: 10px 0;">Thoughtfully designed goods for everyday life.</p>
-                <p style="font-size: 13px;"><i class="fa-solid fa-phone" style="color: #27ae60;"></i> 01600445389</p>
-                <p style="font-size: 13px;"><i class="fa-solid fa-envelope" style="color: #27ae60;"></i> srprimemart2026@gmail.com</p>
+                <p style="font-size: 13px; margin-bottom: 6px;"><i class="fa-solid fa-phone" style="color: #27ae60; margin-right: 6px;"></i> <a href="tel:01600445389">01600445389</a></p>
+                <p style="font-size: 13px;"><i class="fa-solid fa-envelope" style="color: #27ae60; margin-right: 6px;"></i> srprimemart2026@gmail.com</p>
             </div>
             <div class="footer-col">
                 <h4>Support</h4>
@@ -419,8 +362,10 @@
             const authBtn = document.getElementById('userAuthBtn');
             const adminTopBtn = document.getElementById('adminPanelTopBtn');
 
-            if (loggedInUser) {
-                authText.innerText = loggedInUser.email.split('@')[0];
+            if (loggedInUser && loggedInUser.email) {
+                let displayName = loggedInUser.email.split('@')[0];
+                if (displayName.length > 10) displayName = displayName.substring(0, 8) + '...';
+                authText.innerText = displayName;
                 authBtn.onclick = handleCustomerLogout;
                 if (loggedInUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                     if (adminTopBtn) adminTopBtn.style.display = 'inline-flex';
