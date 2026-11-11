@@ -1,14 +1,13 @@
-// --- S.R. Prime Mart E-Commerce Script ---
+// --- S.R. Prime Mart Master Script ---
 
-// Initial Products Data (Syncs across devices via LocalStorage)
-let products = JSON.parse(localStorage.getItem('sr_admin_products')) || [
+let defaultProducts = [
     {
         id: 1,
         name: "Men's Bar Neckpiece",
         category: "Accessories",
         price: 1200,
         stock: 15,
-        image: "neckpiece.jpg",
+        image: "b2.jpg",
         desc: "প্রিমিয়াম কোয়ালিটির স্টাইলিশ মেনস বার নেকপিস।"
     },
     {
@@ -17,15 +16,12 @@ let products = JSON.parse(localStorage.getItem('sr_admin_products')) || [
         category: "Accessories",
         price: 850,
         stock: 20,
-        image: "bracelet.jpg",
+        image: "b3.jpg",
         desc: "আকর্ষণীয় ও টেকসই মেনস বার ব্রেসলেট।"
     }
 ];
 
-if (!localStorage.getItem('sr_admin_products')) {
-    localStorage.setItem('sr_admin_products', JSON.stringify(products));
-}
-
+let products = JSON.parse(localStorage.getItem('sr_admin_products')) || defaultProducts;
 let cart = JSON.parse(localStorage.getItem('sr_cart')) || [];
 let orders = JSON.parse(localStorage.getItem('sr_orders')) || [];
 
@@ -66,12 +62,6 @@ function renderProducts(productsToRender = products) {
 function searchProducts() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
-    renderProducts(filtered);
-}
-
-// Filter by Category
-function filterByCategory(cat) {
-    const filtered = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
     renderProducts(filtered);
 }
 
@@ -139,6 +129,7 @@ function updateCartUI() {
 
         const div = document.createElement('div');
         div.className = 'drawer-item-card';
+        div.style.cssText = "display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f3f4f6;";
         div.innerHTML = `
             <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
             <div style="flex: 1; margin-left: 12px;">
@@ -289,9 +280,9 @@ window.loadAdminDashboardData = function() {
     let totalRev = 0;
     orders.forEach(o => totalRev += o.grandTotal);
 
-    document.getElementById('dashRevenue').innerText = `৳${totalRev}`;
-    document.getElementById('dashOrdersCount').innerText = orders.length;
-    document.getElementById('dashProductsCount').innerText = products.length;
+    if (document.getElementById('dashRevenue')) document.getElementById('dashRevenue').innerText = `৳${totalRev}`;
+    if (document.getElementById('dashOrdersCount')) document.getElementById('dashOrdersCount').innerText = orders.length;
+    if (document.getElementById('dashProductsCount')) document.getElementById('dashProductsCount').innerText = products.length;
 
     renderAdminOrdersTable();
     renderAdminInventoryTable();
@@ -311,13 +302,12 @@ function renderAdminOrdersTable() {
     orders.forEach((order, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${order.id}</strong></td>
-            <td>${order.customer.name}<br><small>${order.customer.phone}</small></td>
-            <td>${order.date}</td>
-            <td>৳${order.grandTotal}</td>
-            <td><span style="background: #eef2ff; color: #4f46e5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${order.status}</span></td>
-            <td>
-                <button class="action-icon-btn" onclick="deleteOrder(${idx})" style="color: #ef4444;" title="Delete Order"><i class="fa-solid fa-trash"></i></button>
+            <td style="padding: 10px;"><strong>${order.id}</strong></td>
+            <td style="padding: 10px;">${order.customer.name}<br><small>${order.customer.phone}</small></td>
+            <td style="padding: 10px;">৳${order.grandTotal}</td>
+            <td style="padding: 10px;"><span style="background: #eef2ff; color: #4f46e5; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${order.status}</span></td>
+            <td style="padding: 10px;">
+                <button onclick="deleteOrder(${idx})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;" title="Delete Order"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -340,11 +330,10 @@ function renderAdminInventoryTable() {
     products.forEach((p, idx) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><div style="display: flex; align-items: center; gap: 10px;"><img src="${p.image}" style="width: 35px; height: 35px; object-fit: cover; border-radius: 4px;"><span>${p.name}</span></div></td>
-            <td>${p.category || 'General'}</td>
-            <td>৳${p.price}</td>
-            <td><span style="font-weight: 700; color: ${p.stock <= 5 ? '#ef4444' : '#27ae60'};">${p.stock} units</span></td>
-            <td>
+            <td style="padding: 10px;"><div style="display: flex; align-items: center; gap: 10px;"><img src="${p.image}" style="width: 35px; height: 35px; object-fit: cover; border-radius: 4px;"><span>${p.name}</span></div></td>
+            <td style="padding: 10px;">৳${p.price}</td>
+            <td style="padding: 10px;"><span style="font-weight: 700; color: ${p.stock <= 5 ? '#ef4444' : '#27ae60'};">${p.stock} units</span></td>
+            <td style="padding: 10px;">
                 <input type="number" value="${p.stock}" style="width: 60px; padding: 4px; border: 1px solid #d1d5db; border-radius: 4px;" onchange="quickUpdateStock(${idx}, this.value)">
             </td>
         `;
@@ -369,8 +358,8 @@ function renderAdminProductManageList() {
         div.innerHTML = `
             <span>${p.name} (৳${p.price})</span>
             <div style="display: flex; gap: 8px;">
-                <button onclick="editProduct(${idx})" style="background: #2563eb; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Edit</button>
-                <button onclick="deleteProduct(${idx})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Delete</button>
+                <button type="button" onclick="editProduct(${idx})" style="background: #2563eb; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Edit</button>
+                <button type="button" onclick="deleteProduct(${idx})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Delete</button>
             </div>
         `;
         list.appendChild(div);
@@ -397,9 +386,9 @@ function updateAdminPreview() {
     const price = document.getElementById('adminPPrice').value || '0';
     const cat = document.getElementById('adminPCategory').value || 'CATEGORY';
 
-    document.getElementById('prevName').innerText = name;
-    document.getElementById('prevPrice').innerText = `৳${price}`;
-    document.getElementById('prevCategory').innerText = cat;
+    if (document.getElementById('prevName')) document.getElementById('prevName').innerText = name;
+    if (document.getElementById('prevPrice')) document.getElementById('prevPrice').innerText = `৳${price}`;
+    if (document.getElementById('prevCategory')) document.getElementById('prevCategory').innerText = cat;
 }
 
 function handleSaveProduct(e) {
@@ -411,7 +400,7 @@ function handleSaveProduct(e) {
     const stock = parseInt(document.getElementById('adminPStock').value) || 10;
     const price = parseFloat(document.getElementById('adminPPrice').value) || 0;
 
-    const image = uploadedImageBase64 || (idField !== "" ? products[idField].image : "https://via.placeholder.com/200");
+    const image = uploadedImageBase64 || (idField !== "" ? products[idField].image : "b2.jpg");
 
     if (idField !== "") {
         products[idField] = { id: products[idField].id, name, desc, category, stock, price, image };
@@ -436,7 +425,7 @@ function editProduct(idx) {
     document.getElementById('adminPStock').value = p.stock;
     document.getElementById('adminPPrice').value = p.price;
     uploadedImageBase64 = p.image;
-    document.getElementById('prevImg').src = p.image;
+    if (document.getElementById('prevImg')) document.getElementById('prevImg').src = p.image;
     updateAdminPreview();
 }
 
@@ -450,8 +439,9 @@ function deleteProduct(idx) {
 }
 
 function resetAdminForm() {
-    document.getElementById('adminProductForm').reset();
+    const form = document.getElementById('adminProductForm');
+    if (form) form.reset();
     document.getElementById('adminProductId').value = "";
     uploadedImageBase64 = "";
-    document.getElementById('prevImg').src = "https://via.placeholder.com/200?text=Image+Preview";
+    if (document.getElementById('prevImg')) document.getElementById('prevImg').src = "https://via.placeholder.com/200?text=Image+Preview";
 }
