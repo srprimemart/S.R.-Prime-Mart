@@ -10,11 +10,6 @@
 </head>
 <body>
 
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        Welcome to SR Prime Mart
-    </div>
-
     <!-- Header Section -->
     <header class="main-header">
         <div class="header-container">
@@ -31,7 +26,12 @@
             </div>
 
             <div class="header-right">
-                <!-- সাধারণ ভিজিটরদের থেকে এডমিন বাটনটি গোপন রাখা হয়েছে -->
+                <!-- Customer Account Button -->
+                <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()">
+                    <i class="fa-solid fa-user"></i> <span id="userAuthText">Login / Register</span>
+                </button>
+
+                <!-- Cart Button -->
                 <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
                 </button>
@@ -104,7 +104,47 @@
         </div>
     </div>
 
-    <!-- Full-Screen Checkout Modal (Email Mandatory) -->
+    <!-- CUSTOMER LOGIN & REGISTER MODAL (Google & Email/Pass) -->
+    <div id="customerAuthModal" class="modal">
+        <div class="admin-auth-box" style="width: 400px; text-align: center;">
+            <span class="close-btn" onclick="closeCustomerAuthModal()">&times;</span>
+            <h3 style="margin-bottom: 5px; color: #111827;"><i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> Customer Login</h3>
+            <p style="font-size: 13px; color: #6b7280; margin-bottom: 18px;">Sign in to place orders and manage your account</p>
+
+            <!-- Google Login Button -->
+            <button onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style="width: 18px; height: 18px;">
+                Continue with Google
+            </button>
+
+            <div style="display: flex; align-items: center; margin: 15px 0; color: #9ca3af; font-size: 12px;">
+                <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                <span style="padding: 0 10px;">OR</span>
+                <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+            </div>
+
+            <!-- Email & Password Form -->
+            <form onsubmit="handleCustomerEmailLogin(event)">
+                <div class="form-group" style="text-align: left;">
+                    <label>Email Address *</label>
+                    <input type="email" id="custModalEmail" class="form-control" placeholder="yourname@gmail.com" required>
+                </div>
+                
+                <div class="form-group" style="text-align: left;">
+                    <label>Password *</label>
+                    <input type="password" id="custModalPass" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="confirm-order-btn" style="width: 100%; margin-top: 5px;">Login with Email</button>
+            </form>
+
+            <p style="font-size: 12px; color: #6b7280; margin-top: 15px;">
+                Don't have an account? <a href="javascript:void(0)" onclick="alert('Google দিয়ে ক্লিক করুন অথবা ইমেইল দিয়ে সরাসরি সাইন-ইন সম্পন্ন করুন!')" style="color: #27ae60; font-weight: 600;">Register Now</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Full-Screen Checkout Modal (Requires Login) -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
@@ -127,10 +167,9 @@
                                 <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
                             </div>
 
-                            <!-- বাধ্যতামূলক ইমেইল ইনপুট -->
                             <div class="form-group">
-                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address (Required to place order) *</label>
-                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required>
+                                <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address *</label>
+                                <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required readonly>
                             </div>
                             
                             <div class="form-group">
@@ -217,342 +256,3 @@
                             </div>
 
                             <div id="successMessage" class="success-message" style="display: none;">
-                                ✅ আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!<br><br>
-                                আমাদের প্রতিনিধি দল আপনার সাথে খুব দ্রুত যোগাযোগ করে অর্ডারটি কনফার্ম করবে। ধন্যবাদ!
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Product Details Popup Modal -->
-    <div id="productDetailModal" class="modal" style="display: none; align-items: center; justify-content: center;">
-        <div class="modal-content" style="max-width: 650px; min-height: auto; border-radius: 16px; padding: 25px;">
-            <span class="close-btn" onclick="closeProductModal()">&times;</span>
-            
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
-                <div style="flex: 1; min-width: 250px;">
-                    <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb;">
-                </div>
-                
-                <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between;">
-                    <div>
-                        <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600;">ELECTRONICS</span>
-                        <h2 id="modalProductName" style="font-size: 20px; color: #111827; margin: 4px 0 10px 0;"></h2>
-                        <div style="font-size: 22px; font-weight: 700; color: #27ae60; margin-bottom: 12px;" id="modalProductPrice"></div>
-                        <p id="modalProductDesc" style="font-size: 13px; color: #6b7280; line-height: 1.5; margin-bottom: 15px;">
-                            প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।
-                        </p>
-                        <div style="font-size: 12px; color: #059669; background: #ecfdf5; padding: 6px 10px; border-radius: 6px; display: inline-block; margin-bottom: 15px;">
-                            ✔ স্টক অ্যাভেলেবল (In Stock) • ক্যাশ অন ডেলিভারি উপলব্ধ
-                        </div>
-                    </div>
-
-                    <button class="confirm-order-btn" id="modalAddToCartBtn" style="padding: 10px; font-size: 14px;">
-                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shipping & Delivery Info Modal -->
-    <div id="shippingModal" class="modal">
-        <div class="admin-auth-box" style="width: 450px;">
-            <span class="close-btn" onclick="closeShippingModal()">&times;</span>
-            <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-truck-fast" style="color: #27ae60; margin-right: 8px;"></i> Shipping & Delivery</h3>
-            <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">
-                <p style="margin-bottom: 10px;"><strong>Inside Dhaka:</strong> 2-3 Days (70 BDT)</p>
-                <p style="margin-bottom: 10px;"><strong>Outside Dhaka:</strong> 3-4 Days (120 BDT)</p>
-                <p style="font-size: 13px; color: #6b7280;">Our delivery partner will reach out to you before delivering your package.</p>
-            </div>
-            <button class="confirm-order-btn" onclick="closeShippingModal()" style="width: 100%; margin-top: 20px;">Got it</button>
-        </div>
-    </div>
-
-    <!-- ADMIN LOGIN MODAL -->
-    <div id="adminAuthModal" class="modal">
-        <div class="admin-auth-box">
-            <span class="close-btn" onclick="closeAdminAuthModal()">&times;</span>
-            <h3><i class="fa-solid fa-lock"></i> Admin Login</h3>
-            <p style="font-size: 12px; color: #6b7280; margin-bottom: 15px;">Enter admin password (Default: 1234)</p>
-            <input type="password" id="adminPassInput" class="form-control" placeholder="Password" style="margin-bottom: 12px;">
-            <button class="confirm-order-btn" onclick="verifyAdminPassword()" style="width: 100%;">Login</button>
-        </div>
-    </div>
-
-    <!-- FULL CONTROL ADMIN DASHBOARD MODAL -->
-    <div id="adminDashboardModal" class="modal">
-        <div class="modal-content admin-full-modal">
-            <!-- Admin Top Navigation Bar -->
-            <div class="admin-top-nav">
-                <div class="admin-logo-tabs">
-                    <span class="brand-name" style="font-size: 16px; margin-right: 25px;">S.R. PRIME MART</span>
-                    <button class="admin-nav-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
-                    <button class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
-                </div>
-                <button class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
-            </div>
-
-            <!-- DASHBOARD VIEW -->
-            <div id="adminDashboardView" class="admin-view-section">
-                <h1 class="dash-main-title">S.R. PRIME MART — Dashboard</h1>
-
-                <!-- Summary Metrics Cards -->
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <span class="metric-label">Total Revenue</span>
-                        <div class="metric-value" id="dashRevenue">৳0.00</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Total Orders</span>
-                        <div class="metric-value" id="dashOrdersCount">0</div>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Listed Products</span>
-                        <div class="metric-value" id="dashProductsCount">0</div>
-                    </div>
-                </div>
-
-                <!-- Recent Orders Section -->
-                <div class="dash-section">
-                    <h2 class="dash-sec-title">Recent Customer Orders</h2>
-                    <div class="table-responsive">
-                        <table class="dash-table">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer Info</th>
-                                    <th>Date</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashOrdersTbody">
-                                <!-- Order rows generated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Inventory Section -->
-                <div class="dash-section" style="margin-top: 35px;">
-                    <div class="dash-sec-header">
-                        <div>
-                            <h2 class="dash-sec-title">Inventory & Stock Control</h2>
-                            <span class="low-stock-alert" id="dashLowStockText">0 product(s) low on stock.</span>
-                        </div>
-                        <button class="manage-prod-btn" onclick="switchAdminTab('products')">+ Add / Setup Products</button>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="dash-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40%;">Product Name</th>
-                                    <th>Category</th>
-                                    <th>Price</th>
-                                    <th>Stock Level</th>
-                                    <th>Quick Stock Edit</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashInventoryTbody">
-                                <!-- Inventory rows generated dynamically -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PRODUCTS MANAGEMENT VIEW -->
-            <div id="adminProductsView" class="admin-view-section" style="display: none;">
-                <div class="admin-body-grid">
-                    <div class="admin-form-side">
-                        <h3 style="font-size: 20px; font-weight: 600; color: #111827; margin-bottom: 20px;" id="adminFormTitle">Add / Edit Product</h3>
-
-                        <form id="adminProductForm" onsubmit="handleSaveProduct(event)">
-                            <input type="hidden" id="adminProductId">
-
-                            <div class="form-group">
-                                <label>Product Name *</label>
-                                <input type="text" id="adminPName" class="form-control" placeholder="e.g. Premium Leather Bag" required oninput="updateAdminPreview()">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Description</label>
-                                <textarea id="adminPDesc" class="form-control" rows="3" placeholder="Write product details..." oninput="updateAdminPreview()"></textarea>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div class="form-group">
-                                    <label>Category</label>
-                                    <input type="text" id="adminPCategory" class="form-control" placeholder="ELECTRONICS" oninput="updateAdminPreview()">
-                                </div>
-                                <div class="form-group">
-                                    <label>Stock Quantity *</label>
-                                    <input type="number" id="adminPStock" class="form-control" placeholder="25" value="10" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label>Price (৳) *</label>
-                                <input type="number" id="adminPPrice" class="form-control" placeholder="1200" required oninput="updateAdminPreview()">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Product Image (Select from Gallery/Storage)</label>
-                                <input type="file" id="adminPFileInput" class="form-control" accept="image/*" onchange="handleFileSelect(event)">
-                                <small style="font-size: 11px; color: #6b7280; margin-top: 4px; display: block;">Upload image file directly from your mobile/PC.</small>
-                            </div>
-
-                            <div style="margin-top: 25px; display: flex; gap: 12px;">
-                                <button type="submit" class="save-changes-btn">Save Product</button>
-                                <button type="button" class="cancel-admin-btn" onclick="resetAdminForm()">Reset Form</button>
-                            </div>
-                        </form>
-
-                        <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                            <h4 style="font-size: 16px; margin-bottom: 12px; color: #1f2937;">Website Listed Products</h4>
-                            <div id="adminProductManageList" style="max-height: 250px; overflow-y: auto;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Live Preview -->
-                    <div class="admin-preview-side">
-                        <span style="font-size: 13px; color: #6b7280; font-weight: 500; display: block; margin-bottom: 10px;">Card Preview</span>
-                        <div class="preview-card product-card">
-                            <div class="image-box-wrapper">
-                                <div class="image-box">
-                                    <img id="prevImg" src="https://via.placeholder.com/200?text=Image+Preview" alt="Preview">
-                                </div>
-                            </div>
-                            <div id="prevCategory" class="product-category">CATEGORY</div>
-                            <div id="prevName" class="product-title">Product Title</div>
-                            <div class="price-buy-row" style="margin-top: 10px;">
-                                <div>
-                                    <span id="prevPrice" class="product-price">৳0.00</span>
-                                </div>
-                                <button type="button" class="buy-btn">Buy</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- EDIT CUSTOMER INFO MODAL -->
-    <div id="editCustomerModal" class="modal">
-        <div class="admin-auth-box" style="width: 450px;">
-            <span class="close-btn" onclick="closeEditCustomerModal()">&times;</span>
-            <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-pen-to-square"></i> Edit Customer Information</h3>
-            <input type="hidden" id="editOrderIndex">
-            
-            <div class="form-group">
-                <label>Customer Name</label>
-                <input type="text" id="editCustomerName" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="editCustomerEmail" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" id="editCustomerPhone" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Full Address</label>
-                <textarea id="editCustomerAddress" class="form-control" rows="3" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Order Total Amount (৳)</label>
-                <input type="number" id="editOrderTotal" class="form-control" required>
-            </div>
-
-            <button class="confirm-order-btn" onclick="saveCustomerInfoEdit()" style="width: 100%; margin-top: 10px;">Save Customer Info</button>
-        </div>
-    </div>
-
-    <!-- Footer Section -->
-    <footer class="site-footer">
-        <div class="footer-container">
-            <!-- Col 1: Brand Info & Contact directly below -->
-            <div class="footer-col">
-                <h3 class="footer-brand" style="margin-bottom: 4px;" onclick="handleSecretAdminClick()">S.R. PRIME MART<span class="footer-dot">.</span></h3>
-                <p class="footer-desc" style="margin-bottom: 12px;">Thoughtfully designed goods for everyday life. Quality you can feel.</p>
-
-                <h4 style="font-size: 15px; margin-bottom: 6px;">Contact & WhatsApp</h4>
-                <p class="footer-desc" style="margin-bottom: 4px;">
-                    <i class="fa-solid fa-phone" style="color: #27ae60; margin-right: 6px;"></i> Call / WhatsApp: <a href="tel:01600445389" style="color: #27ae60; font-weight: 600; text-decoration: none;">01600445389</a>
-                </p>
-                <p class="footer-desc" style="margin-bottom: 0;">
-                    <i class="fa-solid fa-envelope" style="color: #27ae60; margin-right: 6px;"></i> Email: <a href="mailto:srprimemart2026@gmail.com" style="color: #4b5563; text-decoration: none;">srprimemart2026@gmail.com</a>
-                </p>
-            </div>
-
-            <!-- Col 2: Shop Links -->
-            <div class="footer-col">
-                <h4>Shop</h4>
-                <ul>
-                    <li><a href="#products-section">All products</a></li>
-                    <li><a href="#products-section" onclick="filterByCategory('Accessories')">Accessories</a></li>
-                </ul>
-            </div>
-
-            <!-- Col 3: Support Links -->
-            <div class="footer-col">
-                <h4>Support</h4>
-                <ul>
-                    <li>
-                        <a href="javascript:void(0)" onclick="openShippingModal()">
-                            Shipping & delivery <span class="delivery-badge-sub" style="display: block;">Inside Dhaka: 2-3 days | Outside Dhaka: 3-4 days</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:void(0)">
-                            Returns & exchanges <span class="delivery-badge-sub" style="display: block;">Within 7 days</span>
-                        </a>
-                    </li>
-                    <li><a href="#">FAQ</a></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
-    <script>
-        function openShippingModal() {
-            document.getElementById('shippingModal').style.display = 'block';
-        }
-        function closeShippingModal() {
-            document.getElementById('shippingModal').style.display = 'none';
-        }
-
-        // Secret Admin Access via Triple-Clicking Logo/Brand Title
-        let clickCount = 0;
-        let clickTimer = null;
-        function handleSecretAdminClick() {
-            clickCount++;
-            if (clickCount === 3) {
-                openAdminAuthModal();
-                clickCount = 0;
-                clearTimeout(clickTimer);
-            } else {
-                clearTimeout(clickTimer);
-                clickTimer = setTimeout(() => {
-                    clickCount = 0;
-                }, 1000);
-            }
-        }
-    </script>
-</body>
-</html>
