@@ -97,7 +97,6 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: background 0.2s;
 }
 
 .header-cart-btn {
@@ -147,18 +146,19 @@ body {
 .hero-banner {
     position: relative;
     width: 100%;
-    height: 55vh;
+    height: 60vh;
     min-height: 380px;
-    background-size: contain !important; /* কোনো অংশ কাটবে না, পুরো ছবি ফিট করবে */
+    background-image: url('banner.jpg');
+    background-size: contain !important; /* ছবি কোনোভাবেই কাটবে না, পুরোটা ফিট থাকবে */
     background-position: center center !important;
     background-repeat: no-repeat !important;
-    background-color: #f3f4f6; /* ফাঁকা জায়গায় মানানসই ব্যাকগ্রাউন্ড */
+    background-color: #f3f4f6;
 }
 
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.03);
     display: flex;
     align-items: flex-end;
     padding: 40px;
@@ -198,7 +198,8 @@ body {
     background: #ffffff;
     border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.2s;
+    border: 1px solid #f3f4f6;
+    padding-bottom: 12px;
 }
 
 .image-box {
@@ -218,22 +219,22 @@ body {
     font-size: 11px;
     text-transform: uppercase;
     color: #6b7280;
-    margin: 12px 0 4px 0;
+    margin: 12px 12px 4px 12px;
     font-weight: 700;
-    letter-spacing: 0.5px;
 }
 
 .product-title {
     font-size: 15px;
     font-weight: 600;
     color: #111827;
-    margin-bottom: 8px;
+    margin: 0 12px 8px 12px;
 }
 
 .price-buy-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: 0 12px;
 }
 
 .product-price {
@@ -279,14 +280,6 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
-}
-
-.drawer-item-card {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f3f4f6;
 }
 
 .drawer-footer {
@@ -407,8 +400,8 @@ body {
 /* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
     .hero-banner {
-        height: 32vh !important;
-        min-height: 220px !important;
+        height: 40vh !important;
+        min-height: 240px !important;
         background-size: contain !important;
     }
     .main-header .header-container {
