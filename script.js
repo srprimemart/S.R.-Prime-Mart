@@ -295,7 +295,7 @@ function renderAdminOrdersTable() {
     tbody.innerHTML = '';
 
     if (orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #6b7280; padding: 20px;">No orders received yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">No orders received yet.</td></tr>`;
         return;
     }
 
