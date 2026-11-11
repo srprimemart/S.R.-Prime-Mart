@@ -7,6 +7,44 @@
     <link rel="stylesheet" href="style.css">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Hero Banner Fix for Mobile (Prevents Image Cutting) */
+        @media (max-width: 768px) {
+            .hero-banner {
+                height: 45vh !important;
+                min-height: 250px !important;
+                background-size: contain !important;
+                background-position: center center !important;
+                background-repeat: no-repeat !important;
+                background-color: #f3f4f6;
+            }
+            .main-header .header-container {
+                flex-direction: column;
+                gap: 12px;
+                padding: 10px 15px;
+            }
+            .search-area {
+                width: 100%;
+                order: 3;
+                margin-top: 5px;
+            }
+            .search-area input {
+                width: 100% !important;
+            }
+            .header-right {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                order: 2;
+            }
+            .logo-area {
+                order: 1;
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -18,7 +56,7 @@
                 <span class="brand-name">S.R. PRIME MART</span>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Responsive Search Bar -->
             <div class="search-area">
                 <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
                 <button class="search-btn" onclick="searchProducts()"><i class="fa-solid fa-magnifying-glass"></i></button>
@@ -26,17 +64,17 @@
 
             <div class="header-right">
                 <!-- Admin Panel Button (Dynamically Displayed ONLY for Admin Email) -->
-                <button class="admin-top-btn" id="adminPanelTopBtn" onclick="openAdminDashboardFromTop()" style="display: none; background: #ea580c; color: white; margin-right: 8px;">
-                    <i class="fa-solid fa-user-gear"></i> Admin Panel
+                <button class="admin-top-btn" id="adminPanelTopBtn" onclick="openAdminDashboardFromTop()" style="display: none; background: #ea580c; color: white; margin-right: 6px; padding: 6px 12px; font-size: 13px;">
+                    <i class="fa-solid fa-user-gear"></i> Admin
                 </button>
 
-                <!-- Customer Account Button -->
-                <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()">
-                    <i class="fa-solid fa-user"></i> <span id="userAuthText">Login / Register</span>
+                <!-- Customer Login Button (Only Login text, no Register) -->
+                <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()" style="padding: 6px 12px; font-size: 13px;">
+                    <i class="fa-solid fa-user"></i> <span id="userAuthText">Login</span>
                 </button>
 
                 <!-- Cart Button -->
-                <button class="header-cart-btn" onclick="toggleCartDrawer()">
+                <button class="header-cart-btn" onclick="toggleCartDrawer()" style="padding: 6px 12px; font-size: 13px;">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
                 </button>
             </div>
@@ -108,11 +146,11 @@
         </div>
     </div>
 
-    <!-- LOGIN & REGISTER MODAL -->
+    <!-- CUSTOMER LOGIN MODAL -->
     <div id="customerAuthModal" class="modal">
         <div class="admin-auth-box" style="width: 400px; text-align: center;">
             <span class="close-btn" onclick="closeCustomerAuthModal()">&times;</span>
-            <h3 style="margin-bottom: 5px; color: #111827;"><i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> User Login</h3>
+            <h3 style="margin-bottom: 5px; color: #111827;"><i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> Customer Login</h3>
             <p style="font-size: 13px; color: #6b7280; margin-bottom: 18px;">Sign in to your account</p>
 
             <!-- Google Login Button -->
@@ -139,22 +177,18 @@
                     <input type="password" id="custModalPass" class="form-control" placeholder="••••••••" required>
                 </div>
 
-                <!-- Admin Security Code Input (Shows conditionally if srprimemart2026@gmail.com is typed) -->
+                <!-- Admin Security Code Input -->
                 <div class="form-group" id="adminSecKeyContainer" style="text-align: left; display: none;">
                     <label style="color: #ea580c; font-weight: 700;"><i class="fa-solid fa-key"></i> Admin Master Security Key *</label>
                     <input type="password" id="adminSecKeyInput" class="form-control" placeholder="Enter Security Code">
                 </div>
 
-                <button type="submit" class="confirm-order-btn" style="width: 100%; margin-top: 5px;">Login with Email</button>
+                <button type="submit" class="confirm-order-btn" style="width: 100%; margin-top: 5px;">Login</button>
             </form>
-
-            <p style="font-size: 12px; color: #6b7280; margin-top: 15px;">
-                Don't have an account? <a href="javascript:void(0)" onclick="alert('Google দিয়ে ক্লিক করুন অথবা ইমেইল দিয়ে সরাসরি সাইন-ইন সম্পন্ন করুন!')" style="color: #27ae60; font-weight: 600;">Register Now</a>
-            </p>
         </div>
     </div>
 
-    <!-- Full-Screen Checkout Modal (Requires Login) -->
+    <!-- Full-Screen Checkout Modal -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
@@ -550,12 +584,11 @@
     <script src="script.js"></script>
     <script>
         const ADMIN_EMAIL = "srprimemart2026@gmail.com";
-        const ADMIN_MASTER_KEY = "1234"; // আপনার সিক্রেট পাসওয়ার্ড/কী
+        const ADMIN_MASTER_KEY = "1234";
 
         let loggedInUser = JSON.parse(localStorage.getItem('sr_customer_user')) || null;
         let registeredEmails = JSON.parse(localStorage.getItem('sr_registered_emails')) || [];
 
-        // Check Admin Input In Realtime
         document.addEventListener('DOMContentLoaded', function() {
             const emailInput = document.getElementById('custModalEmail');
             const adminSecContainer = document.getElementById('adminSecKeyContainer');
@@ -582,21 +615,20 @@
                 authBtn.setAttribute('title', 'Click to logout');
                 authBtn.onclick = handleCustomerLogout;
 
-                // If logged in user is admin email, show Admin Panel button at top
                 if (loggedInUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                     if (adminTopBtn) adminTopBtn.style.display = 'inline-flex';
                 } else {
                     if (adminTopBtn) adminTopBtn.style.display = 'none';
                 }
             } else {
-                authText.innerText = 'Login / Register';
+                authText.innerText = 'Login';
                 authBtn.onclick = openCustomerAuthModal;
                 if (adminTopBtn) adminTopBtn.style.display = 'none';
             }
         }
 
         function saveCustomerEmailToList(email, provider) {
-            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) return; // Don't list admin email in customer list
+            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) return;
             const exists = registeredEmails.some(user => user.email.toLowerCase() === email.toLowerCase());
             if (!exists) {
                 const now = new Date();
@@ -607,7 +639,6 @@
                     date: formattedDate
                 });
                 localStorage.setItem('sr_registered_emails', JSON.stringify(registeredEmails));
-                renderAdminEmailsTable();
             }
         }
 
@@ -631,7 +662,6 @@
         function handleCustomerEmailLogin(e) {
             e.preventDefault();
             const email = document.getElementById('custModalEmail').value.trim();
-            const pass = document.getElementById('custModalPass').value;
             const secKey = document.getElementById('adminSecKeyInput').value;
 
             if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
