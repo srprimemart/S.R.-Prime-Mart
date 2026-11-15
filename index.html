@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,12 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S.R. Prime Mart</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <!-- Header Section -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo-area" style="cursor: pointer;" title="SR Prime Mart">
@@ -18,24 +17,20 @@
                 <span class="brand-name">S.R. PRIME MART</span>
             </div>
 
-            <!-- Search Bar -->
             <div class="search-area">
                 <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
                 <button class="search-btn" onclick="searchProducts()"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
 
             <div class="header-right">
-                <!-- Admin Panel Button (Dynamically Displayed ONLY for Admin Email) -->
                 <button class="admin-top-btn" id="adminPanelTopBtn" onclick="openAdminDashboardFromTop()" style="display: none; background: #ea580c; color: white; margin-right: 8px;">
                     <i class="fa-solid fa-user-gear"></i> Admin Panel
                 </button>
 
-                <!-- Customer Account Button -->
                 <button class="admin-top-btn" id="userAuthBtn" onclick="openCustomerAuthModal()">
                     <i class="fa-solid fa-user"></i> <span id="userAuthText">Login / Register</span>
                 </button>
 
-                <!-- Cart Button -->
                 <button class="header-cart-btn" onclick="toggleCartDrawer()">
                     <i class="fa-solid fa-cart-shopping"></i> <span class="cart-text">Cart</span> (<span id="cartCount">0</span>)
                 </button>
@@ -43,7 +38,6 @@
         </div>
     </header>
 
-    <!-- Navigation Bar -->
     <nav class="nav-bar">
         <div class="nav-container">
             <a href="#products-section" class="nav-link active">Shop all</a>
@@ -51,7 +45,6 @@
         </div>
     </nav>
 
-    <!-- Hero Banner Section -->
     <section class="hero-banner">
         <div class="hero-overlay">
             <div class="hero-content">
@@ -62,7 +55,6 @@
         </div>
     </section>
 
-    <!-- Main Content: Featured Products Section -->
     <main class="main-container">
         <section id="products-section" class="products-section">
             <div class="section-header">
@@ -72,7 +64,7 @@
         </section>
     </main>
 
-    <!-- Side Cart Drawer -->
+    <!-- CART DRAWER -->
     <div id="cartDrawer" class="cart-drawer">
         <div class="drawer-header">
             <div class="drawer-header-title">
@@ -84,7 +76,7 @@
             </div>
             <span class="close-drawer" onclick="toggleCartDrawer()">&times;</span>
         </div>
-        
+
         <div class="drawer-items" id="drawerItemsContainer"></div>
 
         <div class="drawer-footer">
@@ -103,7 +95,6 @@
                     <span id="drawerItemsTotal">৳0</span>
                 </div>
             </div>
-
             <button class="drawer-place-order-btn" onclick="openCheckoutModal()">Checkout</button>
         </div>
     </div>
@@ -112,10 +103,11 @@
     <div id="customerAuthModal" class="modal">
         <div class="admin-auth-box" style="width: 400px; text-align: center;">
             <span class="close-btn" onclick="closeCustomerAuthModal()">&times;</span>
-            <h3 style="margin-bottom: 5px; color: #111827;"><i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> User Login</h3>
+            <h3 style="margin-bottom: 5px; color: #111827;">
+                <i class="fa-solid fa-user-check" style="color: #27ae60; margin-right: 6px;"></i> User Login
+            </h3>
             <p style="font-size: 13px; color: #6b7280; margin-bottom: 18px;">Sign in to your account</p>
 
-            <!-- Google Login Button -->
             <button onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style="width: 18px; height: 18px;">
                 Continue with Google
@@ -127,51 +119,45 @@
                 <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
             </div>
 
-            <!-- Email & Password Form -->
             <form onsubmit="handleCustomerEmailLogin(event)">
                 <div class="form-group" style="text-align: left;">
                     <label>Email Address *</label>
                     <input type="email" id="custModalEmail" class="form-control" placeholder="yourname@gmail.com" required>
                 </div>
-                
+
                 <div class="form-group" style="text-align: left;">
                     <label>Password *</label>
                     <input type="password" id="custModalPass" class="form-control" placeholder="••••••••" required>
                 </div>
 
-                <!-- Admin Security Code Input (Shows conditionally if srprimemart2026@gmail.com is typed) -->
-                <div class="form-group" id="adminSecKeyContainer" style="text-align: left; display: none;">
-                    <label style="color: #ea580c; font-weight: 700;"><i class="fa-solid fa-key"></i> Admin Master Security Key *</label>
-                    <input type="password" id="adminSecKeyInput" class="form-control" placeholder="Enter Security Code">
-                </div>
-
                 <button type="submit" class="confirm-order-btn" style="width: 100%; margin-top: 5px;">Login with Email</button>
             </form>
 
-            <p style="font-size: 12px; color: #6b7280; margin-top: 15px;">
-                Don't have an account? <a href="javascript:void(0)" onclick="alert('Google দিয়ে ক্লিক করুন অথবা ইমেইল দিয়ে সরাসরি সাইন-ইন সম্পন্ন করুন!')" style="color: #27ae60; font-weight: 600;">Register Now</a>
-            </p>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button type="button" class="confirm-order-btn" onclick="handleCustomerRegister()" style="flex:1;">Create account</button>
+                <button type="button" onclick="handleForgotPassword()" style="flex:1; border:1px solid #d1d5db; background:#fff; border-radius:8px; padding:10px; cursor:pointer;">Forgot password?</button>
+            </div>
+            <p style="font-size:11px;color:#6b7280;margin-top:12px;">Admin access is granted only to the authorized Firebase account.</p>
         </div>
     </div>
 
-    <!-- Full-Screen Checkout Modal (Requires Login) -->
+    <!-- CHECKOUT MODAL -->
     <div id="checkoutModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeCheckoutModal()">&times;</span>
-            
+
             <div class="checkout-header-bar">
                 <h2><i class="fa-solid fa-arrow-left" onclick="closeCheckoutModal()" style="cursor:pointer; margin-right: 10px;"></i> Checkout Details</h2>
                 <span class="secure-badge"><i class="fa-solid fa-lock"></i> Secure checkout</span>
             </div>
-            
+
             <form id="orderForm">
                 <div class="checkout-grid">
-                    
-                    <!-- Customer Info & Payment -->
+
                     <div class="checkout-form-side">
                         <div class="checkout-card">
                             <h3 class="card-subtitle"><i class="fa-solid fa-user"></i> Customer Information</h3>
-                            
+
                             <div class="form-group">
                                 <label for="customerName">Full Name *</label>
                                 <input type="text" id="customerName" name="Name" class="form-control" placeholder="Enter your full name" required>
@@ -181,7 +167,7 @@
                                 <label for="customerEmail"><i class="fa-solid fa-envelope" style="color: #ea580c; margin-right: 4px;"></i> Email Address *</label>
                                 <input type="email" id="customerEmail" name="Email" class="form-control" placeholder="yourname@gmail.com" required readonly>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="customerPhone">Phone Number *</label>
                                 <input type="tel" id="customerPhone" name="Phone" class="form-control" placeholder="01XXXXXXXXX" required>
@@ -192,18 +178,15 @@
                                 <textarea id="customerAddress" name="Address" class="form-control" rows="3" placeholder="Village/Road, Thana, District" required></textarea>
                             </div>
 
-                            <!-- Payment Methods -->
                             <div class="form-group" style="margin-top: 15px;">
                                 <label style="font-weight: 700; font-size: 14px; margin-bottom: 8px; display: block; color: #1f2937;">
                                     <i class="fa-solid fa-wallet" style="color: #ea580c; margin-right: 6px;"></i> Payment Method *
                                 </label>
-                                
+
                                 <div class="payment-stack">
                                     <label class="pay-row-card">
                                         <input type="radio" name="PaymentMethod" value="Cash on Delivery" checked>
-                                        <div class="pay-img-box cod-bg">
-                                            <i class="fa-solid fa-money-bill-wave"></i>
-                                        </div>
+                                        <div class="pay-img-box cod-bg"><i class="fa-solid fa-money-bill-wave"></i></div>
                                         <div class="pay-details">
                                             <div class="pay-title">Cash on Delivery</div>
                                             <div class="pay-sub">Pay with cash upon delivery.</div>
@@ -233,11 +216,9 @@
                                     </label>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
-                    <!-- Order Summary -->
                     <div class="checkout-summary-side">
                         <div class="checkout-card">
                             <h3 class="card-subtitle"><i class="fa-solid fa-bag-shopping"></i> Order Items</h3>
@@ -277,16 +258,16 @@
         </div>
     </div>
 
-    <!-- Product Details Popup Modal -->
+    <!-- PRODUCT DETAILS MODAL -->
     <div id="productDetailModal" class="modal" style="display: none; align-items: center; justify-content: center;">
         <div class="modal-content" style="max-width: 650px; min-height: auto; border-radius: 16px; padding: 25px;">
             <span class="close-btn" onclick="closeProductModal()">&times;</span>
-            
+
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
                 <div style="flex: 1; min-width: 250px;">
                     <img id="modalProductImg" src="" alt="Product" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; border: 1px solid #e5e7eb;">
                 </div>
-                
+
                 <div style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
                         <span id="modalCategory" style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b7280; font-weight: 600;">ELECTRONICS</span>
@@ -308,11 +289,13 @@
         </div>
     </div>
 
-    <!-- Shipping & Delivery Info Modal -->
+    <!-- SHIPPING MODAL -->
     <div id="shippingModal" class="modal">
         <div class="admin-auth-box" style="width: 450px;">
             <span class="close-btn" onclick="closeShippingModal()">&times;</span>
-            <h3 style="margin-bottom: 15px; color: #111827;"><i class="fa-solid fa-truck-fast" style="color: #27ae60; margin-right: 8px;"></i> Shipping & Delivery</h3>
+            <h3 style="margin-bottom: 15px; color: #111827;">
+                <i class="fa-solid fa-truck-fast" style="color: #27ae60; margin-right: 8px;"></i> Shipping & Delivery
+            </h3>
             <div style="font-size: 14px; color: #4b5563; line-height: 1.6;">
                 <p style="margin-bottom: 10px;"><strong>Inside Dhaka:</strong> 2-3 Days (70 BDT)</p>
                 <p style="margin-bottom: 10px;"><strong>Outside Dhaka:</strong> 3-4 Days (120 BDT)</p>
@@ -322,7 +305,7 @@
         </div>
     </div>
 
-    <!-- FULL CONTROL ADMIN DASHBOARD MODAL -->
+    <!-- ADMIN DASHBOARD -->
     <div id="adminDashboardModal" class="modal">
         <div class="modal-content admin-full-modal">
             <div class="admin-top-nav">
@@ -463,9 +446,7 @@
                             <div id="prevCategory" class="product-category">CATEGORY</div>
                             <div id="prevName" class="product-title">Product Title</div>
                             <div class="price-buy-row" style="margin-top: 10px;">
-                                <div>
-                                    <span id="prevPrice" class="product-price">৳0.00</span>
-                                </div>
+                                <div><span id="prevPrice" class="product-price">৳0.00</span></div>
                                 <button type="button" class="buy-btn">Buy</button>
                             </div>
                         </div>
@@ -500,11 +481,10 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Footer Section -->
+    <!-- FOOTER -->
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-col">
@@ -513,10 +493,12 @@
 
                 <h4 style="font-size: 15px; margin-bottom: 6px;">Contact & WhatsApp</h4>
                 <p class="footer-desc" style="margin-bottom: 4px;">
-                    <i class="fa-solid fa-phone" style="color: #27ae60; margin-right: 6px;"></i> Call / WhatsApp: <a href="tel:01600445389" style="color: #27ae60; font-weight: 600; text-decoration: none;">01600445389</a>
+                    <i class="fa-solid fa-phone" style="color: #27ae60; margin-right: 6px;"></i>
+                    Call / WhatsApp: <a href="tel:01600445389" style="color: #27ae60; font-weight: 600; text-decoration: none;">01600445389</a>
                 </p>
                 <p class="footer-desc" style="margin-bottom: 0;">
-                    <i class="fa-solid fa-envelope" style="color: #27ae60; margin-right: 6px;"></i> Email: <a href="mailto:srprimemart2026@gmail.com" style="color: #4b5563; text-decoration: none;">srprimemart2026@gmail.com</a>
+                    <i class="fa-solid fa-envelope" style="color: #27ae60; margin-right: 6px;"></i>
+                    Email: <a href="mailto:srprimemart2026@gmail.com" style="color: #4b5563; text-decoration: none;">srprimemart2026@gmail.com</a>
                 </p>
             </div>
 
@@ -547,224 +529,6 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
-    <script>
-        const ADMIN_EMAIL = "srprimemart2026@gmail.com";
-        const ADMIN_MASTER_KEY = "1234"; // আপনার সিক্রেট পাসওয়ার্ড/কী
-
-        let loggedInUser = JSON.parse(localStorage.getItem('sr_customer_user')) || null;
-        let registeredEmails = JSON.parse(localStorage.getItem('sr_registered_emails')) || [];
-
-        // Check Admin Input In Realtime
-        document.addEventListener('DOMContentLoaded', function() {
-            const emailInput = document.getElementById('custModalEmail');
-            const adminSecContainer = document.getElementById('adminSecKeyContainer');
-            
-            if (emailInput && adminSecContainer) {
-                emailInput.addEventListener('input', function() {
-                    if (this.value.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                        adminSecContainer.style.display = 'block';
-                    } else {
-                        adminSecContainer.style.display = 'none';
-                    }
-                });
-            }
-            updateUIForCustomer();
-        });
-
-        function updateUIForCustomer() {
-            const authText = document.getElementById('userAuthText');
-            const authBtn = document.getElementById('userAuthBtn');
-            const adminTopBtn = document.getElementById('adminPanelTopBtn');
-
-            if (loggedInUser) {
-                authText.innerText = loggedInUser.email.split('@')[0];
-                authBtn.setAttribute('title', 'Click to logout');
-                authBtn.onclick = handleCustomerLogout;
-
-                // If logged in user is admin email, show Admin Panel button at top
-                if (loggedInUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                    if (adminTopBtn) adminTopBtn.style.display = 'inline-flex';
-                } else {
-                    if (adminTopBtn) adminTopBtn.style.display = 'none';
-                }
-            } else {
-                authText.innerText = 'Login / Register';
-                authBtn.onclick = openCustomerAuthModal;
-                if (adminTopBtn) adminTopBtn.style.display = 'none';
-            }
-        }
-
-        function saveCustomerEmailToList(email, provider) {
-            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) return; // Don't list admin email in customer list
-            const exists = registeredEmails.some(user => user.email.toLowerCase() === email.toLowerCase());
-            if (!exists) {
-                const now = new Date();
-                const formattedDate = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                registeredEmails.unshift({
-                    email: email,
-                    provider: provider || 'Email',
-                    date: formattedDate
-                });
-                localStorage.setItem('sr_registered_emails', JSON.stringify(registeredEmails));
-                renderAdminEmailsTable();
-            }
-        }
-
-        function openCustomerAuthModal() {
-            document.getElementById('customerAuthModal').style.display = 'block';
-        }
-        function closeCustomerAuthModal() {
-            document.getElementById('customerAuthModal').style.display = 'none';
-        }
-
-        function handleGoogleLogin() {
-            const mockGoogleEmail = "customer@gmail.com";
-            loggedInUser = { email: mockGoogleEmail, provider: 'Google' };
-            localStorage.setItem('sr_customer_user', JSON.stringify(loggedInUser));
-            saveCustomerEmailToList(mockGoogleEmail, 'Google');
-            updateUIForCustomer();
-            closeCustomerAuthModal();
-            alert(`Google সফলভাবে লগইন হয়েছে: ${mockGoogleEmail}`);
-        }
-
-        function handleCustomerEmailLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('custModalEmail').value.trim();
-            const pass = document.getElementById('custModalPass').value;
-            const secKey = document.getElementById('adminSecKeyInput').value;
-
-            if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                if (secKey !== ADMIN_MASTER_KEY) {
-                    alert("ভুল অ্যাডমিন সিকিউরিটি কোড! সঠিক কোড প্রদান করুন।");
-                    return;
-                }
-                loggedInUser = { email: email, provider: 'Admin' };
-                localStorage.setItem('sr_customer_user', JSON.stringify(loggedInUser));
-                updateUIForCustomer();
-                closeCustomerAuthModal();
-                alert("অ্যাডমিন হিসেবে সফলভাবে লগইন করেছেন!");
-                openAdminDashboardFromTop();
-            } else {
-                loggedInUser = { email: email, provider: 'Email' };
-                localStorage.setItem('sr_customer_user', JSON.stringify(loggedInUser));
-                saveCustomerEmailToList(email, 'Email');
-                updateUIForCustomer();
-                closeCustomerAuthModal();
-                alert(`সফলভাবে লগইন হয়েছে: ${email}`);
-            }
-        }
-
-        function handleCustomerLogout() {
-            if (confirm("আপনি কি লগআউট করতে চান?")) {
-                loggedInUser = null;
-                localStorage.removeItem('sr_customer_user');
-                updateUIForCustomer();
-            }
-        }
-
-        function openAdminDashboardFromTop() {
-            const adminModal = document.getElementById('adminDashboardModal');
-            if (adminModal) adminModal.style.display = 'block';
-            if (window.loadAdminDashboardData) window.loadAdminDashboardData();
-        }
-
-        function closeAdminDashboard() {
-            const adminModal = document.getElementById('adminDashboardModal');
-            if (adminModal) adminModal.style.display = 'none';
-        }
-
-        window.switchAdminTab = function(tabName) {
-            document.getElementById('btnTabDashboard').classList.remove('active');
-            document.getElementById('btnTabProducts').classList.remove('active');
-            document.getElementById('btnTabEmails').classList.remove('active');
-
-            document.getElementById('adminDashboardView').style.display = 'none';
-            document.getElementById('adminProductsView').style.display = 'none';
-            document.getElementById('adminEmailsView').style.display = 'none';
-
-            if (tabName === 'dashboard') {
-                document.getElementById('btnTabDashboard').classList.add('active');
-                document.getElementById('adminDashboardView').style.display = 'block';
-            } else if (tabName === 'products') {
-                document.getElementById('btnTabProducts').classList.add('active');
-                document.getElementById('adminProductsView').style.display = 'block';
-            } else if (tabName === 'emails') {
-                document.getElementById('btnTabEmails').classList.add('active');
-                document.getElementById('adminEmailsView').style.display = 'block';
-                renderAdminEmailsTable();
-            }
-        };
-
-        function renderAdminEmailsTable() {
-            const tbody = document.getElementById('dashEmailsTbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            if (registeredEmails.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">No registered customer emails yet.</td></tr>`;
-                return;
-            }
-
-            registeredEmails.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${index + 1}</strong></td>
-                    <td><span style="font-weight: 600; color: #111827;">${item.email}</span></td>
-                    <td><span style="background: #f3f4f6; color: #374151; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${item.provider}</span></td>
-                    <td>${item.date}</td>
-                    <td>
-                        <button class="action-icon-btn" onclick="deleteCustomerEmail(${index})" style="color: #ef4444;" title="Delete Email">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function deleteCustomerEmail(index) {
-            if (confirm("আপনি কি এই ইমেইলটি মুছে ফেলতে চান?")) {
-                registeredEmails.splice(index, 1);
-                localStorage.setItem('sr_registered_emails', JSON.stringify(registeredEmails));
-                renderAdminEmailsTable();
-            }
-        }
-
-        function exportCustomerEmailsCSV() {
-            if (registeredEmails.length === 0) {
-                alert("ডাউনলোড করার মতো কোনো ইমেইল নেই!");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,SL No,Email,Provider,Registered Date\n";
-            registeredEmails.forEach((item, idx) => {
-                csvContent += `${idx + 1},${item.email},${item.provider},${item.date}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "SR_Prime_Mart_Customer_Emails.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        const originalOpenCheckoutModal = window.openCheckoutModal;
-        window.openCheckoutModal = function() {
-            if (!loggedInUser) {
-                alert("অর্ডার সম্পন্ন করার পূর্বে অনুগ্রহ করে Google বা Email দিয়ে লগইন করুন!");
-                openCustomerAuthModal();
-                return;
-            }
-            if (originalOpenCheckoutModal) originalOpenCheckoutModal();
-            const emailInput = document.getElementById('customerEmail');
-            if (emailInput && loggedInUser) {
-                emailInput.value = loggedInUser.email;
-            }
-        };
-
-        function openShippingModal() { document.getElementById('shippingModal').style.display = 'block'; }
-        function closeShippingModal() { document.getElementById('shippingModal').style.display = 'none'; }
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
