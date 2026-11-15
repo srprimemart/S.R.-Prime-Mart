@@ -1,10 +1,56 @@
-// ডিফল্ট প্রোডাক্ট তালিকা
+
+/* =========================================================
+   S.R. PRIME MART
+   Firebase Authentication + Products + Cart + Checkout
+   ========================================================= */
+
+/* ---------------- FIREBASE IMPORTS ---------------- */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getAuth,
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    sendPasswordResetEmail,
+    updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+/* ---------------- FIREBASE CONFIG ---------------- */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCysJRNg1OsWNjCny9xB3-3xGJmuFJMJVT",
+    authDomain: "srprimemart-177c5.firebaseapp.com",
+    projectId: "srprimemart-177c5",
+    storageBucket: "srprimemart-177c5.firebasestorage.app",
+    messagingSenderId: "132024731701",
+    appId: "1:132024731701:web:877ef144c03731454b497c",
+    measurementId: "G-RLPXZEW6PH"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const googleProvider = new GoogleAuthProvider();
+
+const ADMIN_UID = "VJvdQjS0ygSx46SnLqcyPx49mi02";
+
+let currentUser = null;
+let isAdminUser = false;
+
+
+/* ---------------- DEFAULT PRODUCTS ---------------- */
+
 const defaultProducts = [
     {
         id: 1,
         name: "Aurora Wireless Headphones",
         category: "Electronics",
-        price: 199.00,
+        price: 199,
         stock: 23,
         description: "Studio-grade sound with active noise cancellation, 40-hour battery life and plush memory-foam cushions.",
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop"
@@ -13,7 +59,7 @@ const defaultProducts = [
         id: 2,
         name: "Midnight Runner Sneakers",
         category: "Footwear",
-        price: 89.00,
+        price: 89,
         stock: 30,
         description: "Lightweight running sneakers for everyday athletic performance.",
         image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&auto=format&fit=crop"
@@ -22,7 +68,7 @@ const defaultProducts = [
         id: 3,
         name: "Pure White Classics",
         category: "Footwear",
-        price: 99.00,
+        price: 99,
         stock: 22,
         description: "Minimalist classic sneakers with soft leather padding.",
         image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500&auto=format&fit=crop"
@@ -31,627 +77,1516 @@ const defaultProducts = [
         id: 4,
         name: "Heritage Leather Watch",
         category: "Accessories",
-        price: 349.00,
+        price: 349,
         stock: 8,
         description: "Premium analog watch with genuine leather strap.",
         image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop"
     }
 ];
 
-// নমুনা অর্ডার
-const defaultOrders = [
-    {
-        orderId: "#00001",
-        customerName: "Jane Doe",
-        customerPhone: "01700000000",
-        customerAddress: "Dhaka, Bangladesh",
-        payMethod: "Cash on Delivery",
-        itemsSummary: "Aurora Wireless Headphones (x1)",
-        date: "11/8/2026",
-        total: 269.00,
-        status: "Paid"
+
+/* ---------------- LOCAL STORAGE ---------------- */
+
+function loadStorage(key, fallback) {
+    try {
+        const saved = localStorage.getItem(key);
+        return saved ? JSON.parse(saved) : fallback;
+    } catch (error) {
+        console.error("Storage loading error:", error);
+        return fallback;
     }
-];
+}
 
-let storedProducts = localStorage.getItem('sr_products_v9');
-let products = storedProducts ? JSON.parse(storedProducts) : defaultProducts;
-
-let storedOrders = localStorage.getItem('sr_orders_v9');
-let orders = storedOrders ? JSON.parse(storedOrders) : defaultOrders;
+let products = loadStorage("sr_products_v9", defaultProducts);
+let orders = loadStorage("sr_orders_v9", []);
 
 let cart = [];
 let uploadedImageBase64 = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    saveProductsToStorage();
-    saveOrdersToStorage();
-    renderProducts(products);
-    updateCartUI();
-});
+let customerEmails = loadStorage("sr_customer_emails_v1", []);
+
 
 function saveProductsToStorage() {
-    localStorage.setItem('sr_products_v9', JSON.stringify(products));
+    localStorage.setItem("sr_products_v9", JSON.stringify(products));
 }
 
 function saveOrdersToStorage() {
-    localStorage.setItem('sr_orders_v9', JSON.stringify(orders));
+    localStorage.setItem("sr_orders_v9", JSON.stringify(orders));
 }
 
-// Render Main Storefront Products
+function saveCustomerEmails() {
+    localStorage.setItem("sr_customer_emails_v1", JSON.stringify(customerEmails));
+}
+
+
+/* ---------------- COMMON HELPERS ---------------- */
+
+function getElement(id) {
+    return document.getElementById(id);
+}
+
+function formatMoney(amount) {
+    return "৳" + Number(amount || 0).toLocaleString("en-US");
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function (character) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[character];
+    });
+}
+
+function showAuthError(error) {
+    console.error(error);
+
+    const messages = {
+        "auth/email-already-in-use": "এই Email দিয়ে আগে থেকেই Account তৈরি করা আছে।",
+        "auth/invalid-email": "সঠিক Email Address দিন।",
+        "auth/weak-password": "Password কমপক্ষে ৬ অক্ষরের হতে হবে।",
+        "auth/invalid-credential": "Email অথবা Password সঠিক নয়।",
+        "auth/user-not-found": "এই Email দিয়ে কোনো Account পাওয়া যায়নি।",
+        "auth/wrong-password": "Password সঠিক নয়।",
+        "auth/popup-closed-by-user": "Google Login বন্ধ করা হয়েছে।",
+        "auth/popup-blocked": "Browser Popup Block করেছে। Popup Allow করে আবার চেষ্টা করুন।",
+        "auth/network-request-failed": "Internet Connection পরীক্ষা করে আবার চেষ্টা করুন।",
+        "auth/too-many-requests": "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+        "auth/unauthorized-domain": "Firebase Console-এ Website Domain Authorized করতে হবে।"
+    };
+
+    alert(messages[error.code] || error.message || "একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+}
+
+
+/* ---------------- CUSTOMER EMAIL LIST ---------------- */
+
+function saveCustomerEmail(user, method) {
+    if (!user || !user.email) return;
+
+    const email = user.email.toLowerCase();
+
+    const existing = customerEmails.find(item => item.email === email);
+
+    if (existing) {
+        existing.method = method;
+        existing.lastLogin = new Date().toLocaleString();
+    } else {
+        customerEmails.unshift({
+            email: email,
+            method: method,
+            date: new Date().toLocaleString(),
+            lastLogin: new Date().toLocaleString()
+        });
+    }
+
+    saveCustomerEmails();
+}
+
+
+/* ---------------- AUTHENTICATION STATE ---------------- */
+
+onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    isAdminUser = !!user && user.uid === ADMIN_UID;
+
+    const authText = getElement("userAuthText");
+    const adminButton = getElement("adminPanelTopBtn");
+    const customerEmailInput = getElement("customerEmail");
+
+    if (user) {
+        if (authText) {
+            authText.textContent = "Logout";
+        }
+
+        if (customerEmailInput) {
+            customerEmailInput.value = user.email || "";
+        }
+
+        if (adminButton) {
+            adminButton.style.display = isAdminUser ? "inline-block" : "none";
+        }
+
+        if (isAdminUser) {
+            console.log("Authorized Admin logged in.");
+        }
+
+    } else {
+        if (authText) {
+            authText.textContent = "Login / Register";
+        }
+
+        if (customerEmailInput) {
+            customerEmailInput.value = "";
+        }
+
+        if (adminButton) {
+            adminButton.style.display = "none";
+        }
+    }
+});
+
+
+/* ---------------- CUSTOMER AUTH MODAL ---------------- */
+
+function openCustomerAuthModal() {
+    if (currentUser) {
+        const confirmLogout = confirm("আপনি কি Logout করতে চান?");
+
+        if (confirmLogout) {
+            signOut(auth).catch(showAuthError);
+        }
+
+        return;
+    }
+
+    const modal = getElement("customerAuthModal");
+    if (modal) modal.style.display = "block";
+}
+
+function closeCustomerAuthModal() {
+    const modal = getElement("customerAuthModal");
+    if (modal) modal.style.display = "none";
+}
+
+
+/* ---------------- EMAIL LOGIN ---------------- */
+
+async function handleCustomerEmailLogin(event) {
+    if (event) event.preventDefault();
+
+    const email = getElement("custModalEmail")?.value.trim();
+    const password = getElement("custModalPass")?.value;
+
+    if (!email || !password) {
+        alert("Email এবং Password দিন।");
+        return;
+    }
+
+    try {
+        const result = await signInWithEmailAndPassword(auth, email, password);
+
+        saveCustomerEmail(result.user, "Email/Password");
+
+        closeCustomerAuthModal();
+
+        alert("Login সফল হয়েছে। Welcome to S.R. Prime Mart!");
+
+    } catch (error) {
+        showAuthError(error);
+    }
+}
+
+
+/* ---------------- CUSTOMER REGISTER ---------------- */
+
+async function handleCustomerRegister() {
+    const email = getElement("custModalEmail")?.value.trim();
+    const password = getElement("custModalPass")?.value;
+
+    if (!email || !password) {
+        alert("প্রথমে Email এবং Password লিখুন।");
+        return;
+    }
+
+    if (password.length < 6) {
+        alert("Password কমপক্ষে ৬ অক্ষরের হতে হবে।");
+        return;
+    }
+
+    try {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+
+        saveCustomerEmail(result.user, "Email/Password");
+
+        closeCustomerAuthModal();
+
+        alert("আপনার Account সফলভাবে তৈরি হয়েছে!");
+
+    } catch (error) {
+        showAuthError(error);
+    }
+}
+
+
+/* ---------------- GOOGLE LOGIN ---------------- */
+
+async function handleGoogleLogin() {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+
+        saveCustomerEmail(result.user, "Google");
+
+        closeCustomerAuthModal();
+
+        alert("Google Login সফল হয়েছে!");
+
+    } catch (error) {
+        showAuthError(error);
+    }
+}
+
+
+/* ---------------- FORGOT PASSWORD ---------------- */
+
+async function handleForgotPassword() {
+    const email = getElement("custModalEmail")?.value.trim();
+
+    if (!email) {
+        alert("প্রথমে Email Address লিখুন।");
+        return;
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+
+        alert("Password Reset Link আপনার Email-এ পাঠানো হয়েছে। Inbox এবং Spam Folder দেখুন।");
+
+    } catch (error) {
+        showAuthError(error);
+    }
+}
+
+
+/* ---------------- ADMIN AUTHENTICATION ---------------- */
+
+function openAdminDashboardFromTop() {
+    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+        alert("আপনার Admin Access নেই।");
+        return;
+    }
+
+    openAdminDashboard();
+}
+
+function openAdminDashboard() {
+    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+        alert("শুধুমাত্র অনুমোদিত Admin Dashboard খুলতে পারবেন।");
+        return;
+    }
+
+    const modal = getElement("adminDashboardModal");
+    if (modal) modal.style.display = "block";
+
+    switchAdminTab("dashboard");
+    renderDashboardView();
+    renderAdminProductManageList();
+    renderCustomerEmails();
+}
+
+function closeAdminDashboard() {
+    const modal = getElement("adminDashboardModal");
+    if (modal) modal.style.display = "none";
+}
+
+
+/* ---------------- ADMIN TAB SYSTEM ---------------- */
+
+function switchAdminTab(tab) {
+    if (!isAdminUser) {
+        alert("Admin access required.");
+        return;
+    }
+
+    const dashView = getElement("adminDashboardView");
+    const prodView = getElement("adminProductsView");
+    const emailsView = getElement("adminEmailsView");
+
+    const btnDash = getElement("btnTabDashboard");
+    const btnProd = getElement("btnTabProducts");
+    const btnEmails = getElement("btnTabEmails");
+
+    [dashView, prodView, emailsView].forEach(element => {
+        if (element) element.style.display = "none";
+    });
+
+    [btnDash, btnProd, btnEmails].forEach(element => {
+        if (element) element.classList.remove("active");
+    });
+
+    if (tab === "products") {
+        if (prodView) prodView.style.display = "block";
+        if (btnProd) btnProd.classList.add("active");
+        renderAdminProductManageList();
+
+    } else if (tab === "emails") {
+        if (emailsView) emailsView.style.display = "block";
+        if (btnEmails) btnEmails.classList.add("active");
+        renderCustomerEmails();
+
+    } else {
+        if (dashView) dashView.style.display = "block";
+        if (btnDash) btnDash.classList.add("active");
+        renderDashboardView();
+    }
+}
+
+
+/* ---------------- PRODUCT RENDERING ---------------- */
+
 function renderProducts(items) {
-    const container = document.getElementById('product-container');
+    const container = getElement("product-container");
     if (!container) return;
 
-    if (items.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #888;">No products available!</p>`;
+    if (!items || items.length === 0) {
+        container.innerHTML = `
+            <p style="grid-column:1/-1;text-align:center;color:#888;">
+                No products available!
+            </p>
+        `;
         return;
     }
 
     container.innerHTML = items.map(product => `
         <div class="product-card">
             <div class="image-box-wrapper">
-                <div class="image-box" onclick="openProductModal(${product.id})" title="Click to view details">
-                    <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null; this.src='https://via.placeholder.com/200?text=Product+Image';">
+                <div class="image-box"
+                     onclick="openProductModal(${Number(product.id)})"
+                     title="Click to view details">
+
+                    <img src="${escapeHTML(product.image)}"
+                         alt="${escapeHTML(product.name)}"
+                         onerror="this.onerror=null;this.src='https://via.placeholder.com/300?text=Product+Image';">
                 </div>
             </div>
-            <div class="product-category">${product.category || 'GENERAL'}</div>
-            <div class="product-title" onclick="openProductModal(${product.id})" title="${product.name}">${product.name}</div>
-            <div class="price-buy-row" style="margin-top: 10px;">
+
+            <div class="product-category">
+                ${escapeHTML(product.category || "GENERAL")}
+            </div>
+
+            <div class="product-title"
+                 onclick="openProductModal(${Number(product.id)})"
+                 title="${escapeHTML(product.name)}">
+                ${escapeHTML(product.name)}
+            </div>
+
+            <div class="price-buy-row" style="margin-top:10px;">
                 <div>
-                    <span class="product-price">৳${product.price}</span>
+                    <span class="product-price">${formatMoney(product.price)}</span>
                 </div>
-                <button class="buy-btn" onclick="directBuyNow(${product.id})">Buy</button>
+
+                <button class="buy-btn"
+                        onclick="directBuyNow(${Number(product.id)})">
+                    Buy
+                </button>
             </div>
         </div>
-    `).join('');
+    `).join("");
+}
+
+function searchProducts() {
+    const query = (getElement("searchInput")?.value || "").toLowerCase();
+
+    const filtered = products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        (product.category || "").toLowerCase().includes(query)
+    );
+
+    renderProducts(filtered);
+}
+
+function filterByCategory(category) {
+    const filtered = products.filter(product =>
+        (product.category || "").toLowerCase() === category.toLowerCase()
+    );
+
+    renderProducts(filtered);
+}
+
+
+/* ---------------- CART SYSTEM ---------------- */
+
+function addToCart(productId) {
+    const product = products.find(item => Number(item.id) === Number(productId));
+
+    if (!product) return;
+
+    const currentStock = Number(product.stock ?? 10);
+
+    const existingItem = cart.find(item => Number(item.id) === Number(productId));
+
+    const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+    if (currentQuantity >= currentStock) {
+        alert("এই Product-এর পর্যাপ্ত Stock নেই।");
+        return;
+    }
+
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            ...product,
+            quantity: 1
+        });
+    }
+
+    updateCartUI();
 }
 
 function directBuyNow(productId) {
     addToCart(productId);
-    const drawer = document.getElementById('cartDrawer');
-    if (drawer && !drawer.classList.contains('open')) {
-        drawer.classList.add('open');
+
+    const drawer = getElement("cartDrawer");
+
+    if (drawer && cart.length > 0) {
+        drawer.classList.add("open");
     }
-}
-
-function searchProducts() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const filtered = products.filter(p => 
-        p.name.toLowerCase().includes(query) || 
-        (p.category && p.category.toLowerCase().includes(query))
-    );
-    renderProducts(filtered);
-}
-
-// Cart System
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-
-    const existingItem = cart.find(item => item.id === productId);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-    updateCartUI();
 }
 
 function decreaseQty(productId) {
-    const item = cart.find(i => i.id === productId);
-    if (item) {
-        item.quantity -= 1;
-        if (item.quantity <= 0) {
-            cart = cart.filter(i => i.id !== productId);
-        }
+    const item = cart.find(i => Number(i.id) === Number(productId));
+
+    if (!item) return;
+
+    item.quantity -= 1;
+
+    if (item.quantity <= 0) {
+        cart = cart.filter(i => Number(i.id) !== Number(productId));
     }
+
     updateCartUI();
 }
 
 function removeFromCart(productId) {
-    cart = cart.filter(i => i.id !== productId);
+    cart = cart.filter(i => Number(i.id) !== Number(productId));
     updateCartUI();
 }
 
 function toggleCartDrawer() {
-    const drawer = document.getElementById('cartDrawer');
-    if (drawer) drawer.classList.toggle('open');
+    const drawer = getElement("cartDrawer");
+
+    if (drawer) {
+        drawer.classList.toggle("open");
+    }
 }
 
 function updateCartUI() {
-    const cartCount = document.getElementById('cartCount');
-    const drawerItemsContainer = document.getElementById('drawerItemsContainer');
-    const drawerSubtotal = document.getElementById('drawerSubtotal');
-    const drawerItemsTotal = document.getElementById('drawerItemsTotal');
-    const drawerItemHeaderSub = document.getElementById('drawerItemHeaderSub');
+    const cartCount = getElement("cartCount");
+    const drawerItemsContainer = getElement("drawerItemsContainer");
+    const drawerSubtotal = getElement("drawerSubtotal");
+    const drawerItemsTotal = getElement("drawerItemsTotal");
+    const drawerItemHeaderSub = getElement("drawerItemHeaderSub");
 
     let totalCount = 0;
     let subtotal = 0;
 
     cart.forEach(item => {
         totalCount += item.quantity;
-        subtotal += item.price * item.quantity;
+        subtotal += Number(item.price) * item.quantity;
     });
 
     if (cartCount) cartCount.innerText = totalCount;
     if (drawerItemHeaderSub) drawerItemHeaderSub.innerText = `${totalCount} items`;
-    if (drawerSubtotal) drawerSubtotal.innerText = `৳${subtotal}`;
-    if (drawerItemsTotal) drawerItemsTotal.innerText = `৳${subtotal}`;
+    if (drawerSubtotal) drawerSubtotal.innerText = formatMoney(subtotal);
+    if (drawerItemsTotal) drawerItemsTotal.innerText = formatMoney(subtotal);
 
     if (drawerItemsContainer) {
         if (cart.length === 0) {
-            drawerItemsContainer.innerHTML = `<p style="text-align: center; color: #888; margin-top: 40px;">Your cart is empty</p>`;
+            drawerItemsContainer.innerHTML = `
+                <p style="text-align:center;color:#888;margin-top:40px;">
+                    Your cart is empty
+                </p>
+            `;
         } else {
             drawerItemsContainer.innerHTML = cart.map(item => `
                 <div class="cart-item-card">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-img" onerror="this.src='https://via.placeholder.com/60';">
+
+                    <img src="${escapeHTML(item.image)}"
+                         alt="${escapeHTML(item.name)}"
+                         class="cart-item-img"
+                         onerror="this.src='https://via.placeholder.com/60';">
+
                     <div class="cart-item-details">
-                        <div class="cart-item-title">${item.name}</div>
+
+                        <div class="cart-item-title">
+                            ${escapeHTML(item.name)}
+                        </div>
+
                         <div class="cart-item-bottom">
-                            <span class="cart-item-price">৳${item.price}</span>
+
+                            <span class="cart-item-price">
+                                ${formatMoney(item.price)}
+                            </span>
+
                             <div class="cart-qty-controls">
-                                <button class="q-btn" onclick="decreaseQty(${item.id})">-</button>
+
+                                <button class="q-btn"
+                                        onclick="decreaseQty(${Number(item.id)})">
+                                    -
+                                </button>
+
                                 <span>${item.quantity}</span>
-                                <button class="q-btn" onclick="addToCart(${item.id})">+</button>
-                                <i class="fa-solid fa-trash-can delete-btn" onclick="removeFromCart(${item.id})"></i>
+
+                                <button class="q-btn"
+                                        onclick="addToCart(${Number(item.id)})">
+                                    +
+                                </button>
+
+                                <i class="fa-solid fa-trash-can delete-btn"
+                                   onclick="removeFromCart(${Number(item.id)})">
+                                </i>
+
                             </div>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `).join("");
         }
     }
 
     updateCheckoutUI(subtotal, totalCount);
 }
 
+
+/* ---------------- CHECKOUT ---------------- */
+
 function openCheckoutModal() {
     if (cart.length === 0) {
-        alert('আপনার কার্ট খালি!');
+        alert("আপনার Cart খালি!");
         return;
     }
-    toggleCartDrawer();
-    document.getElementById('checkoutModal').style.display = 'block';
+
+    if (!currentUser) {
+        alert("অর্ডার করার আগে Login / Register করুন।");
+        openCustomerAuthModal();
+        return;
+    }
+
+    const drawer = getElement("cartDrawer");
+    if (drawer) drawer.classList.remove("open");
+
+    const emailInput = getElement("customerEmail");
+
+    if (emailInput) {
+        emailInput.value = currentUser.email || "";
+    }
+
+    const modal = getElement("checkoutModal");
+
+    if (modal) modal.style.display = "block";
+
+    updateCartUI();
 }
 
 function closeCheckoutModal() {
-    document.getElementById('checkoutModal').style.display = 'none';
+    const modal = getElement("checkoutModal");
+    if (modal) modal.style.display = "none";
 }
 
 function updateCheckoutUI(subtotal, totalCount) {
-    const checkoutItemsList = document.getElementById('checkoutItemsList');
-    const summaryTotalQty = document.getElementById('summaryTotalQty');
-    const modalSubtotal = document.getElementById('modalSubtotal');
-    
+    const checkoutItemsList = getElement("checkoutItemsList");
+    const summaryTotalQty = getElement("summaryTotalQty");
+    const modalSubtotal = getElement("modalSubtotal");
+
     if (summaryTotalQty) summaryTotalQty.innerText = totalCount;
-    if (modalSubtotal) modalSubtotal.innerText = `BDT ${subtotal}`;
+
+    if (modalSubtotal) {
+        modalSubtotal.innerText = `BDT ${subtotal}`;
+    }
 
     if (checkoutItemsList) {
         checkoutItemsList.innerHTML = cart.map(item => `
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px;">
-                <img src="${item.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" onerror="this.src='https://via.placeholder.com/50';">
-                <div style="flex-grow: 1;">
-                    <div style="font-size: 13px; font-weight: 500; color: #1f2937;">${item.name}</div>
-                    <div style="font-size: 12px; color: #6b7280;">BDT ${item.price} × ${item.quantity}</div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;border-bottom:1px solid #f3f4f6;padding-bottom:10px;">
+
+                <img src="${escapeHTML(item.image)}"
+                     style="width:50px;height:50px;object-fit:cover;border-radius:6px;"
+                     onerror="this.src='https://via.placeholder.com/50';">
+
+                <div style="flex-grow:1;">
+                    <div style="font-size:13px;font-weight:500;color:#1f2937;">
+                        ${escapeHTML(item.name)}
+                    </div>
+
+                    <div style="font-size:12px;color:#6b7280;">
+                        BDT ${item.price} × ${item.quantity}
+                    </div>
                 </div>
-                <div style="font-weight: 700; font-size: 13px; color: #000000;">BDT ${item.price * item.quantity}</div>
+
+                <div style="font-weight:700;font-size:13px;">
+                    BDT ${item.price * item.quantity}
+                </div>
+
             </div>
-        `).join('');
+        `).join("");
     }
 
     calculateFinalTotal();
 }
 
 function calculateFinalTotal() {
-    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliverySelect = document.getElementById('deliveryLocation');
-    const deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 70;
+    const subtotal = cart.reduce(
+        (sum, item) => sum + Number(item.price) * item.quantity,
+        0
+    );
 
-    const modalDeliveryFee = document.getElementById('modalDeliveryFee');
-    const modalGrandTotal = document.getElementById('modalGrandTotal');
+    const deliverySelect = getElement("deliveryLocation");
 
-    if (modalDeliveryFee) modalDeliveryFee.innerText = `BDT ${deliveryFee}`;
-    if (modalGrandTotal) modalGrandTotal.innerText = `BDT ${subtotal + deliveryFee}`;
+    const deliveryFee = deliverySelect
+        ? Number(deliverySelect.value)
+        : 70;
+
+    const modalDeliveryFee = getElement("modalDeliveryFee");
+    const modalGrandTotal = getElement("modalGrandTotal");
+
+    if (modalDeliveryFee) {
+        modalDeliveryFee.innerText = `BDT ${deliveryFee}`;
+    }
+
+    if (modalGrandTotal) {
+        modalGrandTotal.innerText = `BDT ${subtotal + deliveryFee}`;
+    }
+
+    return {
+        subtotal,
+        deliveryFee,
+        grandTotal: subtotal + deliveryFee
+    };
 }
 
-function openProductModal(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
 
-    document.getElementById('modalProductImg').src = product.image;
-    document.getElementById('modalProductName').innerText = product.name;
-    document.getElementById('modalProductPrice').innerText = `৳${product.price}`;
-    document.getElementById('modalCategory').innerText = product.category || "GENERAL";
-    document.getElementById('modalProductDesc').innerText = product.description || "প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।";
-    
-    const modalBtn = document.getElementById('modalAddToCartBtn');
-    modalBtn.onclick = function() {
-        addToCart(product.id);
-        closeProductModal();
-        toggleCartDrawer(); 
+/* ---------------- ORDER SUBMISSION ---------------- */
+
+async function handleOrderSubmit(event) {
+    event.preventDefault();
+
+    if (!currentUser) {
+        alert("অর্ডার করার আগে Login করুন।");
+        openCustomerAuthModal();
+        return;
+    }
+
+    if (cart.length === 0) {
+        alert("আপনার Cart খালি!");
+        return;
+    }
+
+    const customerName = getElement("customerName")?.value.trim();
+    const customerPhone = getElement("customerPhone")?.value.trim();
+    const customerAddress = getElement("customerAddress")?.value.trim();
+
+    const paymentMethod =
+        document.querySelector('input[name="PaymentMethod"]:checked')?.value ||
+        "Cash on Delivery";
+
+    if (!customerName || !customerPhone || !customerAddress) {
+        alert("সব Customer Information পূরণ করুন।");
+        return;
+    }
+
+    /* Stock check before order */
+
+    for (const item of cart) {
+        const product = products.find(p => Number(p.id) === Number(item.id));
+
+        if (!product || Number(product.stock ?? 10) < item.quantity) {
+            alert(`${item.name} - পর্যাপ্ত Stock নেই।`);
+            return;
+        }
+    }
+
+    const totals = calculateFinalTotal();
+
+    const itemsSummary = cart.map(item =>
+        `${item.name} (x${item.quantity})`
+    ).join(", ");
+
+    const newOrder = {
+        orderId: "SR-" + Date.now(),
+        customerName,
+        customerEmail: currentUser.email || "",
+        customerPhone,
+        customerAddress,
+        payMethod: paymentMethod,
+        itemsSummary,
+        items: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+        })),
+        subtotal: totals.subtotal,
+        deliveryFee: totals.deliveryFee,
+        total: totals.grandTotal,
+        date: new Date().toLocaleString(),
+        status: "Pending"
     };
 
-    document.getElementById('productDetailModal').style.display = 'flex';
-}
+    const submitBtn = getElement("submitBtn");
+    const successMessage = getElement("successMessage");
 
-function closeProductModal() {
-    document.getElementById('productDetailModal').style.display = 'none';
-}
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Processing...";
+    }
 
-/* AUTOMATIC CUSTOMER ORDER SUBMISSION */
-const orderForm = document.getElementById('orderForm');
-if (orderForm) {
-    orderForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const customerName = document.getElementById('customerName').value;
-        const customerPhone = document.getElementById('customerPhone').value;
-        const customerAddress = document.getElementById('customerAddress').value;
-        const payMethod = document.querySelector('input[name="PaymentMethod"]:checked')?.value || 'COD';
-        
-        const deliverySelect = document.getElementById('deliveryLocation');
-        const deliveryFee = deliverySelect ? parseInt(deliverySelect.value) : 70;
-        
-        let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        let grandTotal = subtotal + deliveryFee;
-
-        let itemsSummaryStr = cart.map(i => `${i.name} (x${i.quantity})`).join(', ');
-
-        const newOrder = {
-            orderId: `#${String(orders.length + 1).padStart(5, '0')}`,
-            customerName: customerName,
-            customerPhone: customerPhone,
-            customerAddress: customerAddress,
-            payMethod: payMethod,
-            itemsSummary: itemsSummaryStr,
-            date: new Date().toLocaleDateString('en-US'),
-            total: grandTotal,
-            status: "Pending"
-        };
-
-        // Deduct Stock
-        cart.forEach(cartItem => {
-            const p = products.find(prod => prod.id === cartItem.id);
-            if (p) {
-                p.stock = Math.max(0, (p.stock || 10) - cartItem.quantity);
-            }
-        });
-        saveProductsToStorage();
-        renderProducts(products);
+    try {
+        /* Save order in this browser */
 
         orders.unshift(newOrder);
         saveOrdersToStorage();
 
-        const submitBtn = document.getElementById('submitBtn');
-        const successMessage = document.getElementById('successMessage');
+        /* Deduct product stock */
 
-        if (submitBtn) submitBtn.style.display = 'none';
-        if (successMessage) successMessage.style.display = 'block';
+        cart.forEach(cartItem => {
+            const product = products.find(
+                p => Number(p.id) === Number(cartItem.id)
+            );
+
+            if (product) {
+                product.stock = Math.max(
+                    0,
+                    Number(product.stock ?? 10) - cartItem.quantity
+                );
+            }
+        });
+
+        saveProductsToStorage();
+
+        /* Remember customer email locally */
+
+        saveCustomerEmail(currentUser, "Order");
+
+        renderProducts(products);
+
+        if (successMessage) {
+            successMessage.style.display = "block";
+        }
+
+        if (submitBtn) {
+            submitBtn.style.display = "none";
+        }
+
+        alert("আপনার অর্ডারটি গ্রহণ করা হয়েছে। আমাদের টিম ফোনে যোগাযোগ করবে।");
 
         setTimeout(() => {
             cart = [];
             updateCartUI();
-            if (submitBtn) submitBtn.style.display = 'block';
-            if (successMessage) successMessage.style.display = 'none';
+
+            if (successMessage) {
+                successMessage.style.display = "none";
+            }
+
+            if (submitBtn) {
+                submitBtn.style.display = "block";
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Confirm Place Order";
+            }
+
+            const form = getElement("orderForm");
+            if (form) form.reset();
+
+            if (currentUser && getElement("customerEmail")) {
+                getElement("customerEmail").value = currentUser.email || "";
+            }
+
             closeCheckoutModal();
+
         }, 3500);
-    });
-}
 
-/* ADMIN DASHBOARD ENGINE */
-function openAdminAuthModal() {
-    document.getElementById('adminAuthModal').style.display = 'block';
-}
+    } catch (error) {
+        console.error("Order error:", error);
 
-function closeAdminAuthModal() {
-    document.getElementById('adminAuthModal').style.display = 'none';
-}
+        alert("অর্ডার সম্পন্ন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
 
-function verifyAdminPassword() {
-    const pass = document.getElementById('adminPassInput').value;
-    if (pass === '1234') {
-        closeAdminAuthModal();
-        document.getElementById('adminPassInput').value = '';
-        openAdminDashboard();
-    } else {
-        alert('Incorrect Password!');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Confirm Place Order";
+        }
     }
 }
 
-function openAdminDashboard() {
-    document.getElementById('adminDashboardModal').style.display = 'block';
-    renderDashboardView();
-    renderAdminProductManageList();
-}
 
-function closeAdminDashboard() {
-    document.getElementById('adminDashboardModal').style.display = 'none';
-}
+/* ---------------- PRODUCT DETAILS ---------------- */
 
-function switchAdminTab(tab) {
-    const dashView = document.getElementById('adminDashboardView');
-    const prodView = document.getElementById('adminProductsView');
-    const btnDash = document.getElementById('btnTabDashboard');
-    const btnProd = document.getElementById('btnTabProducts');
+function openProductModal(productId) {
+    const product = products.find(
+        p => Number(p.id) === Number(productId)
+    );
 
-    if (tab === 'dashboard') {
-        dashView.style.display = 'block';
-        prodView.style.display = 'none';
-        btnDash.classList.add('active');
-        btnProd.classList.remove('active');
-        renderDashboardView();
-    } else {
-        dashView.style.display = 'none';
-        prodView.style.display = 'block';
-        btnDash.classList.remove('active');
-        btnProd.classList.add('active');
-        renderAdminProductManageList();
+    if (!product) return;
+
+    const image = getElement("modalProductImg");
+    const name = getElement("modalProductName");
+    const price = getElement("modalProductPrice");
+    const category = getElement("modalCategory");
+    const description = getElement("modalProductDesc");
+    const modalBtn = getElement("modalAddToCartBtn");
+
+    if (image) image.src = product.image;
+    if (name) name.innerText = product.name;
+    if (price) price.innerText = formatMoney(product.price);
+    if (category) category.innerText = product.category || "GENERAL";
+
+    if (description) {
+        description.innerText = product.description ||
+            "প্রিমিয়াম কোয়ালিটির এই পণ্যটি অত্যন্ত স্টাইলিশ এবং টেকসই।";
     }
+
+    if (modalBtn) {
+        modalBtn.onclick = function () {
+            addToCart(product.id);
+            closeProductModal();
+
+            const drawer = getElement("cartDrawer");
+            if (drawer) drawer.classList.add("open");
+        };
+    }
+
+    const modal = getElement("productDetailModal");
+
+    if (modal) modal.style.display = "flex";
 }
+
+function closeProductModal() {
+    const modal = getElement("productDetailModal");
+    if (modal) modal.style.display = "none";
+}
+
+
+/* ---------------- SHIPPING MODAL ---------------- */
+
+function openShippingModal() {
+    const modal = getElement("shippingModal");
+    if (modal) modal.style.display = "block";
+}
+
+function closeShippingModal() {
+    const modal = getElement("shippingModal");
+    if (modal) modal.style.display = "none";
+}
+
+
+/* ---------------- ADMIN DASHBOARD DATA ---------------- */
 
 function renderDashboardView() {
-    let totalRevenue = orders.reduce((sum, ord) => sum + ord.total, 0);
-    document.getElementById('dashRevenue').innerText = `৳${totalRevenue.toFixed(2)}`;
-    document.getElementById('dashOrdersCount').innerText = orders.length;
-    document.getElementById('dashProductsCount').innerText = products.length;
+    if (!isAdminUser) return;
 
-    const ordersTbody = document.getElementById('dashOrdersTbody');
+    const totalRevenue = orders.reduce(
+        (sum, order) => sum + Number(order.total || 0),
+        0
+    );
+
+    const revenue = getElement("dashRevenue");
+    const orderCount = getElement("dashOrdersCount");
+    const productCount = getElement("dashProductsCount");
+
+    if (revenue) revenue.innerText = formatMoney(totalRevenue);
+    if (orderCount) orderCount.innerText = orders.length;
+    if (productCount) productCount.innerText = products.length;
+
+    const ordersTbody = getElement("dashOrdersTbody");
+
     if (ordersTbody) {
         if (orders.length === 0) {
-            ordersTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No orders recorded yet.</td></tr>`;
-        } else {
-            ordersTbody.innerHTML = orders.map((ord, idx) => `
+            ordersTbody.innerHTML = `
                 <tr>
-                    <td><strong>${ord.orderId}</strong></td>
-                    <td>
-                        <div><strong>${ord.customerName}</strong> (${ord.customerPhone})</div>
-                        <small style="color: #6b7280; display: block;">📍 ${ord.customerAddress}</small>
-                        <small style="color: #059669; font-weight: 500;">🛒 ${ord.itemsSummary || 'Items'} [${ord.payMethod || 'COD'}]</small>
-                    </td>
-                    <td>${ord.date}</td>
-                    <td><strong>৳${parseFloat(ord.total).toFixed(2)}</strong></td>
-                    <td>
-                        <select class="status-select" id="statusSelect_${idx}">
-                            <option value="Pending" ${ord.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="Paid" ${ord.status === 'Paid' ? 'selected' : ''}>Paid</option>
-                            <option value="Delivered" ${ord.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                            <option value="Cancelled" ${ord.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
-                        </select>
-                        <button class="status-save-btn" onclick="saveOrderStatus(${idx})">Save</button>
-                    </td>
-                    <td>
-                        <button class="action-icon-btn" onclick="openEditCustomerModal(${idx})" title="Edit Customer Info" style="color: #27ae60;"><i class="fa-solid fa-pen"></i></button>
-                        <button class="action-icon-btn" onclick="deleteOrder(${idx})" title="Delete Order" style="color: #ef4444;"><i class="fa-solid fa-trash"></i></button>
+                    <td colspan="6" style="text-align:center;color:#888;">
+                        No orders recorded yet.
                     </td>
                 </tr>
-            `).join('');
+            `;
+        } else {
+            ordersTbody.innerHTML = orders.map((order, index) => `
+                <tr>
+                    <td><strong>${escapeHTML(order.orderId)}</strong></td>
+
+                    <td>
+                        <div>
+                            <strong>${escapeHTML(order.customerName)}</strong>
+                            (${escapeHTML(order.customerPhone)})
+                        </div>
+
+                        <small style="color:#6b7280;display:block;">
+                            ${escapeHTML(order.customerAddress)}
+                        </small>
+
+                        <small style="color:#059669;">
+                            ${escapeHTML(order.itemsSummary || "Items")}
+                            [${escapeHTML(order.payMethod || "COD")}]
+                        </small>
+                    </td>
+
+                    <td>${escapeHTML(order.date)}</td>
+
+                    <td><strong>${formatMoney(order.total)}</strong></td>
+
+                    <td>
+                        <select class="status-select" id="statusSelect_${index}">
+                            <option value="Pending" ${order.status === "Pending" ? "selected" : ""}>Pending</option>
+                            <option value="Paid" ${order.status === "Paid" ? "selected" : ""}>Paid</option>
+                            <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                            <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+                        </select>
+
+                        <button class="status-save-btn"
+                                onclick="saveOrderStatus(${index})">
+                            Save
+                        </button>
+                    </td>
+
+                    <td>
+                        <button class="action-icon-btn"
+                                onclick="deleteOrder(${index})"
+                                title="Delete Order"
+                                style="color:#ef4444;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join("");
         }
     }
 
-    const invTbody = document.getElementById('dashInventoryTbody');
+    const invTbody = getElement("dashInventoryTbody");
     let lowStockCount = 0;
 
     if (invTbody) {
-        invTbody.innerHTML = products.map((p, idx) => {
-            const currentStock = p.stock !== undefined ? p.stock : 10;
-            const isLow = currentStock <= 10;
+        invTbody.innerHTML = products.map((product, index) => {
+            const stock = Number(product.stock ?? 10);
+            const isLow = stock <= 10;
+
             if (isLow) lowStockCount++;
 
             return `
                 <tr>
                     <td>
                         <div class="prod-cell-box">
-                            <img src="${p.image}" class="prod-cell-img" onerror="this.src='https://via.placeholder.com/40';">
-                            <span><strong>${p.name}</strong></span>
+                            <img src="${escapeHTML(product.image)}"
+                                 class="prod-cell-img"
+                                 onerror="this.src='https://via.placeholder.com/40';">
+
+                            <span><strong>${escapeHTML(product.name)}</strong></span>
                         </div>
                     </td>
-                    <td>${p.category || 'General'}</td>
-                    <td>৳${parseFloat(p.price).toFixed(2)}</td>
-                    <td class="${isLow ? 'text-low-stock' : ''}"><strong>${currentStock}</strong></td>
+
+                    <td>${escapeHTML(product.category || "General")}</td>
+
+                    <td>${formatMoney(product.price)}</td>
+
+                    <td class="${isLow ? "text-low-stock" : ""}">
+                        <strong>${stock}</strong>
+                    </td>
+
                     <td>
-                        <button class="stock-control-btn" onclick="adjustStock(${idx}, -1)">-</button>
-                        <span style="margin: 0 8px; font-weight: 600;">${currentStock}</span>
-                        <button class="stock-control-btn" onclick="adjustStock(${idx}, 1)">+</button>
+                        <button class="stock-control-btn"
+                                onclick="adjustStock(${index},-1)">-</button>
+
+                        <span style="margin:0 8px;font-weight:600;">
+                            ${stock}
+                        </span>
+
+                        <button class="stock-control-btn"
+                                onclick="adjustStock(${index},1)">+</button>
                     </td>
                 </tr>
             `;
-        }).join('');
+        }).join("");
     }
 
-    const lowStockText = document.getElementById('dashLowStockText');
+    const lowStockText = getElement("dashLowStockText");
+
     if (lowStockText) {
         lowStockText.innerText = `${lowStockCount} product(s) low on stock.`;
     }
 }
 
-function adjustStock(productIndex, amount) {
-    if (products[productIndex]) {
-        let current = products[productIndex].stock !== undefined ? products[productIndex].stock : 10;
-        products[productIndex].stock = Math.max(0, current + amount);
-        saveProductsToStorage();
-        renderProducts(products);
-        renderDashboardView();
-    }
-}
+
+/* ---------------- ADMIN ORDER MANAGEMENT ---------------- */
 
 function saveOrderStatus(orderIndex) {
-    const select = document.getElementById(`statusSelect_${orderIndex}`);
-    if (select && orders[orderIndex]) {
-        orders[orderIndex].status = select.value;
-        saveOrdersToStorage();
-        alert(`Order status updated to "${select.value}"!`);
-    }
+    if (!isAdminUser) return;
+
+    const select = getElement(`statusSelect_${orderIndex}`);
+
+    if (!select || !orders[orderIndex]) return;
+
+    orders[orderIndex].status = select.value;
+
+    saveOrdersToStorage();
+
+    alert("Order status updated successfully!");
+
+    renderDashboardView();
 }
 
 function deleteOrder(orderIndex) {
-    if (confirm('Are you sure you want to delete this order record?')) {
+    if (!isAdminUser) return;
+
+    if (!orders[orderIndex]) return;
+
+    if (confirm("আপনি কি এই Order Delete করতে চান?")) {
         orders.splice(orderIndex, 1);
+
         saveOrdersToStorage();
+
         renderDashboardView();
     }
 }
 
-function openEditCustomerModal(orderIndex) {
-    const ord = orders[orderIndex];
-    if (!ord) return;
+function adjustStock(productIndex, amount) {
+    if (!isAdminUser) return;
 
-    document.getElementById('editOrderIndex').value = orderIndex;
-    document.getElementById('editCustomerName').value = ord.customerName || '';
-    document.getElementById('editCustomerPhone').value = ord.customerPhone || '';
-    document.getElementById('editCustomerAddress').value = ord.customerAddress || '';
-    document.getElementById('editOrderTotal').value = ord.total || 0;
+    const product = products[productIndex];
 
-    document.getElementById('editCustomerModal').style.display = 'block';
+    if (!product) return;
+
+    const currentStock = Number(product.stock ?? 10);
+
+    product.stock = Math.max(0, currentStock + amount);
+
+    saveProductsToStorage();
+
+    renderProducts(products);
+    renderDashboardView();
 }
 
-function closeEditCustomerModal() {
-    document.getElementById('editCustomerModal').style.display = 'none';
-}
 
-function saveCustomerInfoEdit() {
-    const idx = document.getElementById('editOrderIndex').value;
-    if (orders[idx]) {
-        orders[idx].customerName = document.getElementById('editCustomerName').value;
-        orders[idx].customerPhone = document.getElementById('editCustomerPhone').value;
-        orders[idx].customerAddress = document.getElementById('editCustomerAddress').value;
-        orders[idx].total = parseFloat(document.getElementById('editOrderTotal').value) || orders[idx].total;
+/* ---------------- PRODUCT IMAGE UPLOAD ---------------- */
 
-        saveOrdersToStorage();
-        closeEditCustomerModal();
-        renderDashboardView();
-        alert('✅ Customer information updated successfully!');
-    }
-}
-
-/* PRODUCT LISTING & SETUP */
 function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            uploadedImageBase64 = e.target.result;
-            updateAdminPreview();
-        };
-        reader.readAsDataURL(file);
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("শুধুমাত্র Image File Upload করুন।");
+        event.target.value = "";
+        return;
     }
+
+    if (file.size > 2 * 1024 * 1024) {
+        alert("Image Size 2 MB-এর কম রাখুন।");
+        event.target.value = "";
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        uploadedImageBase64 = e.target.result;
+        updateAdminPreview();
+    };
+
+    reader.onerror = function () {
+        alert("Image পড়তে সমস্যা হয়েছে।");
+    };
+
+    reader.readAsDataURL(file);
 }
+
+
+/* ---------------- PRODUCT PREVIEW ---------------- */
 
 function updateAdminPreview() {
-    const name = document.getElementById('adminPName').value || 'Product Title';
-    const category = (document.getElementById('adminPCategory').value || 'CATEGORY').toUpperCase();
-    const price = document.getElementById('adminPPrice').value || '0.00';
-    
-    const prevImg = document.getElementById('prevImg');
+    const name = getElement("adminPName")?.value || "Product Title";
 
-    document.getElementById('prevName').innerText = name;
-    document.getElementById('prevCategory').innerText = category;
-    document.getElementById('prevPrice').innerText = `৳${price}`;
+    const category = (
+        getElement("adminPCategory")?.value || "CATEGORY"
+    ).toUpperCase();
 
-    if (uploadedImageBase64) {
+    const price = getElement("adminPPrice")?.value || "0.00";
+
+    const prevName = getElement("prevName");
+    const prevCategory = getElement("prevCategory");
+    const prevPrice = getElement("prevPrice");
+    const prevImg = getElement("prevImg");
+
+    if (prevName) prevName.innerText = name;
+    if (prevCategory) prevCategory.innerText = category;
+    if (prevPrice) prevPrice.innerText = `৳${price}`;
+
+    if (uploadedImageBase64 && prevImg) {
         prevImg.src = uploadedImageBase64;
     }
 }
 
-function handleSaveProduct(e) {
-    e.preventDefault();
 
-    const idInput = document.getElementById('adminProductId').value;
-    const name = document.getElementById('adminPName').value;
-    const category = document.getElementById('adminPCategory').value || 'General';
-    const price = parseFloat(document.getElementById('adminPPrice').value);
-    const stock = parseInt(document.getElementById('adminPStock').value) || 10;
-    const description = document.getElementById('adminPDesc').value;
+/* ---------------- SAVE PRODUCT ---------------- */
+
+function handleSaveProduct(event) {
+    event.preventDefault();
+
+    if (!isAdminUser) {
+        alert("Admin access required.");
+        return;
+    }
+
+    const idInput = getElement("adminProductId")?.value;
+
+    const name = getElement("adminPName")?.value.trim();
+
+    const category = getElement("adminPCategory")?.value.trim() || "General";
+
+    const price = Number(getElement("adminPPrice")?.value);
+
+    const stock = Number(getElement("adminPStock")?.value);
+
+    const description = getElement("adminPDesc")?.value.trim() || "";
+
+    if (!name || !Number.isFinite(price) || price < 0) {
+        alert("Product Name এবং সঠিক Price দিন।");
+        return;
+    }
 
     if (idInput) {
-        const index = products.findIndex(p => p.id == idInput);
+        const index = products.findIndex(
+            product => Number(product.id) === Number(idInput)
+        );
+
         if (index !== -1) {
-            const finalImage = uploadedImageBase64 || products[index].image;
-            products[index] = { 
-                ...products[index], 
-                name, 
-                category, 
-                price, 
-                stock,
-                description, 
-                image: finalImage 
+            products[index] = {
+                ...products[index],
+                name,
+                category,
+                price,
+                stock: Math.max(0, stock),
+                description,
+                image: uploadedImageBase64 || products[index].image
             };
         }
+
     } else {
         if (!uploadedImageBase64) {
-            alert('Please select an image file from your device first!');
+            alert("প্রথমে Product Image Select করুন।");
             return;
         }
 
-        const newProduct = {
+        products.push({
             id: Date.now(),
             name,
             category,
             price,
-            stock,
+            stock: Math.max(0, stock),
             description,
             image: uploadedImageBase64
-        };
-        products.push(newProduct);
+        });
     }
 
     saveProductsToStorage();
+
     renderProducts(products);
+    renderDashboardView();
     renderAdminProductManageList();
+
     resetAdminForm();
-    alert('✅ Product setup saved successfully!');
+
+    alert("Product সফলভাবে Save হয়েছে!");
 }
+
+
+/* ---------------- EDIT PRODUCT ---------------- */
 
 function editProductInAdmin(productId) {
-    const product = products.find(p => p.id === productId);
+    if (!isAdminUser) return;
+
+    const product = products.find(
+        item => Number(item.id) === Number(productId)
+    );
+
     if (!product) return;
 
-    document.getElementById('adminProductId').value = product.id;
-    document.getElementById('adminPName').value = product.name;
-    document.getElementById('adminPCategory').value = product.category || '';
-    document.getElementById('adminPPrice').value = product.price;
-    document.getElementById('adminPStock').value = product.stock !== undefined ? product.stock : 10;
-    document.getElementById('adminPDesc').value = product.description || '';
-    
+    getElement("adminProductId").value = product.id;
+    getElement("adminPName").value = product.name;
+    getElement("adminPCategory").value = product.category || "";
+    getElement("adminPPrice").value = product.price;
+    getElement("adminPStock").value = product.stock ?? 10;
+    getElement("adminPDesc").value = product.description || "";
+
     uploadedImageBase64 = product.image;
 
-    document.getElementById('adminFormTitle').innerText = 'Edit Product';
+    const title = getElement("adminFormTitle");
+    if (title) title.innerText = "Edit Product";
+
     updateAdminPreview();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
+
+
+/* ---------------- DELETE PRODUCT ---------------- */
 
 function deleteProductInAdmin(productId) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        products = products.filter(p => p.id !== productId);
-        saveProductsToStorage();
-        renderProducts(products);
-        renderAdminProductManageList();
-    }
+    if (!isAdminUser) return;
+
+    if (!confirm("আপনি কি এই Product Delete করতে চান?")) return;
+
+    products = products.filter(
+        product => Number(product.id) !== Number(productId)
+    );
+
+    cart = cart.filter(
+        item => Number(item.id) !== Number(productId)
+    );
+
+    saveProductsToStorage();
+
+    renderProducts(products);
+    renderAdminProductManageList();
+    renderDashboardView();
+    updateCartUI();
 }
 
+
+/* ---------------- RESET PRODUCT FORM ---------------- */
+
 function resetAdminForm() {
-    document.getElementById('adminProductForm').reset();
-    document.getElementById('adminProductId').value = '';
+    if (!isAdminUser) return;
+
+    const form = getElement("adminProductForm");
+
+    if (form) form.reset();
+
+    const id = getElement("adminProductId");
+    if (id) id.value = "";
+
     uploadedImageBase64 = null;
-    document.getElementById('adminFormTitle').innerText = 'Add / Edit Product';
-    document.getElementById('prevImg').src = 'https://via.placeholder.com/200?text=Image+Preview';
+
+    const title = getElement("adminFormTitle");
+    if (title) title.innerText = "Add / Edit Product";
+
+    const preview = getElement("prevImg");
+
+    if (preview) {
+        preview.src = "https://via.placeholder.com/200?text=Image+Preview";
+    }
+
     updateAdminPreview();
 }
 
+
+/* ---------------- ADMIN PRODUCT LIST ---------------- */
+
 function renderAdminProductManageList() {
-    const container = document.getElementById('adminProductManageList');
+    const container = getElement("adminProductManageList");
+
     if (!container) return;
 
+    if (!isAdminUser) {
+        container.innerHTML = "";
+        return;
+    }
+
     if (products.length === 0) {
-        container.innerHTML = `<p style="color: #888;">No products listed yet.</p>`;
+        container.innerHTML = `
+            <p style="color:#888;">No products listed yet.</p>
+        `;
         return;
     }
 
     container.innerHTML = products.map(product => `
         <div class="admin-prod-item">
-            <span><strong>${product.name}</strong> (৳${product.price}) — Stock: ${product.stock !== undefined ? product.stock : 10}</span>
+
+            <span>
+                <strong>${escapeHTML(product.name)}</strong>
+                (${formatMoney(product.price)})
+                — Stock: ${Number(product.stock ?? 10)}
+            </span>
+
             <div>
-                <button onclick="editProductInAdmin(${product.id})" style="background: none; border: none; color: #27ae60; cursor: pointer; margin-right: 10px; font-weight: 600;">Edit</button>
-                <button onclick="deleteProductInAdmin(${product.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 600;">Delete</button>
+                <button onclick="editProductInAdmin(${Number(product.id)})"
+                        style="background:none;border:none;color:#27ae60;cursor:pointer;margin-right:10px;font-weight:600;">
+                    Edit
+                </button>
+
+                <button onclick="deleteProductInAdmin(${Number(product.id)})"
+                        style="background:none;border:none;color:#ef4444;cursor:pointer;font-weight:600;">
+                    Delete
+                </button>
             </div>
+
         </div>
-    `).join('');
+    `).join("");
 }
+
+
+/* ---------------- CUSTOMER EMAIL ADMIN VIEW ---------------- */
+
+function renderCustomerEmails() {
+    if (!isAdminUser) return;
+
+    const tbody = getElement("dashEmailsTbody");
+
+    if (!tbody) return;
+
+    if (customerEmails.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;color:#888;">
+                    No customer emails recorded on this browser yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = customerEmails.map((customer, index) => `
+        <tr>
+            <td>${index + 1}</td>
+
+            <td>${escapeHTML(customer.email)}</td>
+
+            <td>${escapeHTML(customer.method || "Unknown")}</td>
+
+            <td>${escapeHTML(customer.date || customer.lastLogin || "")}</td>
+
+            <td>
+                <button class="action-icon-btn"
+                        onclick="deleteCustomerEmail(${index})"
+                        style="color:#ef4444;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function deleteCustomerEmail(index) {
+    if (!isAdminUser) return;
+
+    if (!customerEmails[index]) return;
+
+    if (!confirm("এই Email List থেকে Remove করবেন?")) return;
+
+    customerEmails.splice(index, 1);
+
+    saveCustomerEmails();
+    renderCustomerEmails();
+}
+
+function exportCustomerEmailsCSV() {
+    if (!isAdminUser) return;
+
+    if (customerEmails.length === 0) {
+        alert("Export করার মতো Customer Email নেই।");
+        return;
+    }
+
+    const rows = [
+        ["Email", "Login Method", "Date", "Last Login"],
+        ...customerEmails.map(item => [
+            item.email,
+            item.method || "",
+            item.date || "",
+            item.lastLogin || ""
+        ])
+    ];
+
+    const csv = rows.map(row =>
+        row.map(value =>
+            '"' + String(value).replace(/"/g, '""') + '"'
+        ).join(",")
+    ).join("\n");
+
+    const blob = new Blob(
+        ["\uFEFF" + csv],
+        { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "SR_Prime_Mart_Customer_Emails.csv";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+
+/* ---------------- INITIAL PAGE SETUP ---------------- */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    saveProductsToStorage();
+    saveOrdersToStorage();
+
+    renderProducts(products);
+    updateCartUI();
+
+    const orderForm = getElement("orderForm");
+
+    if (orderForm) {
+        orderForm.addEventListener("submit", handleOrderSubmit);
+    }
+
+    const adminProductForm = getElement("adminProductForm");
+
+    if (adminProductForm) {
+        adminProductForm.addEventListener("submit", handleSaveProduct);
+    }
+
+    /* Close modal when clicking outside */
+
+    document.querySelectorAll(".modal").forEach(modal => {
+        modal.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+
+    console.log("S.R. Prime Mart website loaded successfully.");
+});
+
+
+/* ---------------- MAKE FUNCTIONS AVAILABLE TO HTML ---------------- */
+
+Object.assign(window, {
+    openCustomerAuthModal,
+    closeCustomerAuthModal,
+    handleCustomerEmailLogin,
+    handleCustomerRegister,
+    handleGoogleLogin,
+    handleForgotPassword,
+
+    openAdminDashboardFromTop,
+    openAdminDashboard,
+    closeAdminDashboard,
+    switchAdminTab,
+
+    searchProducts,
+    filterByCategory,
+
+    addToCart,
+    decreaseQty,
+    removeFromCart,
+    directBuyNow,
+    toggleCartDrawer,
+
+    openCheckoutModal,
+    closeCheckoutModal,
+    calculateFinalTotal,
+
+    openProductModal,
+    closeProductModal,
+
+    openShippingModal,
+    closeShippingModal,
+
+    handleFileSelect,
+    updateAdminPreview,
+    handleSaveProduct,
+    editProductInAdmin,
+    deleteProductInAdmin,
+    resetAdminForm,
+
+    renderAdminProductManageList,
+    renderDashboardView,
+    adjustStock,
+    saveOrderStatus,
+    deleteOrder,
+
+    renderCustomerEmails,
+    deleteCustomerEmail,
+    exportCustomerEmailsCSV
+});
