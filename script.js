@@ -24,7 +24,7 @@ import {
 /* ---------------- FIREBASE CONFIG ---------------- */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCysJRNg1OsWNjCnyx9b-3xGJmuFJMJVT8",
+    apiKey: "AIzaSyCysJRNg1OsWNjCny9xB3-3xGJmuFJMJVT",
     authDomain: "srprimemart-177c5.firebaseapp.com",
     projectId: "srprimemart-177c5",
     storageBucket: "srprimemart-177c5.firebasestorage.app",
