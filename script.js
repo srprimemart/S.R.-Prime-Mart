@@ -1,7 +1,8 @@
 
 /* =========================================================
    S.R. PRIME MART
-   Firebase Authentication + Products + Cart + Checkout
+   Firebase Authentication + Firestore Products + Orders
+   Cloudflare Worker Image Upload
    ========================================================= */
 
 /* ---------------- FIREBASE IMPORTS ---------------- */
@@ -16,12 +17,25 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     signOut,
-    sendPasswordResetEmail,
-    updateProfile
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+    getFirestore,
+    collection,
+    doc,
+    getDocs,
+    addDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    onSnapshot,
+    query,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* ---------------- FIREBASE CONFIG ---------------- */
+
+/* ---------------- CONFIGURATION ---------------- */
 
 const firebaseConfig = {
     apiKey: "AIzaSyCysJRNg1OsWNjCnyx9b-3xGJmuFJMJVT8",
@@ -35,12 +49,32 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 const googleProvider = new GoogleAuthProvider();
 
 const ADMIN_UID = "VJvdQjS0ygSx46SnLqcyPx49mi02";
 
+const IMAGE_UPLOAD_URL =
+    "https://sr-prime-mart-upload.srprimemart2026.workers.dev/";
+
 let currentUser = null;
 let isAdminUser = false;
+
+let products = [];
+let orders = [];
+let cart = [];
+
+let customerEmails = [];
+let selectedImageFile = null;
+let uploadedImageBase64 = null;
+
+let productsLoaded = false;
+let ordersLoaded = false;
+let migrationStarted = false;
+
+let unsubscribeProducts = null;
+let unsubscribeOrders = null;
+let unsubscribeEmails = null;
 
 
 /* ---------------- DEFAULT PRODUCTS ---------------- */
@@ -92,19 +126,14 @@ function loadStorage(key, fallback) {
         const saved = localStorage.getItem(key);
         return saved ? JSON.parse(saved) : fallback;
     } catch (error) {
-        console.error("Storage loading error:", error);
+        console.error(error);
         return fallback;
     }
 }
 
-let products = loadStorage("sr_products_v9", defaultProducts);
-let orders = loadStorage("sr_orders_v9", []);
-
-let cart = [];
-let uploadedImageBase64 = null;
-
-let customerEmails = loadStorage("sr_customer_emails_v1", []);
-
+const localProducts = loadStorage("sr_products_v9", defaultProducts);
+orders = loadStorage("sr_orders_v9", []);
+customerEmails = loadStorage("sr_customer_emails_v1", []);
 
 function saveProductsToStorage() {
     localStorage.setItem("sr_products_v9", JSON.stringify(products));
@@ -130,15 +159,17 @@ function formatMoney(amount) {
 }
 
 function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, function (character) {
-        return {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-        }[character];
-    });
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+function sameId(a, b) {
+    return String(a) === String(b);
 }
 
 function showAuthError(error) {
@@ -152,13 +183,13 @@ function showAuthError(error) {
         "auth/user-not-found": "এই Email দিয়ে কোনো Account পাওয়া যায়নি।",
         "auth/wrong-password": "Password সঠিক নয়।",
         "auth/popup-closed-by-user": "Google Login বন্ধ করা হয়েছে।",
-        "auth/popup-blocked": "Browser Popup Block করেছে। Popup Allow করে আবার চেষ্টা করুন।",
-        "auth/network-request-failed": "Internet Connection পরীক্ষা করে আবার চেষ্টা করুন।",
+        "auth/popup-blocked": "Browser Popup Block করেছে।",
+        "auth/network-request-failed": "Internet Connection পরীক্ষা করুন।",
         "auth/too-many-requests": "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
         "auth/unauthorized-domain": "Firebase Console-এ Website Domain Authorized করতে হবে।"
     };
 
-    alert(messages[error.code] || error.message || "একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+    alert(messages[error.code] || error.message || "একটি সমস্যা হয়েছে।");
 }
 
 
@@ -168,7 +199,6 @@ function saveCustomerEmail(user, method) {
     if (!user || !user.email) return;
 
     const email = user.email.toLowerCase();
-
     const existing = customerEmails.find(item => item.email === email);
 
     if (existing) {
@@ -176,20 +206,184 @@ function saveCustomerEmail(user, method) {
         existing.lastLogin = new Date().toLocaleString();
     } else {
         customerEmails.unshift({
-            email: email,
-            method: method,
+            email,
+            method,
             date: new Date().toLocaleString(),
             lastLogin: new Date().toLocaleString()
         });
     }
 
     saveCustomerEmails();
+
+    if (isAdminUser) {
+        syncCustomerEmails();
+    }
+}
+
+
+/* ---------------- FIRESTORE PRODUCT SYNC ---------------- */
+
+async function migrateLocalProductsIfNeeded(snapshot) {
+    if (migrationStarted || !isAdminUser) return;
+
+    const onlyTestProduct =
+        snapshot.size === 1 &&
+        snapshot.docs[0].data().name === "Test Product";
+
+    if (snapshot.size !== 0 && !onlyTestProduct) return;
+
+    migrationStarted = true;
+
+    try {
+        const sourceProducts = Array.isArray(localProducts)
+            ? localProducts
+            : defaultProducts;
+
+        for (const product of sourceProducts) {
+            const productData = {
+                name: product.name || "Product",
+                category: product.category || "General",
+                price: Number(product.price || 0),
+                stock: Number(product.stock ?? 0),
+                description: product.description || "",
+                image: product.image || "",
+                createdAt: new Date().toISOString()
+            };
+
+            await addDoc(collection(db, "products"), productData);
+        }
+
+        if (onlyTestProduct) {
+            await deleteDoc(doc(db, "products", snapshot.docs[0].id));
+        }
+
+        alert("আগের প্রোডাক্টগুলো Firebase-এ সংরক্ষণ করা হয়েছে।");
+
+    } catch (error) {
+        console.error("Product migration error:", error);
+        alert("পুরোনো প্রোডাক্ট Firebase-এ নেওয়া যায়নি। " + error.message);
+    }
+}
+
+function startProductsListener() {
+    if (unsubscribeProducts) unsubscribeProducts();
+
+    unsubscribeProducts = onSnapshot(
+        collection(db, "products"),
+        async snapshot => {
+            if (!migrationStarted && isAdminUser) {
+                await migrateLocalProductsIfNeeded(snapshot);
+            }
+
+            products = snapshot.docs.map(item => ({
+                id: item.id,
+                ...item.data()
+            }));
+
+            productsLoaded = true;
+
+            saveProductsToStorage();
+            renderProducts(products);
+            updateCartUI();
+            renderDashboardView();
+            renderAdminProductManageList();
+        },
+        error => {
+            console.error("Products listener error:", error);
+            alert("Firebase থেকে Product লোড করা যায়নি: " + error.message);
+        }
+    );
+}
+
+
+/* ---------------- FIRESTORE ORDERS ---------------- */
+
+function startOrdersListener() {
+    if (unsubscribeOrders) unsubscribeOrders();
+
+    if (!isAdminUser) {
+        orders = [];
+        renderDashboardView();
+        return;
+    }
+
+    const ordersQuery = query(
+        collection(db, "orders"),
+        orderBy("createdAt", "desc")
+    );
+
+    unsubscribeOrders = onSnapshot(
+        ordersQuery,
+        snapshot => {
+            orders = snapshot.docs.map(item => ({
+                id: item.id,
+                ...item.data()
+            }));
+
+            ordersLoaded = true;
+            renderDashboardView();
+        },
+        error => {
+            console.error("Orders listener error:", error);
+            alert("Orders লোড করা যায়নি: " + error.message);
+        }
+    );
+}
+
+
+/* ---------------- CUSTOMER EMAIL FIRESTORE SYNC ---------------- */
+
+async function syncCustomerEmails() {
+    if (!isAdminUser) return;
+
+    try {
+        const ref = doc(db, "customerEmails", currentUser.uid);
+
+        await setDoc(ref, {
+            emails: customerEmails,
+            updatedAt: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error("Customer email sync error:", error);
+    }
+}
+
+function startCustomerEmailsListener() {
+    if (unsubscribeEmails) unsubscribeEmails();
+
+    if (!isAdminUser) return;
+
+    unsubscribeEmails = onSnapshot(
+        collection(db, "customerEmails"),
+        snapshot => {
+            let combined = [];
+
+            snapshot.forEach(item => {
+                const data = item.data();
+                if (Array.isArray(data.emails)) {
+                    combined = combined.concat(data.emails);
+                }
+            });
+
+            const unique = new Map();
+
+            combined.forEach(item => {
+                if (item.email) unique.set(item.email, item);
+            });
+
+            customerEmails = Array.from(unique.values());
+
+            renderCustomerEmails();
+        },
+        error => console.error("Email listener error:", error)
+    );
 }
 
 
 /* ---------------- AUTHENTICATION STATE ---------------- */
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
     currentUser = user;
     isAdminUser = !!user && user.uid === ADMIN_UID;
 
@@ -198,35 +392,33 @@ onAuthStateChanged(auth, (user) => {
     const customerEmailInput = getElement("customerEmail");
 
     if (user) {
-        if (authText) {
-            authText.textContent = "Logout";
-        }
+        if (authText) authText.textContent = "Logout";
+        if (customerEmailInput) customerEmailInput.value = user.email || "";
+        if (adminButton) adminButton.style.display = isAdminUser ? "inline-block" : "none";
 
-        if (customerEmailInput) {
-            customerEmailInput.value = user.email || "";
-        }
-
-        if (adminButton) {
-            adminButton.style.display = isAdminUser ? "inline-block" : "none";
-        }
+        saveCustomerEmail(user, "Login");
 
         if (isAdminUser) {
-            console.log("Authorized Admin logged in.");
+            startOrdersListener();
+            startCustomerEmailsListener();
+        } else {
+            if (unsubscribeOrders) unsubscribeOrders();
+            if (unsubscribeEmails) unsubscribeEmails();
+            orders = [];
         }
 
     } else {
-        if (authText) {
-            authText.textContent = "Login / Register";
-        }
+        if (authText) authText.textContent = "Login / Register";
+        if (customerEmailInput) customerEmailInput.value = "";
+        if (adminButton) adminButton.style.display = "none";
 
-        if (customerEmailInput) {
-            customerEmailInput.value = "";
-        }
+        if (unsubscribeOrders) unsubscribeOrders();
+        if (unsubscribeEmails) unsubscribeEmails();
 
-        if (adminButton) {
-            adminButton.style.display = "none";
-        }
+        orders = [];
     }
+
+    startProductsListener();
 });
 
 
@@ -234,12 +426,9 @@ onAuthStateChanged(auth, (user) => {
 
 function openCustomerAuthModal() {
     if (currentUser) {
-        const confirmLogout = confirm("আপনি কি Logout করতে চান?");
-
-        if (confirmLogout) {
+        if (confirm("আপনি কি Logout করতে চান?")) {
             signOut(auth).catch(showAuthError);
         }
-
         return;
     }
 
@@ -251,9 +440,6 @@ function closeCustomerAuthModal() {
     const modal = getElement("customerAuthModal");
     if (modal) modal.style.display = "none";
 }
-
-
-/* ---------------- EMAIL LOGIN ---------------- */
 
 async function handleCustomerEmailLogin(event) {
     if (event) event.preventDefault();
@@ -267,21 +453,13 @@ async function handleCustomerEmailLogin(event) {
     }
 
     try {
-        const result = await signInWithEmailAndPassword(auth, email, password);
-
-        saveCustomerEmail(result.user, "Email/Password");
-
+        await signInWithEmailAndPassword(auth, email, password);
         closeCustomerAuthModal();
-
         alert("Login সফল হয়েছে। Welcome to S.R. Prime Mart!");
-
     } catch (error) {
         showAuthError(error);
     }
 }
-
-
-/* ---------------- CUSTOMER REGISTER ---------------- */
 
 async function handleCustomerRegister() {
     const email = getElement("custModalEmail")?.value.trim();
@@ -298,39 +476,23 @@ async function handleCustomerRegister() {
     }
 
     try {
-        const result = await createUserWithEmailAndPassword(auth, email, password);
-
-        saveCustomerEmail(result.user, "Email/Password");
-
+        await createUserWithEmailAndPassword(auth, email, password);
         closeCustomerAuthModal();
-
         alert("আপনার Account সফলভাবে তৈরি হয়েছে!");
-
     } catch (error) {
         showAuthError(error);
     }
 }
-
-
-/* ---------------- GOOGLE LOGIN ---------------- */
 
 async function handleGoogleLogin() {
     try {
-        const result = await signInWithPopup(auth, googleProvider);
-
-        saveCustomerEmail(result.user, "Google");
-
+        await signInWithPopup(auth, googleProvider);
         closeCustomerAuthModal();
-
         alert("Google Login সফল হয়েছে!");
-
     } catch (error) {
         showAuthError(error);
     }
 }
-
-
-/* ---------------- FORGOT PASSWORD ---------------- */
 
 async function handleForgotPassword() {
     const email = getElement("custModalEmail")?.value.trim();
@@ -342,19 +504,17 @@ async function handleForgotPassword() {
 
     try {
         await sendPasswordResetEmail(auth, email);
-
         alert("Password Reset Link আপনার Email-এ পাঠানো হয়েছে। Inbox এবং Spam Folder দেখুন।");
-
     } catch (error) {
         showAuthError(error);
     }
 }
 
 
-/* ---------------- ADMIN AUTHENTICATION ---------------- */
+/* ---------------- ADMIN DASHBOARD ---------------- */
 
 function openAdminDashboardFromTop() {
-    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+    if (!isAdminUser) {
         alert("আপনার Admin Access নেই।");
         return;
     }
@@ -363,7 +523,7 @@ function openAdminDashboardFromTop() {
 }
 
 function openAdminDashboard() {
-    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+    if (!isAdminUser) {
         alert("শুধুমাত্র অনুমোদিত Admin Dashboard খুলতে পারবেন।");
         return;
     }
@@ -382,46 +542,37 @@ function closeAdminDashboard() {
     if (modal) modal.style.display = "none";
 }
 
-
-/* ---------------- ADMIN TAB SYSTEM ---------------- */
-
 function switchAdminTab(tab) {
-    if (!isAdminUser) {
-        alert("Admin access required.");
-        return;
-    }
+    if (!isAdminUser) return;
 
-    const dashView = getElement("adminDashboardView");
-    const prodView = getElement("adminProductsView");
-    const emailsView = getElement("adminEmailsView");
+    const views = [
+        getElement("adminDashboardView"),
+        getElement("adminProductsView"),
+        getElement("adminEmailsView")
+    ];
 
-    const btnDash = getElement("btnTabDashboard");
-    const btnProd = getElement("btnTabProducts");
-    const btnEmails = getElement("btnTabEmails");
+    const buttons = [
+        getElement("btnTabDashboard"),
+        getElement("btnTabProducts"),
+        getElement("btnTabEmails")
+    ];
 
-    [dashView, prodView, emailsView].forEach(element => {
-        if (element) element.style.display = "none";
+    views.forEach(item => {
+        if (item) item.style.display = "none";
     });
 
-    [btnDash, btnProd, btnEmails].forEach(element => {
-        if (element) element.classList.remove("active");
+    buttons.forEach(item => {
+        if (item) item.classList.remove("active");
     });
 
-    if (tab === "products") {
-        if (prodView) prodView.style.display = "block";
-        if (btnProd) btnProd.classList.add("active");
-        renderAdminProductManageList();
+    const index = tab === "products" ? 1 : tab === "emails" ? 2 : 0;
 
-    } else if (tab === "emails") {
-        if (emailsView) emailsView.style.display = "block";
-        if (btnEmails) btnEmails.classList.add("active");
-        renderCustomerEmails();
+    if (views[index]) views[index].style.display = "block";
+    if (buttons[index]) buttons[index].classList.add("active");
 
-    } else {
-        if (dashView) dashView.style.display = "block";
-        if (btnDash) btnDash.classList.add("active");
-        renderDashboardView();
-    }
+    if (index === 1) renderAdminProductManageList();
+    if (index === 2) renderCustomerEmails();
+    if (index === 0) renderDashboardView();
 }
 
 
@@ -435,8 +586,7 @@ function renderProducts(items) {
         container.innerHTML = `
             <p style="grid-column:1/-1;text-align:center;color:#888;">
                 No products available!
-            </p>
-        `;
+            </p>`;
         return;
     }
 
@@ -444,10 +594,9 @@ function renderProducts(items) {
         <div class="product-card">
             <div class="image-box-wrapper">
                 <div class="image-box"
-                     onclick="openProductModal(${Number(product.id)})"
+                     onclick='openProductModal(${JSON.stringify(String(product.id))})'
                      title="Click to view details">
-
-                    <img src="${escapeHTML(product.image)}"
+                    <img src="${escapeHTML(product.image || "")}"
                          alt="${escapeHTML(product.name)}"
                          onerror="this.onerror=null;this.src='https://via.placeholder.com/300?text=Product+Image';">
                 </div>
@@ -458,7 +607,7 @@ function renderProducts(items) {
             </div>
 
             <div class="product-title"
-                 onclick="openProductModal(${Number(product.id)})"
+                 onclick='openProductModal(${JSON.stringify(String(product.id))})'
                  title="${escapeHTML(product.name)}">
                 ${escapeHTML(product.name)}
             </div>
@@ -469,7 +618,7 @@ function renderProducts(items) {
                 </div>
 
                 <button class="buy-btn"
-                        onclick="directBuyNow(${Number(product.id)})">
+                        onclick='directBuyNow(${JSON.stringify(String(product.id))})'>
                     Buy
                 </button>
             </div>
@@ -478,36 +627,29 @@ function renderProducts(items) {
 }
 
 function searchProducts() {
-    const query = (getElement("searchInput")?.value || "").toLowerCase();
+    const queryText = (getElement("searchInput")?.value || "").toLowerCase();
 
-    const filtered = products.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        (product.category || "").toLowerCase().includes(query)
-    );
-
-    renderProducts(filtered);
+    renderProducts(products.filter(product =>
+        (product.name || "").toLowerCase().includes(queryText) ||
+        (product.category || "").toLowerCase().includes(queryText)
+    ));
 }
 
 function filterByCategory(category) {
-    const filtered = products.filter(product =>
+    renderProducts(products.filter(product =>
         (product.category || "").toLowerCase() === category.toLowerCase()
-    );
-
-    renderProducts(filtered);
+    ));
 }
 
 
 /* ---------------- CART SYSTEM ---------------- */
 
 function addToCart(productId) {
-    const product = products.find(item => Number(item.id) === Number(productId));
-
+    const product = products.find(item => sameId(item.id, productId));
     if (!product) return;
 
     const currentStock = Number(product.stock ?? 10);
-
-    const existingItem = cart.find(item => Number(item.id) === Number(productId));
-
+    const existingItem = cart.find(item => sameId(item.id, productId));
     const currentQuantity = existingItem ? existingItem.quantity : 0;
 
     if (currentQuantity >= currentStock) {
@@ -516,12 +658,9 @@ function addToCart(productId) {
     }
 
     if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity++;
     } else {
-        cart.push({
-            ...product,
-            quantity: 1
-        });
+        cart.push({ ...product, quantity: 1 });
     }
 
     updateCartUI();
@@ -531,37 +670,30 @@ function directBuyNow(productId) {
     addToCart(productId);
 
     const drawer = getElement("cartDrawer");
-
-    if (drawer && cart.length > 0) {
-        drawer.classList.add("open");
-    }
+    if (drawer && cart.length > 0) drawer.classList.add("open");
 }
 
 function decreaseQty(productId) {
-    const item = cart.find(i => Number(i.id) === Number(productId));
-
+    const item = cart.find(i => sameId(i.id, productId));
     if (!item) return;
 
-    item.quantity -= 1;
+    item.quantity--;
 
     if (item.quantity <= 0) {
-        cart = cart.filter(i => Number(i.id) !== Number(productId));
+        cart = cart.filter(i => !sameId(i.id, productId));
     }
 
     updateCartUI();
 }
 
 function removeFromCart(productId) {
-    cart = cart.filter(i => Number(i.id) !== Number(productId));
+    cart = cart.filter(i => !sameId(i.id, productId));
     updateCartUI();
 }
 
 function toggleCartDrawer() {
     const drawer = getElement("cartDrawer");
-
-    if (drawer) {
-        drawer.classList.toggle("open");
-    }
+    if (drawer) drawer.classList.toggle("open");
 }
 
 function updateCartUI() {
@@ -589,47 +721,32 @@ function updateCartUI() {
             drawerItemsContainer.innerHTML = `
                 <p style="text-align:center;color:#888;margin-top:40px;">
                     Your cart is empty
-                </p>
-            `;
+                </p>`;
         } else {
             drawerItemsContainer.innerHTML = cart.map(item => `
                 <div class="cart-item-card">
-
-                    <img src="${escapeHTML(item.image)}"
+                    <img src="${escapeHTML(item.image || "")}"
                          alt="${escapeHTML(item.name)}"
                          class="cart-item-img"
                          onerror="this.src='https://via.placeholder.com/60';">
 
                     <div class="cart-item-details">
-
-                        <div class="cart-item-title">
-                            ${escapeHTML(item.name)}
-                        </div>
+                        <div class="cart-item-title">${escapeHTML(item.name)}</div>
 
                         <div class="cart-item-bottom">
-
-                            <span class="cart-item-price">
-                                ${formatMoney(item.price)}
-                            </span>
+                            <span class="cart-item-price">${formatMoney(item.price)}</span>
 
                             <div class="cart-qty-controls">
-
                                 <button class="q-btn"
-                                        onclick="decreaseQty(${Number(item.id)})">
-                                    -
-                                </button>
+                                        onclick='decreaseQty(${JSON.stringify(String(item.id))})'>-</button>
 
                                 <span>${item.quantity}</span>
 
                                 <button class="q-btn"
-                                        onclick="addToCart(${Number(item.id)})">
-                                    +
-                                </button>
+                                        onclick='addToCart(${JSON.stringify(String(item.id))})'>+</button>
 
                                 <i class="fa-solid fa-trash-can delete-btn"
-                                   onclick="removeFromCart(${Number(item.id)})">
-                                </i>
-
+                                   onclick='removeFromCart(${JSON.stringify(String(item.id))})'></i>
                             </div>
                         </div>
                     </div>
@@ -660,13 +777,9 @@ function openCheckoutModal() {
     if (drawer) drawer.classList.remove("open");
 
     const emailInput = getElement("customerEmail");
-
-    if (emailInput) {
-        emailInput.value = currentUser.email || "";
-    }
+    if (emailInput) emailInput.value = currentUser.email || "";
 
     const modal = getElement("checkoutModal");
-
     if (modal) modal.style.display = "block";
 
     updateCartUI();
@@ -683,16 +796,12 @@ function updateCheckoutUI(subtotal, totalCount) {
     const modalSubtotal = getElement("modalSubtotal");
 
     if (summaryTotalQty) summaryTotalQty.innerText = totalCount;
-
-    if (modalSubtotal) {
-        modalSubtotal.innerText = `BDT ${subtotal}`;
-    }
+    if (modalSubtotal) modalSubtotal.innerText = `BDT ${subtotal}`;
 
     if (checkoutItemsList) {
         checkoutItemsList.innerHTML = cart.map(item => `
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;border-bottom:1px solid #f3f4f6;padding-bottom:10px;">
-
-                <img src="${escapeHTML(item.image)}"
+                <img src="${escapeHTML(item.image || "")}"
                      style="width:50px;height:50px;object-fit:cover;border-radius:6px;"
                      onerror="this.src='https://via.placeholder.com/50';">
 
@@ -700,7 +809,6 @@ function updateCheckoutUI(subtotal, totalCount) {
                     <div style="font-size:13px;font-weight:500;color:#1f2937;">
                         ${escapeHTML(item.name)}
                     </div>
-
                     <div style="font-size:12px;color:#6b7280;">
                         BDT ${item.price} × ${item.quantity}
                     </div>
@@ -709,7 +817,6 @@ function updateCheckoutUI(subtotal, totalCount) {
                 <div style="font-weight:700;font-size:13px;">
                     BDT ${item.price * item.quantity}
                 </div>
-
             </div>
         `).join("");
     }
@@ -724,21 +831,13 @@ function calculateFinalTotal() {
     );
 
     const deliverySelect = getElement("deliveryLocation");
-
-    const deliveryFee = deliverySelect
-        ? Number(deliverySelect.value)
-        : 70;
+    const deliveryFee = deliverySelect ? Number(deliverySelect.value) : 70;
 
     const modalDeliveryFee = getElement("modalDeliveryFee");
     const modalGrandTotal = getElement("modalGrandTotal");
 
-    if (modalDeliveryFee) {
-        modalDeliveryFee.innerText = `BDT ${deliveryFee}`;
-    }
-
-    if (modalGrandTotal) {
-        modalGrandTotal.innerText = `BDT ${subtotal + deliveryFee}`;
-    }
+    if (modalDeliveryFee) modalDeliveryFee.innerText = `BDT ${deliveryFee}`;
+    if (modalGrandTotal) modalGrandTotal.innerText = `BDT ${subtotal + deliveryFee}`;
 
     return {
         subtotal,
@@ -777,43 +876,16 @@ async function handleOrderSubmit(event) {
         return;
     }
 
-    /* Stock check before order */
-
     for (const item of cart) {
-        const product = products.find(p => Number(p.id) === Number(item.id));
+        const product = products.find(p => sameId(p.id, item.id));
 
-        if (!product || Number(product.stock ?? 10) < item.quantity) {
+        if (!product || Number(product.stock ?? 0) < item.quantity) {
             alert(`${item.name} - পর্যাপ্ত Stock নেই।`);
             return;
         }
     }
 
     const totals = calculateFinalTotal();
-
-    const itemsSummary = cart.map(item =>
-        `${item.name} (x${item.quantity})`
-    ).join(", ");
-
-    const newOrder = {
-        orderId: "SR-" + Date.now(),
-        customerName,
-        customerEmail: currentUser.email || "",
-        customerPhone,
-        customerAddress,
-        payMethod: paymentMethod,
-        itemsSummary,
-        items: cart.map(item => ({
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity
-        })),
-        subtotal: totals.subtotal,
-        deliveryFee: totals.deliveryFee,
-        total: totals.grandTotal,
-        date: new Date().toLocaleString(),
-        status: "Pending"
-    };
 
     const submitBtn = getElement("submitBtn");
     const successMessage = getElement("successMessage");
@@ -824,41 +896,52 @@ async function handleOrderSubmit(event) {
     }
 
     try {
-        /* Save order in this browser */
+        const orderData = {
+            orderId: "SR-" + Date.now(),
+            userId: currentUser.uid,
+            customerName,
+            customerEmail: currentUser.email || "",
+            customerPhone,
+            customerAddress,
+            payMethod: paymentMethod,
+            itemsSummary: cart.map(item =>
+                `${item.name} (x${item.quantity})`
+            ).join(", "),
+            items: cart.map(item => ({
+                id: String(item.id),
+                name: item.name,
+                price: Number(item.price),
+                quantity: item.quantity
+            })),
+            subtotal: totals.subtotal,
+            deliveryFee: totals.deliveryFee,
+            total: totals.grandTotal,
+            date: new Date().toLocaleString(),
+            createdAt: new Date().toISOString(),
+            status: "Pending"
+        };
 
-        orders.unshift(newOrder);
-        saveOrdersToStorage();
+        await addDoc(collection(db, "orders"), orderData);
 
-        /* Deduct product stock */
+        /* Update product stock in Firestore */
 
-        cart.forEach(cartItem => {
-            const product = products.find(
-                p => Number(p.id) === Number(cartItem.id)
-            );
+        for (const item of cart) {
+            const product = products.find(p => sameId(p.id, item.id));
 
             if (product) {
-                product.stock = Math.max(
-                    0,
-                    Number(product.stock ?? 10) - cartItem.quantity
-                );
+                await updateDoc(doc(db, "products", String(product.id)), {
+                    stock: Math.max(0, Number(product.stock || 0) - item.quantity)
+                });
             }
-        });
-
-        saveProductsToStorage();
-
-        /* Remember customer email locally */
+        }
 
         saveCustomerEmail(currentUser, "Order");
-
-        renderProducts(products);
 
         if (successMessage) {
             successMessage.style.display = "block";
         }
 
-        if (submitBtn) {
-            submitBtn.style.display = "none";
-        }
+        if (submitBtn) submitBtn.style.display = "none";
 
         alert("আপনার অর্ডারটি গ্রহণ করা হয়েছে। আমাদের টিম ফোনে যোগাযোগ করবে।");
 
@@ -866,9 +949,7 @@ async function handleOrderSubmit(event) {
             cart = [];
             updateCartUI();
 
-            if (successMessage) {
-                successMessage.style.display = "none";
-            }
+            if (successMessage) successMessage.style.display = "none";
 
             if (submitBtn) {
                 submitBtn.style.display = "block";
@@ -884,13 +965,12 @@ async function handleOrderSubmit(event) {
             }
 
             closeCheckoutModal();
-
-        }, 3500);
+        }, 3000);
 
     } catch (error) {
-        console.error("Order error:", error);
+        console.error("Order submission error:", error);
 
-        alert("অর্ডার সম্পন্ন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+        alert("অর্ডার Firebase-এ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
 
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -903,10 +983,7 @@ async function handleOrderSubmit(event) {
 /* ---------------- PRODUCT DETAILS ---------------- */
 
 function openProductModal(productId) {
-    const product = products.find(
-        p => Number(p.id) === Number(productId)
-    );
-
+    const product = products.find(p => sameId(p.id, productId));
     if (!product) return;
 
     const image = getElement("modalProductImg");
@@ -916,7 +993,7 @@ function openProductModal(productId) {
     const description = getElement("modalProductDesc");
     const modalBtn = getElement("modalAddToCartBtn");
 
-    if (image) image.src = product.image;
+    if (image) image.src = product.image || "";
     if (name) name.innerText = product.name;
     if (price) price.innerText = formatMoney(product.price);
     if (category) category.innerText = product.category || "GENERAL";
@@ -937,7 +1014,6 @@ function openProductModal(productId) {
     }
 
     const modal = getElement("productDetailModal");
-
     if (modal) modal.style.display = "flex";
 }
 
@@ -983,37 +1059,28 @@ function renderDashboardView() {
     if (ordersTbody) {
         if (orders.length === 0) {
             ordersTbody.innerHTML = `
-                <tr>
-                    <td colspan="6" style="text-align:center;color:#888;">
-                        No orders recorded yet.
-                    </td>
-                </tr>
-            `;
+                <tr><td colspan="6" style="text-align:center;color:#888;">
+                    No orders recorded yet.
+                </td></tr>`;
         } else {
             ordersTbody.innerHTML = orders.map((order, index) => `
                 <tr>
                     <td><strong>${escapeHTML(order.orderId)}</strong></td>
-
                     <td>
                         <div>
                             <strong>${escapeHTML(order.customerName)}</strong>
                             (${escapeHTML(order.customerPhone)})
                         </div>
-
                         <small style="color:#6b7280;display:block;">
                             ${escapeHTML(order.customerAddress)}
                         </small>
-
                         <small style="color:#059669;">
                             ${escapeHTML(order.itemsSummary || "Items")}
                             [${escapeHTML(order.payMethod || "COD")}]
                         </small>
                     </td>
-
-                    <td>${escapeHTML(order.date)}</td>
-
+                    <td>${escapeHTML(order.date || "")}</td>
                     <td><strong>${formatMoney(order.total)}</strong></td>
-
                     <td>
                         <select class="status-select" id="statusSelect_${index}">
                             <option value="Pending" ${order.status === "Pending" ? "selected" : ""}>Pending</option>
@@ -1021,13 +1088,9 @@ function renderDashboardView() {
                             <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
                             <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
                         </select>
-
                         <button class="status-save-btn"
-                                onclick="saveOrderStatus(${index})">
-                            Save
-                        </button>
+                                onclick="saveOrderStatus(${index})">Save</button>
                     </td>
-
                     <td>
                         <button class="action-icon-btn"
                                 onclick="deleteOrder(${index})"
@@ -1045,50 +1108,38 @@ function renderDashboardView() {
     let lowStockCount = 0;
 
     if (invTbody) {
-        invTbody.innerHTML = products.map((product, index) => {
-            const stock = Number(product.stock ?? 10);
+        invTbody.innerHTML = products.map(product => {
+            const stock = Number(product.stock ?? 0);
             const isLow = stock <= 10;
-
             if (isLow) lowStockCount++;
 
             return `
                 <tr>
                     <td>
                         <div class="prod-cell-box">
-                            <img src="${escapeHTML(product.image)}"
+                            <img src="${escapeHTML(product.image || "")}"
                                  class="prod-cell-img"
                                  onerror="this.src='https://via.placeholder.com/40';">
-
                             <span><strong>${escapeHTML(product.name)}</strong></span>
                         </div>
                     </td>
-
                     <td>${escapeHTML(product.category || "General")}</td>
-
                     <td>${formatMoney(product.price)}</td>
-
                     <td class="${isLow ? "text-low-stock" : ""}">
                         <strong>${stock}</strong>
                     </td>
-
                     <td>
                         <button class="stock-control-btn"
-                                onclick="adjustStock(${index},-1)">-</button>
-
-                        <span style="margin:0 8px;font-weight:600;">
-                            ${stock}
-                        </span>
-
+                                onclick='adjustStock(${JSON.stringify(String(product.id))},-1)'>-</button>
+                        <span style="margin:0 8px;font-weight:600;">${stock}</span>
                         <button class="stock-control-btn"
-                                onclick="adjustStock(${index},1)">+</button>
+                                onclick='adjustStock(${JSON.stringify(String(product.id))},1)'>+</button>
                     </td>
-                </tr>
-            `;
+                </tr>`;
         }).join("");
     }
 
     const lowStockText = getElement("dashLowStockText");
-
     if (lowStockText) {
         lowStockText.innerText = `${lowStockCount} product(s) low on stock.`;
     }
@@ -1097,72 +1148,82 @@ function renderDashboardView() {
 
 /* ---------------- ADMIN ORDER MANAGEMENT ---------------- */
 
-function saveOrderStatus(orderIndex) {
+async function saveOrderStatus(orderIndex) {
     if (!isAdminUser) return;
 
+    const order = orders[orderIndex];
     const select = getElement(`statusSelect_${orderIndex}`);
 
-    if (!select || !orders[orderIndex]) return;
+    if (!order || !select || !order.id) return;
 
-    orders[orderIndex].status = select.value;
+    try {
+        await updateDoc(doc(db, "orders", order.id), {
+            status: select.value
+        });
 
-    saveOrdersToStorage();
-
-    alert("Order status updated successfully!");
-
-    renderDashboardView();
-}
-
-function deleteOrder(orderIndex) {
-    if (!isAdminUser) return;
-
-    if (!orders[orderIndex]) return;
-
-    if (confirm("আপনি কি এই Order Delete করতে চান?")) {
-        orders.splice(orderIndex, 1);
-
-        saveOrdersToStorage();
-
-        renderDashboardView();
+        alert("Order status updated successfully!");
+    } catch (error) {
+        console.error(error);
+        alert("Order status update করা যায়নি: " + error.message);
     }
 }
 
-function adjustStock(productIndex, amount) {
+async function deleteOrder(orderIndex) {
     if (!isAdminUser) return;
 
-    const product = products[productIndex];
+    const order = orders[orderIndex];
+    if (!order || !order.id) return;
 
+    if (!confirm("আপনি কি এই Order Delete করতে চান?")) return;
+
+    try {
+        await deleteDoc(doc(db, "orders", order.id));
+    } catch (error) {
+        console.error(error);
+        alert("Order Delete করা যায়নি: " + error.message);
+    }
+}
+
+async function adjustStock(productId, amount) {
+    if (!isAdminUser) return;
+
+    const product = products.find(p => sameId(p.id, productId));
     if (!product) return;
 
-    const currentStock = Number(product.stock ?? 10);
+    const newStock = Math.max(0, Number(product.stock || 0) + amount);
 
-    product.stock = Math.max(0, currentStock + amount);
-
-    saveProductsToStorage();
-
-    renderProducts(products);
-    renderDashboardView();
+    try {
+        await updateDoc(doc(db, "products", String(product.id)), {
+            stock: newStock
+        });
+    } catch (error) {
+        console.error(error);
+        alert("Stock Update করা যায়নি: " + error.message);
+    }
 }
 
 
-/* ---------------- PRODUCT IMAGE UPLOAD ---------------- */
+/* ---------------- IMAGE FILE SELECT ---------------- */
 
 function handleFileSelect(event) {
     const file = event.target.files?.[0];
-
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-        alert("শুধুমাত্র Image File Upload করুন।");
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+        alert("শুধুমাত্র JPG, PNG অথবা WEBP Image Upload করুন।");
         event.target.value = "";
         return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-        alert("Image Size 2 MB-এর কম রাখুন।");
+    if (file.size > 5 * 1024 * 1024) {
+        alert("Image Size 5 MB-এর কম রাখুন।");
         event.target.value = "";
         return;
     }
+
+    selectedImageFile = file;
 
     const reader = new FileReader();
 
@@ -1179,15 +1240,60 @@ function handleFileSelect(event) {
 }
 
 
+/* ---------------- CLOUDflare WORKER IMAGE UPLOAD ---------------- */
+
+async function uploadProductImage(file) {
+    if (!currentUser || !isAdminUser) {
+        throw new Error("Admin login পাওয়া যায়নি।");
+    }
+
+    const idToken = await currentUser.getIdToken();
+
+    const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const dataURL = reader.result;
+            resolve(String(dataURL).split(",")[1]);
+        };
+
+        reader.onerror = () => reject(new Error("Image পড়া যায়নি।"));
+        reader.readAsDataURL(file);
+    });
+
+    const safeFilename = file.name
+        .normalize("NFKD")
+        .replace(/[^a-zA-Z0-9._-]/g, "-")
+        .replace(/-+/g, "-");
+
+    const response = await fetch(IMAGE_UPLOAD_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${idToken}`
+        },
+        body: JSON.stringify({
+            filename: `${Date.now()}-${safeFilename}`,
+            contentType: file.type,
+            imageBase64: base64Data
+        })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success || !result.imageURL) {
+        throw new Error(result.error || "Image Upload ব্যর্থ হয়েছে।");
+    }
+
+    return result.imageURL;
+}
+
+
 /* ---------------- PRODUCT PREVIEW ---------------- */
 
 function updateAdminPreview() {
     const name = getElement("adminPName")?.value || "Product Title";
-
-    const category = (
-        getElement("adminPCategory")?.value || "CATEGORY"
-    ).toUpperCase();
-
+    const category = (getElement("adminPCategory")?.value || "CATEGORY").toUpperCase();
     const price = getElement("adminPPrice")?.value || "0.00";
 
     const prevName = getElement("prevName");
@@ -1205,9 +1311,9 @@ function updateAdminPreview() {
 }
 
 
-/* ---------------- SAVE PRODUCT ---------------- */
+/* ---------------- SAVE PRODUCT TO FIRESTORE ---------------- */
 
-function handleSaveProduct(event) {
+async function handleSaveProduct(event) {
     event.preventDefault();
 
     if (!isAdminUser) {
@@ -1216,15 +1322,10 @@ function handleSaveProduct(event) {
     }
 
     const idInput = getElement("adminProductId")?.value;
-
     const name = getElement("adminPName")?.value.trim();
-
     const category = getElement("adminPCategory")?.value.trim() || "General";
-
     const price = Number(getElement("adminPPrice")?.value);
-
     const stock = Number(getElement("adminPStock")?.value);
-
     const description = getElement("adminPDesc")?.value.trim() || "";
 
     if (!name || !Number.isFinite(price) || price < 0) {
@@ -1232,49 +1333,73 @@ function handleSaveProduct(event) {
         return;
     }
 
-    if (idInput) {
-        const index = products.findIndex(
-            product => Number(product.id) === Number(idInput)
-        );
+    if (!Number.isFinite(stock) || stock < 0) {
+        alert("সঠিক Stock সংখ্যা দিন।");
+        return;
+    }
 
-        if (index !== -1) {
-            products[index] = {
-                ...products[index],
-                name,
-                category,
-                price,
-                stock: Math.max(0, stock),
-                description,
-                image: uploadedImageBase64 || products[index].image
-            };
+    const saveButton = getElement("adminProductForm")?.querySelector('[type="submit"]');
+
+    if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.innerText = "Saving...";
+    }
+
+    try {
+        let imageURL = "";
+
+        if (selectedImageFile) {
+            imageURL = await uploadProductImage(selectedImageFile);
         }
 
-    } else {
-        if (!uploadedImageBase64) {
-            alert("প্রথমে Product Image Select করুন।");
-            return;
-        }
-
-        products.push({
-            id: Date.now(),
+        const productData = {
             name,
             category,
             price,
-            stock: Math.max(0, stock),
+            stock,
             description,
-            image: uploadedImageBase64
-        });
+            updatedAt: new Date().toISOString()
+        };
+
+        if (idInput) {
+            const existing = products.find(p => sameId(p.id, idInput));
+
+            if (!existing) {
+                throw new Error("এই Product আর পাওয়া যাচ্ছে না।");
+            }
+
+            productData.image = imageURL || existing.image || "";
+
+            await updateDoc(
+                doc(db, "products", String(idInput)),
+                productData
+            );
+
+        } else {
+            if (!imageURL) {
+                alert("নতুন Product-এর জন্য প্রথমে Image Select করুন।");
+                return;
+            }
+
+            productData.image = imageURL;
+            productData.createdAt = new Date().toISOString();
+
+            await addDoc(collection(db, "products"), productData);
+        }
+
+        resetAdminForm();
+        alert("Product সফলভাবে Firebase-এ Save হয়েছে!");
+
+    } catch (error) {
+        console.error("Product save error:", error);
+        alert("Product Save করা যায়নি: " + error.message);
+
+    } finally {
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.innerText = "Save Product";
+        }
     }
-
-    saveProductsToStorage();
-
-    renderProducts(products);
-    renderDashboardView();
-    renderAdminProductManageList();
-
-    resetAdminForm();
-
-    alert("Product সফলভাবে Save হয়েছে!");
 }
 
 
@@ -1283,54 +1408,47 @@ function handleSaveProduct(event) {
 function editProductInAdmin(productId) {
     if (!isAdminUser) return;
 
-    const product = products.find(
-        item => Number(item.id) === Number(productId)
-    );
-
+    const product = products.find(item => sameId(item.id, productId));
     if (!product) return;
 
     getElement("adminProductId").value = product.id;
     getElement("adminPName").value = product.name;
     getElement("adminPCategory").value = product.category || "";
     getElement("adminPPrice").value = product.price;
-    getElement("adminPStock").value = product.stock ?? 10;
+    getElement("adminPStock").value = product.stock ?? 0;
     getElement("adminPDesc").value = product.description || "";
 
-    uploadedImageBase64 = product.image;
+    selectedImageFile = null;
+    uploadedImageBase64 = product.image || "";
 
     const title = getElement("adminFormTitle");
     if (title) title.innerText = "Edit Product";
 
     updateAdminPreview();
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 
 /* ---------------- DELETE PRODUCT ---------------- */
 
-function deleteProductInAdmin(productId) {
+async function deleteProductInAdmin(productId) {
     if (!isAdminUser) return;
 
     if (!confirm("আপনি কি এই Product Delete করতে চান?")) return;
 
-    products = products.filter(
-        product => Number(product.id) !== Number(productId)
-    );
+    try {
+        await deleteDoc(doc(db, "products", String(productId)));
 
-    cart = cart.filter(
-        item => Number(item.id) !== Number(productId)
-    );
+        cart = cart.filter(item => !sameId(item.id, productId));
+        updateCartUI();
 
-    saveProductsToStorage();
+        alert("Product Delete করা হয়েছে।");
 
-    renderProducts(products);
-    renderAdminProductManageList();
-    renderDashboardView();
-    updateCartUI();
+    } catch (error) {
+        console.error(error);
+        alert("Product Delete করা যায়নি: " + error.message);
+    }
 }
 
 
@@ -1340,19 +1458,18 @@ function resetAdminForm() {
     if (!isAdminUser) return;
 
     const form = getElement("adminProductForm");
-
     if (form) form.reset();
 
     const id = getElement("adminProductId");
     if (id) id.value = "";
 
+    selectedImageFile = null;
     uploadedImageBase64 = null;
 
     const title = getElement("adminFormTitle");
     if (title) title.innerText = "Add / Edit Product";
 
     const preview = getElement("prevImg");
-
     if (preview) {
         preview.src = "https://via.placeholder.com/200?text=Image+Preview";
     }
@@ -1365,7 +1482,6 @@ function resetAdminForm() {
 
 function renderAdminProductManageList() {
     const container = getElement("adminProductManageList");
-
     if (!container) return;
 
     if (!isAdminUser) {
@@ -1374,33 +1490,29 @@ function renderAdminProductManageList() {
     }
 
     if (products.length === 0) {
-        container.innerHTML = `
-            <p style="color:#888;">No products listed yet.</p>
-        `;
+        container.innerHTML = `<p style="color:#888;">No products listed yet.</p>`;
         return;
     }
 
     container.innerHTML = products.map(product => `
         <div class="admin-prod-item">
-
             <span>
                 <strong>${escapeHTML(product.name)}</strong>
                 (${formatMoney(product.price)})
-                — Stock: ${Number(product.stock ?? 10)}
+                — Stock: ${Number(product.stock ?? 0)}
             </span>
 
             <div>
-                <button onclick="editProductInAdmin(${Number(product.id)})"
+                <button onclick='editProductInAdmin(${JSON.stringify(String(product.id))})'
                         style="background:none;border:none;color:#27ae60;cursor:pointer;margin-right:10px;font-weight:600;">
                     Edit
                 </button>
 
-                <button onclick="deleteProductInAdmin(${Number(product.id)})"
+                <button onclick='deleteProductInAdmin(${JSON.stringify(String(product.id))})'
                         style="background:none;border:none;color:#ef4444;cursor:pointer;font-weight:600;">
                     Delete
                 </button>
             </div>
-
         </div>
     `).join("");
 }
@@ -1412,30 +1524,24 @@ function renderCustomerEmails() {
     if (!isAdminUser) return;
 
     const tbody = getElement("dashEmailsTbody");
-
     if (!tbody) return;
 
     if (customerEmails.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" style="text-align:center;color:#888;">
-                    No customer emails recorded on this browser yet.
+                    No customer emails recorded yet.
                 </td>
-            </tr>
-        `;
+            </tr>`;
         return;
     }
 
     tbody.innerHTML = customerEmails.map((customer, index) => `
         <tr>
             <td>${index + 1}</td>
-
             <td>${escapeHTML(customer.email)}</td>
-
             <td>${escapeHTML(customer.method || "Unknown")}</td>
-
             <td>${escapeHTML(customer.date || customer.lastLogin || "")}</td>
-
             <td>
                 <button class="action-icon-btn"
                         onclick="deleteCustomerEmail(${index})"
@@ -1448,15 +1554,13 @@ function renderCustomerEmails() {
 }
 
 function deleteCustomerEmail(index) {
-    if (!isAdminUser) return;
-
-    if (!customerEmails[index]) return;
+    if (!isAdminUser || !customerEmails[index]) return;
 
     if (!confirm("এই Email List থেকে Remove করবেন?")) return;
 
     customerEmails.splice(index, 1);
-
     saveCustomerEmails();
+    syncCustomerEmails();
     renderCustomerEmails();
 }
 
@@ -1479,19 +1583,16 @@ function exportCustomerEmailsCSV() {
     ];
 
     const csv = rows.map(row =>
-        row.map(value =>
-            '"' + String(value).replace(/"/g, '""') + '"'
-        ).join(",")
+        row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(",")
     ).join("\n");
 
-    const blob = new Blob(
-        ["\uFEFF" + csv],
-        { type: "text/csv;charset=utf-8;" }
-    );
+    const blob = new Blob(["\uFEFF" + csv], {
+        type: "text/csv;charset=utf-8;"
+    });
 
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
+
     link.href = url;
     link.download = "SR_Prime_Mart_Customer_Emails.csv";
 
@@ -1506,26 +1607,23 @@ function exportCustomerEmailsCSV() {
 /* ---------------- INITIAL PAGE SETUP ---------------- */
 
 document.addEventListener("DOMContentLoaded", function () {
-
-    saveProductsToStorage();
-    saveOrdersToStorage();
-
     renderProducts(products);
     updateCartUI();
 
     const orderForm = getElement("orderForm");
-
     if (orderForm) {
         orderForm.addEventListener("submit", handleOrderSubmit);
     }
 
     const adminProductForm = getElement("adminProductForm");
-
     if (adminProductForm) {
         adminProductForm.addEventListener("submit", handleSaveProduct);
     }
 
-    /* Close modal when clicking outside */
+    const deliverySelect = getElement("deliveryLocation");
+    if (deliverySelect) {
+        deliverySelect.addEventListener("change", calculateFinalTotal);
+    }
 
     document.querySelectorAll(".modal").forEach(modal => {
         modal.addEventListener("click", function (event) {
@@ -1535,11 +1633,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    console.log("S.R. Prime Mart website loaded successfully.");
+    console.log("S.R. Prime Mart Firebase website loaded.");
 });
 
 
-/* ---------------- MAKE FUNCTIONS AVAILABLE TO HTML ---------------- */
+/* ---------------- HTML FUNCTION ACCESS ---------------- */
 
 Object.assign(window, {
     openCustomerAuthModal,
