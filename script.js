@@ -1,4 +1,3 @@
-
 /* =========================================================
    S.R. PRIME MART
    Firebase Authentication + Firestore Products + Orders
@@ -24,7 +23,6 @@ import {
     getFirestore,
     collection,
     doc,
-    getDocs,
     addDoc,
     setDoc,
     updateDoc,
@@ -46,6 +44,9 @@ const firebaseConfig = {
     appId: "1:132024731701:web:877ef144c03731454b497c",
     measurementId: "G-RLPXZEW6PH"
 };
+
+const PLACEHOLDER_PRODUCT_IMG = "https://via.placeholder.com/300?text=Product+Image";
+const PLACEHOLDER_PREVIEW_IMG = "https://via.placeholder.com/200?text=Image+Preview";
 
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
@@ -134,6 +135,7 @@ function loadStorage(key, fallback) {
 const localProducts = loadStorage("sr_products_v9", defaultProducts);
 orders = loadStorage("sr_orders_v9", []);
 customerEmails = loadStorage("sr_customer_emails_v1", []);
+cart = loadStorage("sr_cart_v1", []);
 
 function saveProductsToStorage() {
     localStorage.setItem("sr_products_v9", JSON.stringify(products));
@@ -145,6 +147,10 @@ function saveOrdersToStorage() {
 
 function saveCustomerEmails() {
     localStorage.setItem("sr_customer_emails_v1", JSON.stringify(customerEmails));
+}
+
+function saveCartToStorage() {
+    localStorage.setItem("sr_cart_v1", JSON.stringify(cart));
 }
 
 
@@ -176,20 +182,20 @@ function showAuthError(error) {
     console.error(error);
 
     const messages = {
-        "auth/email-already-in-use": "এই Email দিয়ে আগে থেকেই Account তৈরি করা আছে।",
+        "auth/email-already-in-use": "এই Email দিয়ে আগে থেকেই Account তৈরি করা আছে।",
         "auth/invalid-email": "সঠিক Email Address দিন।",
         "auth/weak-password": "Password কমপক্ষে ৬ অক্ষরের হতে হবে।",
-        "auth/invalid-credential": "Email অথবা Password সঠিক নয়।",
-        "auth/user-not-found": "এই Email দিয়ে কোনো Account পাওয়া যায়নি।",
-        "auth/wrong-password": "Password সঠিক নয়।",
-        "auth/popup-closed-by-user": "Google Login বন্ধ করা হয়েছে।",
+        "auth/invalid-credential": "Email অথবা Password সঠিক নয়।",
+        "auth/user-not-found": "এই Email দিয়ে কোনো Account পাওয়া যায়নি।",
+        "auth/wrong-password": "Password সঠিক নয়।",
+        "auth/popup-closed-by-user": "Google Login বন্ধ করা হয়েছে।",
         "auth/popup-blocked": "Browser Popup Block করেছে।",
         "auth/network-request-failed": "Internet Connection পরীক্ষা করুন।",
-        "auth/too-many-requests": "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+        "auth/too-many-requests": "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।",
         "auth/unauthorized-domain": "Firebase Console-এ Website Domain Authorized করতে হবে।"
     };
 
-    alert(messages[error.code] || error.message || "একটি সমস্যা হয়েছে।");
+    alert(messages[error.code] || error.message || "একটি সমস্যা হয়েছে।");
 }
 
 
@@ -257,11 +263,48 @@ async function migrateLocalProductsIfNeeded(snapshot) {
             await deleteDoc(doc(db, "products", snapshot.docs[0].id));
         }
 
-        alert("আগের প্রোডাক্টগুলো Firebase-এ সংরক্ষণ করা হয়েছে।");
+        alert("আগের প্রোডাক্টগুলো Firebase-এ সংরক্ষণ করা হয়েছে।");
 
     } catch (error) {
         console.error("Product migration error:", error);
-        alert("পুরোনো প্রোডাক্ট Firebase-এ নেওয়া যায়নি। " + error.message);
+        alert("পুরোনো প্রোডাক্ট Firebase-এ নেওয়া যায়নি। " + error.message);
+    }
+}
+
+function syncCartWithProducts() {
+    if (!productsLoaded) return;
+
+    let changed = false;
+    cart = cart
+        .map(item => {
+            const latest = products.find(p => sameId(p.id, item.id));
+            if (!latest) {
+                changed = true;
+                return null;
+            }
+            const maxStock = Math.max(0, Number(latest.stock ?? 0));
+            const nextQty = Math.min(Number(item.quantity || 1), maxStock);
+            if (nextQty <= 0) {
+                changed = true;
+                return null;
+            }
+            if (
+                nextQty !== item.quantity ||
+                Number(latest.price) !== Number(item.price) ||
+                latest.name !== item.name ||
+                latest.image !== item.image
+            ) {
+                changed = true;
+            }
+            return {
+                ...latest,
+                quantity: nextQty
+            };
+        })
+        .filter(Boolean);
+
+    if (changed) {
+        saveCartToStorage();
     }
 }
 
@@ -283,6 +326,7 @@ function startProductsListener() {
             productsLoaded = true;
 
             saveProductsToStorage();
+            syncCartWithProducts();
             renderProducts(products);
             updateCartUI();
             renderDashboardView();
@@ -290,7 +334,7 @@ function startProductsListener() {
         },
         error => {
             console.error("Products listener error:", error);
-            alert("Firebase থেকে Product লোড করা যায়নি: " + error.message);
+            alert("Firebase থেকে Product লোড করা যায়নি: " + error.message);
         }
     );
 }
@@ -321,11 +365,12 @@ function startOrdersListener() {
             }));
 
             ordersLoaded = true;
+            saveOrdersToStorage();
             renderDashboardView();
         },
         error => {
             console.error("Orders listener error:", error);
-            alert("Orders লোড করা যায়নি: " + error.message);
+            alert("Orders লোড করা যায়নি: " + error.message);
         }
     );
 }
@@ -373,7 +418,7 @@ function startCustomerEmailsListener() {
             });
 
             customerEmails = Array.from(unique.values());
-
+            saveCustomerEmails();
             renderCustomerEmails();
         },
         error => console.error("Email listener error:", error)
@@ -455,7 +500,7 @@ async function handleCustomerEmailLogin(event) {
     try {
         await signInWithEmailAndPassword(auth, email, password);
         closeCustomerAuthModal();
-        alert("Login সফল হয়েছে। Welcome to S.R. Prime Mart!");
+        alert("Login সফল হয়েছে। Welcome to S.R. Prime Mart!");
     } catch (error) {
         showAuthError(error);
     }
@@ -478,7 +523,7 @@ async function handleCustomerRegister() {
     try {
         await createUserWithEmailAndPassword(auth, email, password);
         closeCustomerAuthModal();
-        alert("আপনার Account সফলভাবে তৈরি হয়েছে!");
+        alert("আপনার Account সফলভাবে তৈরি হয়েছে!");
     } catch (error) {
         showAuthError(error);
     }
@@ -488,7 +533,7 @@ async function handleGoogleLogin() {
     try {
         await signInWithPopup(auth, googleProvider);
         closeCustomerAuthModal();
-        alert("Google Login সফল হয়েছে!");
+        alert("Google Login সফল হয়েছে!");
     } catch (error) {
         showAuthError(error);
     }
@@ -504,7 +549,7 @@ async function handleForgotPassword() {
 
     try {
         await sendPasswordResetEmail(auth, email);
-        alert("Password Reset Link আপনার Email-এ পাঠানো হয়েছে। Inbox এবং Spam Folder দেখুন।");
+        alert("Password Reset Link আপনার Email-এ পাঠানো হয়েছে। Inbox এবং Spam Folder দেখুন।");
     } catch (error) {
         showAuthError(error);
     }
@@ -598,7 +643,7 @@ function renderProducts(items) {
                      title="Click to view details">
                     <img src="${escapeHTML(product.image || "")}"
                          alt="${escapeHTML(product.name)}"
-                         onerror="this.onerror=null;this.src='https://via.placeholder.com/300?text=Product+Image';">
+                         onerror="this.onerror=null;this.src='${PLACEHOLDER_PRODUCT_IMG}';">
                 </div>
             </div>
 
@@ -617,7 +662,7 @@ function renderProducts(items) {
                     <span class="product-price">${formatMoney(product.price)}</span>
                 </div>
 
-                <button class="buy-btn"
+                <button type="button" class="buy-btn"
                         onclick='directBuyNow(${JSON.stringify(String(product.id))})'>
                     Buy
                 </button>
@@ -627,7 +672,12 @@ function renderProducts(items) {
 }
 
 function searchProducts() {
-    const queryText = (getElement("searchInput")?.value || "").toLowerCase();
+    const queryText = (getElement("searchInput")?.value || "").toLowerCase().trim();
+
+    if (!queryText) {
+        renderProducts(products);
+        return;
+    }
 
     renderProducts(products.filter(product =>
         (product.name || "").toLowerCase().includes(queryText) ||
@@ -636,6 +686,11 @@ function searchProducts() {
 }
 
 function filterByCategory(category) {
+    if (!category || category.toLowerCase() === "all") {
+        renderProducts(products);
+        return;
+    }
+
     renderProducts(products.filter(product =>
         (product.category || "").toLowerCase() === category.toLowerCase()
     ));
@@ -648,7 +703,12 @@ function addToCart(productId) {
     const product = products.find(item => sameId(item.id, productId));
     if (!product) return;
 
-    const currentStock = Number(product.stock ?? 10);
+    const currentStock = Number(product.stock ?? 0);
+    if (currentStock <= 0) {
+        alert("এই Product-টি বর্তমানে Stock-এ নেই।");
+        return;
+    }
+
     const existingItem = cart.find(item => sameId(item.id, productId));
     const currentQuantity = existingItem ? existingItem.quantity : 0;
 
@@ -663,6 +723,7 @@ function addToCart(productId) {
         cart.push({ ...product, quantity: 1 });
     }
 
+    saveCartToStorage();
     updateCartUI();
 }
 
@@ -683,11 +744,13 @@ function decreaseQty(productId) {
         cart = cart.filter(i => !sameId(i.id, productId));
     }
 
+    saveCartToStorage();
     updateCartUI();
 }
 
 function removeFromCart(productId) {
     cart = cart.filter(i => !sameId(i.id, productId));
+    saveCartToStorage();
     updateCartUI();
 }
 
@@ -737,12 +800,12 @@ function updateCartUI() {
                             <span class="cart-item-price">${formatMoney(item.price)}</span>
 
                             <div class="cart-qty-controls">
-                                <button class="q-btn"
+                                <button type="button" class="q-btn"
                                         onclick='decreaseQty(${JSON.stringify(String(item.id))})'>-</button>
 
                                 <span>${item.quantity}</span>
 
-                                <button class="q-btn"
+                                <button type="button" class="q-btn"
                                         onclick='addToCart(${JSON.stringify(String(item.id))})'>+</button>
 
                                 <i class="fa-solid fa-trash-can delete-btn"
@@ -923,8 +986,6 @@ async function handleOrderSubmit(event) {
 
         await addDoc(collection(db, "orders"), orderData);
 
-        /* Update product stock in Firestore */
-
         for (const item of cart) {
             const product = products.find(p => sameId(p.id, item.id));
 
@@ -943,10 +1004,11 @@ async function handleOrderSubmit(event) {
 
         if (submitBtn) submitBtn.style.display = "none";
 
-        alert("আপনার অর্ডারটি গ্রহণ করা হয়েছে। আমাদের টিম ফোনে যোগাযোগ করবে।");
+        alert("আপনার অর্ডারটি গ্রহণ করা হয়েছে। আমাদের টিম ফোনে যোগাযোগ করবে।");
 
         setTimeout(() => {
             cart = [];
+            saveCartToStorage();
             updateCartUI();
 
             if (successMessage) successMessage.style.display = "none";
@@ -970,7 +1032,7 @@ async function handleOrderSubmit(event) {
     } catch (error) {
         console.error("Order submission error:", error);
 
-        alert("অর্ডার Firebase-এ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
+        alert("অর্ডার Firebase-এ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।");
 
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -1088,11 +1150,11 @@ function renderDashboardView() {
                             <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
                             <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
                         </select>
-                        <button class="status-save-btn"
+                        <button type="button" class="status-save-btn"
                                 onclick="saveOrderStatus(${index})">Save</button>
                     </td>
                     <td>
-                        <button class="action-icon-btn"
+                        <button type="button" class="action-icon-btn"
                                 onclick="deleteOrder(${index})"
                                 title="Delete Order"
                                 style="color:#ef4444;">
@@ -1126,13 +1188,13 @@ function renderDashboardView() {
                     <td>${escapeHTML(product.category || "General")}</td>
                     <td>${formatMoney(product.price)}</td>
                     <td class="${isLow ? "text-low-stock" : ""}">
-                        <strong>${stock}</strong>
+                        <strong>${stock > 0 ? stock : "Out of Stock (0)"}</strong>
                     </td>
                     <td>
-                        <button class="stock-control-btn"
+                        <button type="button" class="stock-control-btn"
                                 onclick='adjustStock(${JSON.stringify(String(product.id))},-1)'>-</button>
                         <span style="margin:0 8px;font-weight:600;">${stock}</span>
-                        <button class="stock-control-btn"
+                        <button type="button" class="stock-control-btn"
                                 onclick='adjustStock(${JSON.stringify(String(product.id))},1)'>+</button>
                     </td>
                 </tr>`;
@@ -1164,7 +1226,7 @@ async function saveOrderStatus(orderIndex) {
         alert("Order status updated successfully!");
     } catch (error) {
         console.error(error);
-        alert("Order status update করা যায়নি: " + error.message);
+        alert("Order status update করা যায়নি: " + error.message);
     }
 }
 
@@ -1180,7 +1242,7 @@ async function deleteOrder(orderIndex) {
         await deleteDoc(doc(db, "orders", order.id));
     } catch (error) {
         console.error(error);
-        alert("Order Delete করা যায়নি: " + error.message);
+        alert("Order Delete করা যায়নি: " + error.message);
     }
 }
 
@@ -1198,7 +1260,7 @@ async function adjustStock(productId, amount) {
         });
     } catch (error) {
         console.error(error);
-        alert("Stock Update করা যায়নি: " + error.message);
+        alert("Stock Update করা যায়নি: " + error.message);
     }
 }
 
@@ -1233,18 +1295,18 @@ function handleFileSelect(event) {
     };
 
     reader.onerror = function () {
-        alert("Image পড়তে সমস্যা হয়েছে।");
+        alert("Image পড়তে সমস্যা হয়েছে।");
     };
 
     reader.readAsDataURL(file);
 }
 
 
-/* ---------------- CLOUDflare WORKER IMAGE UPLOAD ---------------- */
+/* ---------------- CLOUDFLARE WORKER IMAGE UPLOAD ---------------- */
 
 async function uploadProductImage(file) {
     if (!currentUser || !isAdminUser) {
-        throw new Error("Admin login পাওয়া যায়নি।");
+        throw new Error("Admin login পাওয়া যায়নি।");
     }
 
     const idToken = await currentUser.getIdToken();
@@ -1257,7 +1319,7 @@ async function uploadProductImage(file) {
             resolve(String(dataURL).split(",")[1]);
         };
 
-        reader.onerror = () => reject(new Error("Image পড়া যায়নি।"));
+        reader.onerror = () => reject(new Error("Image পড়া যায়নি।"));
         reader.readAsDataURL(file);
     });
 
@@ -1282,7 +1344,7 @@ async function uploadProductImage(file) {
     const result = await response.json();
 
     if (!response.ok || !result.success || !result.imageURL) {
-        throw new Error(result.error || "Image Upload ব্যর্থ হয়েছে।");
+        throw new Error(result.error || "Image Upload ব্যর্থ হয়েছে।");
     }
 
     return result.imageURL;
@@ -1305,8 +1367,8 @@ function updateAdminPreview() {
     if (prevCategory) prevCategory.innerText = category;
     if (prevPrice) prevPrice.innerText = `৳${price}`;
 
-    if (uploadedImageBase64 && prevImg) {
-        prevImg.src = uploadedImageBase64;
+    if (prevImg) {
+        prevImg.src = uploadedImageBase64 || PLACEHOLDER_PREVIEW_IMG;
     }
 }
 
@@ -1365,7 +1427,7 @@ async function handleSaveProduct(event) {
             const existing = products.find(p => sameId(p.id, idInput));
 
             if (!existing) {
-                throw new Error("এই Product আর পাওয়া যাচ্ছে না।");
+                throw new Error("এই Product আর পাওয়া যাচ্ছে না।");
             }
 
             productData.image = imageURL || existing.image || "";
@@ -1388,11 +1450,11 @@ async function handleSaveProduct(event) {
         }
 
         resetAdminForm();
-        alert("Product সফলভাবে Firebase-এ Save হয়েছে!");
+        alert("Product সফলভাবে Firebase-এ Save হয়েছে!");
 
     } catch (error) {
         console.error("Product save error:", error);
-        alert("Product Save করা যায়নি: " + error.message);
+        alert("Product Save করা যায়নি: " + error.message);
 
     } finally {
         if (saveButton) {
@@ -1441,13 +1503,14 @@ async function deleteProductInAdmin(productId) {
         await deleteDoc(doc(db, "products", String(productId)));
 
         cart = cart.filter(item => !sameId(item.id, productId));
+        saveCartToStorage();
         updateCartUI();
 
-        alert("Product Delete করা হয়েছে।");
+        alert("Product Delete করা হয়েছে।");
 
     } catch (error) {
         console.error(error);
-        alert("Product Delete করা যায়নি: " + error.message);
+        alert("Product Delete করা যায়নি: " + error.message);
     }
 }
 
@@ -1468,11 +1531,6 @@ function resetAdminForm() {
 
     const title = getElement("adminFormTitle");
     if (title) title.innerText = "Add / Edit Product";
-
-    const preview = getElement("prevImg");
-    if (preview) {
-        preview.src = "https://via.placeholder.com/200?text=Image+Preview";
-    }
 
     updateAdminPreview();
 }
@@ -1503,12 +1561,12 @@ function renderAdminProductManageList() {
             </span>
 
             <div>
-                <button onclick='editProductInAdmin(${JSON.stringify(String(product.id))})'
+                <button type="button" onclick='editProductInAdmin(${JSON.stringify(String(product.id))})'
                         style="background:none;border:none;color:#27ae60;cursor:pointer;margin-right:10px;font-weight:600;">
                     Edit
                 </button>
 
-                <button onclick='deleteProductInAdmin(${JSON.stringify(String(product.id))})'
+                <button type="button" onclick='deleteProductInAdmin(${JSON.stringify(String(product.id))})'
                         style="background:none;border:none;color:#ef4444;cursor:pointer;font-weight:600;">
                     Delete
                 </button>
@@ -1543,7 +1601,7 @@ function renderCustomerEmails() {
             <td>${escapeHTML(customer.method || "Unknown")}</td>
             <td>${escapeHTML(customer.date || customer.lastLogin || "")}</td>
             <td>
-                <button class="action-icon-btn"
+                <button type="button" class="action-icon-btn"
                         onclick="deleteCustomerEmail(${index})"
                         style="color:#ef4444;">
                     <i class="fa-solid fa-trash"></i>
