@@ -607,62 +607,112 @@ function switchAdminTab(tab) {
     if (views[index]) views[index].style.display = "block";
     if (buttons[index]) buttons[index].classList.add("active");
 
-    if (index === 1) renderAdminProductManageList();
+    if (index === 1) {
+        renderAdminProductManageList();
+        updateAdminPreview();
+    }
     if (index === 2) renderCustomerEmails();
     if (index === 0) renderDashboardView();
 }
 
 function renderDashboardView() {
-    const container = getElement("adminDashboardView");
-    if (!container) return;
+    if (!isAdminUser) return;
 
-    if (!isAdminUser) {
-        container.innerHTML = "<p>Admin access required.</p>";
-        return;
-    }
+    const revEl = getElement("dashRevenue");
+    const ordersCountEl = getElement("dashOrdersCount");
+    const productsCountEl = getElement("dashProductsCount");
+    const ordersTbody = getElement("dashOrdersTbody");
+    const inventoryTbody = getElement("dashInventoryTbody");
+    const lowStockEl = getElement("dashLowStockText");
 
     const totalRevenue = orders.reduce((sum, ord) => sum + Number(ord.total || 0), 0);
 
-    const ordersHtml = orders.length === 0
-        ? "<p>No orders found yet.</p>"
-        : orders.map(ord => `
-            <div class="order-row">
-                <div><strong>Order ID:</strong> ${escapeHTML(ord.orderId || ord.id)} | <strong>Status:</strong> ${escapeHTML(ord.status || "Pending")}</div>
-                <div><strong>Customer:</strong> ${escapeHTML(ord.customerName || "")} (${escapeHTML(ord.customerPhone || "")})</div>
-                <div><strong>Address:</strong> ${escapeHTML(ord.customerAddress || "")}</div>
-                <div><strong>Items:</strong> ${escapeHTML(ord.itemsSummary || "")}</div>
-                <div><strong>Total:</strong> ${formatMoney(ord.total)} (${escapeHTML(ord.payMethod || "")})</div>
-            </div>
-        `).join("");
+    if (revEl) revEl.textContent = formatMoney(totalRevenue);
+    if (ordersCountEl) ordersCountEl.textContent = String(orders.length);
+    if (productsCountEl) productsCountEl.textContent = String(products.length);
 
-    container.innerHTML = `
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div>Total Products</div>
-                <strong>${products.length}</strong>
-            </div>
-            <div class="stat-box">
-                <div>Total Orders</div>
-                <strong>${orders.length}</strong>
-            </div>
-            <div class="stat-box">
-                <div>Total Sales</div>
-                <strong>${formatMoney(totalRevenue)}</strong>
-            </div>
-        </div>
-        <h3>Recent Orders</h3>
-        ${ordersHtml}
-    `;
+    if (ordersTbody) {
+        if (orders.length === 0) {
+            ordersTbody.innerHTML = `<tr><td colspan="6">No orders found yet.</td></tr>`;
+        } else {
+            ordersTbody.innerHTML = orders.map(ord => `
+                <tr>
+                    <td>${escapeHTML(ord.orderId || ord.id)}</td>
+                    <td>
+                        <div><strong>${escapeHTML(ord.customerName || "")}</strong></div>
+                        <div>${escapeHTML(ord.customerPhone || "")}</div>
+                        <div style="font-size:12px;color:#6b7280;">${escapeHTML(ord.customerAddress || "")}</div>
+                        <div style="font-size:12px;color:#374151;">${escapeHTML(ord.itemsSummary || "")}</div>
+                    </td>
+                    <td>${escapeHTML(ord.date || "")}</td>
+                    <td>${formatMoney(ord.total)}<br><small>${escapeHTML(ord.payMethod || "")}</small></td>
+                    <td>${escapeHTML(ord.status || "Pending")}</td>
+                    <td>
+                        <select onchange='updateOrderStatus(${JSON.stringify(String(ord.id))}, this.value)'>
+                            <option value="Pending" ${(ord.status || "Pending") === "Pending" ? "selected" : ""}>Pending</option>
+                            <option value="Confirmed" ${ord.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+                            <option value="Delivered" ${ord.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                            <option value="Cancelled" ${ord.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join("");
+        }
+    }
+
+    const lowStockCount = products.filter(p => Number(p.stock ?? 0) <= 5).length;
+    if (lowStockEl) {
+        lowStockEl.textContent = `${lowStockCount} product(s) low on stock.`;
+    }
+
+    if (inventoryTbody) {
+        if (products.length === 0) {
+            inventoryTbody.innerHTML = `<tr><td colspan="5">No products in inventory.</td></tr>`;
+        } else {
+            inventoryTbody.innerHTML = products.map(prod => `
+                <tr>
+                    <td>${escapeHTML(prod.name)}</td>
+                    <td>${escapeHTML(prod.category || "GENERAL")}</td>
+                    <td>${formatMoney(prod.price)}</td>
+                    <td>${Number(prod.stock ?? 0)}</td>
+                    <td>
+                        <input type="number" min="0" value="${Number(prod.stock ?? 0)}"
+                               style="width:75px;padding:4px 6px;"
+                               onchange='quickUpdateStock(${JSON.stringify(String(prod.id))}, this.value)'>
+                    </td>
+                </tr>
+            `).join("");
+        }
+    }
+}
+
+async function updateOrderStatus(orderId, nextStatus) {
+    if (!isAdminUser) return;
+    try {
+        await updateDoc(doc(db, "orders", String(orderId)), { status: nextStatus });
+    } catch (error) {
+        console.error("Order status update error:", error);
+        alert("Order status আপডেট করা যায়নি: " + error.message);
+    }
+}
+
+async function quickUpdateStock(productId, nextStockValue) {
+    if (!isAdminUser) return;
+    const stockNum = Math.max(0, Number(nextStockValue || 0));
+    const target = products.find(p => sameId(p.id, productId));
+    if (!target || typeof target.id !== "string") return;
+
+    try {
+        await updateDoc(doc(db, "products", target.id), { stock: stockNum });
+    } catch (error) {
+        console.error("Stock update error:", error);
+        alert("Stock আপডেট করা যায়নি: " + error.message);
+    }
 }
 
 function renderAdminProductManageList() {
     const container = getElement("adminProductManageList");
-    if (!container) return;
-
-    if (!isAdminUser) {
-        container.innerHTML = "";
-        return;
-    }
+    if (!container || !isAdminUser) return;
 
     if (products.length === 0) {
         container.innerHTML = "<p>No products in store.</p>";
@@ -670,20 +720,170 @@ function renderAdminProductManageList() {
     }
 
     container.innerHTML = products.map(prod => `
-        <div class="manage-row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #e5e7eb;border-radius:8px;padding:8px;margin-bottom:8px;">
             <div style="display:flex;align-items:center;gap:10px;">
                 <img src="${escapeHTML(prod.image || PLACEHOLDER_PRODUCT_IMG)}"
                      alt="${escapeHTML(prod.name)}"
-                     style="width:52px;height:52px;object-fit:cover;border-radius:6px;"
+                     style="width:46px;height:46px;object-fit:cover;border-radius:6px;"
                      onerror="this.src='${PLACEHOLDER_PRODUCT_IMG}';">
                 <div>
-                    <div><strong>${escapeHTML(prod.name)}</strong> (${escapeHTML(prod.category || "General")})</div>
-                    <div>Price: ${formatMoney(prod.price)} | Stock: ${Number(prod.stock ?? 0)}</div>
+                    <div style="font-size:13px;"><strong>${escapeHTML(prod.name)}</strong> (${escapeHTML(prod.category || "GENERAL")})</div>
+                    <div style="font-size:12px;color:#4b5563;">${formatMoney(prod.price)} | Stock: ${Number(prod.stock ?? 0)}</div>
                 </div>
             </div>
-            <button type="button" class="danger-btn" onclick='deleteProductItem(${JSON.stringify(String(prod.id))})'>Delete</button>
+            <div style="display:flex;gap:6px;">
+                <button type="button" onclick='editProductItem(${JSON.stringify(String(prod.id))})'
+                        style="padding:5px 10px;border:1px solid #d1d5db;background:#fff;border-radius:6px;cursor:pointer;font-size:12px;">Edit</button>
+                <button type="button" onclick='deleteProductItem(${JSON.stringify(String(prod.id))})'
+                        style="padding:5px 10px;border:none;background:#dc2626;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button>
+            </div>
         </div>
     `).join("");
+}
+
+function editProductItem(productId) {
+    const prod = products.find(p => sameId(p.id, productId));
+    if (!prod) return;
+
+    const idInput = getElement("adminProductId");
+    const nameInput = getElement("adminPName");
+    const descInput = getElement("adminPDesc");
+    const catInput = getElement("adminPCategory");
+    const stockInput = getElement("adminPStock");
+    const priceInput = getElement("adminPPrice");
+    const formTitle = getElement("adminFormTitle");
+
+    if (idInput) idInput.value = String(prod.id);
+    if (nameInput) nameInput.value = prod.name || "";
+    if (descInput) descInput.value = prod.description || "";
+    if (catInput) catInput.value = prod.category || "";
+    if (stockInput) stockInput.value = Number(prod.stock ?? 0);
+    if (priceInput) priceInput.value = Number(prod.price ?? 0);
+    if (formTitle) formTitle.textContent = "Edit Product";
+
+    selectedImageFile = null;
+    updateAdminPreview(prod.image || PLACEHOLDER_PREVIEW_IMG);
+}
+
+function resetAdminForm() {
+    const form = getElement("adminProductForm");
+    if (form) form.reset();
+
+    const idInput = getElement("adminProductId");
+    const formTitle = getElement("adminFormTitle");
+    if (idInput) idInput.value = "";
+    if (formTitle) formTitle.textContent = "Add / Edit Product";
+
+    selectedImageFile = null;
+    updateAdminPreview(PLACEHOLDER_PREVIEW_IMG);
+}
+
+function updateAdminPreview(customImgSrc) {
+    const idVal = getElement("adminProductId")?.value;
+    const existingProd = idVal ? products.find(p => sameId(p.id, idVal)) : null;
+
+    const name = getElement("adminPName")?.value.trim() || "Product Title";
+    const category = (getElement("adminPCategory")?.value.trim() || "CATEGORY").toUpperCase();
+    const price = Number(getElement("adminPPrice")?.value || 0);
+
+    const prevImg = getElement("prevImg");
+    const prevCategory = getElement("prevCategory");
+    const prevName = getElement("prevName");
+    const prevPrice = getElement("prevPrice");
+
+    if (prevCategory) prevCategory.textContent = category;
+    if (prevName) prevName.textContent = name;
+    if (prevPrice) prevPrice.textContent = formatMoney(price);
+
+    if (prevImg) {
+        if (typeof customImgSrc === "string") {
+            prevImg.src = customImgSrc;
+        } else if (!selectedImageFile && existingProd?.image) {
+            prevImg.src = existingProd.image;
+        }
+    }
+}
+
+function handleFileSelect(event) {
+    const file = event.target?.files?.[0] || null;
+    selectedImageFile = file;
+
+    if (!file) {
+        updateAdminPreview(PLACEHOLDER_PREVIEW_IMG);
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        updateAdminPreview(String(reader.result || PLACEHOLDER_PREVIEW_IMG));
+    };
+    reader.readAsDataURL(file);
+}
+
+async function handleSaveProduct(event) {
+    event.preventDefault();
+
+    if (!isAdminUser) {
+        alert("শুধুমাত্র Admin Product সংরক্ষণ করতে পারবেন।");
+        return;
+    }
+
+    const idVal = getElement("adminProductId")?.value.trim();
+    const name = getElement("adminPName")?.value.trim();
+    const description = getElement("adminPDesc")?.value.trim() || "";
+    const category = (getElement("adminPCategory")?.value.trim() || "GENERAL").toUpperCase();
+    const stock = Math.max(0, Number(getElement("adminPStock")?.value ?? 0));
+    const price = Number(getElement("adminPPrice")?.value || 0);
+
+    if (!name || price <= 0) {
+        alert("সঠিক Product Name এবং Price দিন।");
+        return;
+    }
+
+    const submitBtn = event.target?.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Uploading...";
+    }
+
+    try {
+        const existingProd = idVal ? products.find(p => sameId(p.id, idVal)) : null;
+        let imageUrl = existingProd?.image || PLACEHOLDER_PRODUCT_IMG;
+
+        if (selectedImageFile) {
+            imageUrl = await uploadProductImage(selectedImageFile);
+        }
+
+        const payload = {
+            name,
+            description,
+            category,
+            stock,
+            price,
+            image: imageUrl
+        };
+
+        if (existingProd && typeof existingProd.id === "string") {
+            await updateDoc(doc(db, "products", existingProd.id), payload);
+            alert("Product সফলভাবে আপডেট হয়েছে!");
+        } else {
+            await addDoc(collection(db, "products"), {
+                ...payload,
+                createdAt: new Date().toISOString()
+            });
+            alert("নতুন Product সফলভাবে যুক্ত হয়েছে!");
+        }
+
+        resetAdminForm();
+    } catch (error) {
+        console.error("Save product error:", error);
+        alert("Product সংরক্ষণ করা যায়নি: " + error.message);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Save Product";
+        }
+    }
 }
 
 async function deleteProductItem(productId) {
@@ -700,105 +900,63 @@ async function deleteProductItem(productId) {
 }
 
 function renderCustomerEmails() {
-    const container = getElement("adminCustomerEmailsList");
-    if (!container) return;
-
-    if (!isAdminUser) {
-        container.innerHTML = "";
-        return;
-    }
+    const tbody = getElement("dashEmailsTbody");
+    if (!tbody || !isAdminUser) return;
 
     if (!customerEmails || customerEmails.length === 0) {
-        container.innerHTML = "<p>No customer emails recorded yet.</p>";
+        tbody.innerHTML = `<tr><td colspan="5">No customer emails recorded yet.</td></tr>`;
         return;
     }
 
-    container.innerHTML = customerEmails.map(entry => `
-        <div class="email-row">
-            <div><strong>Email:</strong> ${escapeHTML(entry.email)}</div>
-            <div><strong>Method:</strong> ${escapeHTML(entry.method || "Login")} | <strong>Last Seen:</strong> ${escapeHTML(entry.lastLogin || entry.date || "")}</div>
-        </div>
+    tbody.innerHTML = customerEmails.map((entry, idx) => `
+        <tr>
+            <td>${idx + 1}</td>
+            <td>${escapeHTML(entry.email)}</td>
+            <td>${escapeHTML(entry.method || "Login")}</td>
+            <td>${escapeHTML(entry.lastLogin || entry.date || "")}</td>
+            <td>
+                <button type="button" onclick='deleteCustomerEmailEntry(${JSON.stringify(String(entry.email))})'
+                        style="padding:4px 8px;border:none;background:#dc2626;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;">Delete</button>
+            </td>
+        </tr>
     `).join("");
 }
 
-function handleProductImageSelect(event) {
-    const file = event.target?.files?.[0] || null;
-    selectedImageFile = file;
-
-    const preview = getElement("newProdImagePreview");
-    if (!preview) return;
-
-    if (!file) {
-        preview.src = PLACEHOLDER_PREVIEW_IMG;
-        return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        preview.src = String(reader.result || PLACEHOLDER_PREVIEW_IMG);
-    };
-    reader.readAsDataURL(file);
+function deleteCustomerEmailEntry(emailToRemove) {
+    if (!isAdminUser) return;
+    customerEmails = customerEmails.filter(item => item.email !== emailToRemove);
+    saveCustomerEmails();
+    syncCustomerEmails();
+    renderCustomerEmails();
 }
 
-async function saveNewProduct(event) {
-    event.preventDefault();
-
-    if (!isAdminUser) {
-        alert("শুধুমাত্র Admin নতুন Product যোগ করতে পারবেন।");
+function exportCustomerEmailsCSV() {
+    if (!customerEmails || customerEmails.length === 0) {
+        alert("Export করার মতো কোনো Email নেই।");
         return;
     }
 
-    const name = getElement("newProdName")?.value.trim();
-    const category = getElement("newProdCategory")?.value || "General";
-    const price = Number(getElement("newProdPrice")?.value || 0);
-    const stock = Number(getElement("newProdStock")?.value ?? 0);
-    const description = getElement("newProdDesc")?.value.trim() || "";
+    const rows = [
+        ["SL No.", "Customer Email", "Login Method", "Registered Date & Time"],
+        ...customerEmails.map((item, i) => [
+            i + 1,
+            item.email || "",
+            item.method || "Login",
+            item.lastLogin || item.date || ""
+        ])
+    ];
 
-    if (!name || price <= 0) {
-        alert("সঠিক Product Name এবং Price দিন।");
-        return;
-    }
+    const csvContent = rows
+        .map(row => row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
 
-    const saveBtn = getElement("saveProductBtn");
-    if (saveBtn) {
-        saveBtn.disabled = true;
-        saveBtn.innerText = "Uploading...";
-    }
-
-    try {
-        let imageUrl = PLACEHOLDER_PRODUCT_IMG;
-
-        if (selectedImageFile) {
-            imageUrl = await uploadProductImage(selectedImageFile);
-        }
-
-        await addDoc(collection(db, "products"), {
-            name,
-            category,
-            price,
-            stock,
-            description,
-            image: imageUrl,
-            createdAt: new Date().toISOString()
-        });
-
-        const form = getElement("addProductForm");
-        if (form) form.reset();
-
-        selectedImageFile = null;
-        const preview = getElement("newProdImagePreview");
-        if (preview) preview.src = PLACEHOLDER_PREVIEW_IMG;
-
-        alert("নতুন Product সফলভাবে যুক্ত হয়েছে!");
-    } catch (error) {
-        console.error("Save product error:", error);
-        alert("Product সংরক্ষণ করা যায়নি: " + error.message);
-    } finally {
-        if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.innerText = "Save Product";
-        }
-    }
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "sr-prime-mart-customer-emails.csv";
+    link.click();
+    URL.revokeObjectURL(url);
 }
 
 /* ---------------- PRODUCT RENDERING ---------------- */
@@ -1217,6 +1375,11 @@ async function handleOrderSubmit(event) {
     }
 }
 
+const orderFormEl = getElement("orderForm");
+if (orderFormEl) {
+    orderFormEl.addEventListener("submit", handleOrderSubmit);
+}
+
 /* ---------------- PRODUCT DETAILS ---------------- */
 
 function openProductModal(productId) {
@@ -1341,9 +1504,16 @@ Object.assign(window, {
     openAdminDashboard,
     closeAdminDashboard,
     switchAdminTab,
+    updateOrderStatus,
+    quickUpdateStock,
+    editProductItem,
+    resetAdminForm,
+    updateAdminPreview,
+    handleFileSelect,
+    handleSaveProduct,
     deleteProductItem,
-    handleProductImageSelect,
-    saveNewProduct,
+    deleteCustomerEmailEntry,
+    exportCustomerEmailsCSV,
     openProductModal,
     closeProductModal,
     searchProducts,
