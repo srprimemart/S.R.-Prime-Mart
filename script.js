@@ -1746,3 +1746,62 @@ Object.assign(window, {
     deleteCustomerEmail,
     exportCustomerEmailsCSV
 });
+
+const GITHUB_OWNER = "srprimemart2026";
+const GITHUB_REPO = "S.R.-Prime-Mart";
+const GITHUB_BRANCH = "main";
+
+async function (file) {
+    if (!currentUser || !isAdminUser) {
+        throw new Error("Admin login পাওয়া যায়নি।");
+    }
+
+    if (!file) {
+        throw new Error("কোনো ছবি সিলেক্ট করা হয়নি।");
+    }
+
+    const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const resultStr = String(reader.result || "");
+            const parts = resultStr.split(",");
+            if (parts.length < 2 || !parts[1]) {
+                reject(new Error("Image Base64 data তৈরি করা যায়নি।"));
+                return;
+            }
+            resolve(parts[1]);
+        };
+        reader.onerror = () => reject(new Error("Image পড়া যায়নি।"));
+        reader.readAsDataURL(file);
+    });
+
+    const safeFilename = (file.name || "product-image.jpg")
+        .normalize("NFKD")
+        .replace(/[^a-zA-Z0-9._-]/g, "-")
+        .replace(/-+/g, "-");
+
+    const filePath = `uploads/${Date.now()}-${safeFilename}`;
+
+    const response = await fetch(IMAGE_UPLOAD_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            owner: GITHUB_OWNER,
+            repo: GITHUB_REPO,
+            branch: GITHUB_BRANCH,
+            path: filePath,
+            content: base64Data,
+            message: `Add product image: ${safeFilename}`
+        })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "GitHub-এ ছবি আপলোড ব্যর্থ হয়েছে।");
+    }
+
+    return `https://${GITHUB_OWNER}.github.io/${GITHUB_REPO}/${filePath}`;
+}
