@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
 
     <header class="main-header">
         <div class="header-container">
-            <div class="logo-area" style="cursor: pointer;" title="SR Prime Mart">
+            <div class="logo-area" style="cursor: pointer;" title="SR Prime Mart" onclick="filterByCategory('all')">
                 <img src="logo.jpg" alt="Logo" class="logo-img" onerror="this.style.display='none'">
                 <span class="brand-name">S.R. PRIME MART</span>
             </div>
@@ -40,8 +39,8 @@
 
     <nav class="nav-bar">
         <div class="nav-container">
-            <a href="#products-section" class="nav-link active">Shop all</a>
-            <a href="#products-section" class="nav-link">Products</a>
+            <a href="#products-section" class="nav-link active" onclick="filterByCategory('all')">Shop all</a>
+            <a href="#products-section" class="nav-link" onclick="filterByCategory('all')">Products</a>
         </div>
     </nav>
 
@@ -108,7 +107,7 @@
             </h3>
             <p style="font-size: 13px; color: #6b7280; margin-bottom: 18px;">Sign in to your account</p>
 
-            <button onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <button type="button" onclick="handleGoogleLogin()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; background: #ffffff; border-radius: 8px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" style="width: 18px; height: 18px;">
                 Continue with Google
             </button>
@@ -281,7 +280,7 @@
                         </div>
                     </div>
 
-                    <button class="confirm-order-btn" id="modalAddToCartBtn" style="padding: 10px; font-size: 14px;">
+                    <button type="button" class="confirm-order-btn" id="modalAddToCartBtn" style="padding: 10px; font-size: 14px;">
                         <i class="fa-solid fa-cart-plus"></i> Add to Cart
                     </button>
                 </div>
@@ -301,7 +300,7 @@
                 <p style="margin-bottom: 10px;"><strong>Outside Dhaka:</strong> 3-4 Days (120 BDT)</p>
                 <p style="font-size: 13px; color: #6b7280;">Our delivery partner will reach out to you before delivering your package.</p>
             </div>
-            <button class="confirm-order-btn" onclick="closeShippingModal()" style="width: 100%; margin-top: 20px;">Got it</button>
+            <button type="button" class="confirm-order-btn" onclick="closeShippingModal()" style="width: 100%; margin-top: 20px;">Got it</button>
         </div>
     </div>
 
@@ -311,11 +310,11 @@
             <div class="admin-top-nav">
                 <div class="admin-logo-tabs">
                     <span class="brand-name" style="font-size: 16px; margin-right: 25px;">S.R. PRIME MART</span>
-                    <button class="admin-nav-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
-                    <button class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
-                    <button class="admin-nav-btn" id="btnTabEmails" onclick="switchAdminTab('emails')">Customer Emails</button>
+                    <button type="button" class="admin-nav-btn active" id="btnTabDashboard" onclick="switchAdminTab('dashboard')">Dashboard</button>
+                    <button type="button" class="admin-nav-btn" id="btnTabProducts" onclick="switchAdminTab('products')">Products Setup</button>
+                    <button type="button" class="admin-nav-btn" id="btnTabEmails" onclick="switchAdminTab('emails')">Customer Emails</button>
                 </div>
-                <button class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Close Admin</button>
+                <button type="button" class="logout-btn" onclick="closeAdminDashboard()"><i class="fa-solid fa-right-from-bracket"></i> Close Admin</button>
             </div>
 
             <!-- DASHBOARD VIEW -->
@@ -362,7 +361,7 @@
                             <h2 class="dash-sec-title">Inventory & Stock Control</h2>
                             <span class="low-stock-alert" id="dashLowStockText">0 product(s) low on stock.</span>
                         </div>
-                        <button class="manage-prod-btn" onclick="switchAdminTab('products')">+ Add / Setup Products</button>
+                        <button type="button" class="manage-prod-btn" onclick="switchAdminTab('products')">+ Add / Setup Products</button>
                     </div>
 
                     <div class="table-responsive">
@@ -461,7 +460,7 @@
                         <h1 class="dash-main-title" style="margin-bottom: 5px;">Registered Customer Emails</h1>
                         <p style="font-size: 13px; color: #6b7280;">List of all customers who logged in or placed orders on your website.</p>
                     </div>
-                    <button class="confirm-order-btn" onclick="exportCustomerEmailsCSV()" style="width: auto !important; padding: 8px 18px !important;">
+                    <button type="button" class="confirm-order-btn" onclick="exportCustomerEmailsCSV()" style="width: auto !important; padding: 8px 18px !important;">
                         <i class="fa-solid fa-download"></i> Export CSV
                     </button>
                 </div>
@@ -505,7 +504,7 @@
             <div class="footer-col">
                 <h4>Shop</h4>
                 <ul>
-                    <li><a href="#products-section">All products</a></li>
+                    <li><a href="#products-section" onclick="filterByCategory('all')">All products</a></li>
                     <li><a href="#products-section" onclick="filterByCategory('Accessories')">Accessories</a></li>
                 </ul>
             </div>
