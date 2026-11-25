@@ -4,8 +4,6 @@
    Cloudflare Worker Image Upload
    ========================================================= */
 
-/* ---------------- FIREBASE IMPORTS ---------------- */
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
@@ -31,7 +29,6 @@ import {
     query,
     orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 
 /* ---------------- CONFIGURATION ---------------- */
 
@@ -72,13 +69,11 @@ let customerEmails = [];
 let selectedImageFile = null;
 
 let productsLoaded = false;
-let ordersLoaded = false;
 let migrationStarted = false;
 
 let unsubscribeProducts = null;
 let unsubscribeOrders = null;
 let unsubscribeEmails = null;
-
 
 /* ---------------- DEFAULT PRODUCTS ---------------- */
 
@@ -121,7 +116,6 @@ const defaultProducts = [
     }
 ];
 
-
 /* ---------------- LOCAL STORAGE ---------------- */
 
 function loadStorage(key, fallback) {
@@ -135,6 +129,7 @@ function loadStorage(key, fallback) {
 }
 
 const localProducts = loadStorage("sr_products_v9", defaultProducts);
+products = Array.isArray(localProducts) && localProducts.length > 0 ? localProducts : defaultProducts;
 orders = loadStorage("sr_orders_v9", []);
 customerEmails = loadStorage("sr_customer_emails_v1", []);
 cart = loadStorage("sr_cart_v1", []);
@@ -154,7 +149,6 @@ function saveCustomerEmails() {
 function saveCartToStorage() {
     localStorage.setItem("sr_cart_v1", JSON.stringify(cart));
 }
-
 
 /* ---------------- COMMON HELPERS ---------------- */
 
@@ -200,7 +194,6 @@ function showAuthError(error) {
     alert(messages[error.code] || error.message || "একটি সমস্যা হয়েছে।");
 }
 
-
 /* ---------------- CUSTOMER EMAIL LIST ---------------- */
 
 function saveCustomerEmail(user, method) {
@@ -228,7 +221,6 @@ function saveCustomerEmail(user, method) {
     }
 }
 
-
 /* ---------------- FIRESTORE PRODUCT SYNC ---------------- */
 
 async function migrateLocalProductsIfNeeded(snapshot) {
@@ -243,7 +235,7 @@ async function migrateLocalProductsIfNeeded(snapshot) {
     migrationStarted = true;
 
     try {
-        const sourceProducts = Array.isArray(localProducts)
+        const sourceProducts = Array.isArray(localProducts) && localProducts.length > 0
             ? localProducts
             : defaultProducts;
 
@@ -266,7 +258,6 @@ async function migrateLocalProductsIfNeeded(snapshot) {
         }
 
         alert("আগের প্রোডাক্টগুলো Firebase-এ সংরক্ষণ করা হয়েছে।");
-
     } catch (error) {
         console.error("Product migration error:", error);
         alert("পুরোনো প্রোডাক্ট Firebase-এ নেওয়া যায়নি। " + error.message);
@@ -320,10 +311,16 @@ function startProductsListener() {
                 await migrateLocalProductsIfNeeded(snapshot);
             }
 
-            products = snapshot.docs.map(item => ({
-                id: item.id,
-                ...item.data()
-            }));
+            if (snapshot.docs.length > 0) {
+                products = snapshot.docs.map(item => ({
+                    id: item.id,
+                    ...item.data()
+                }));
+            } else if (!productsLoaded) {
+                products = defaultProducts;
+            } else {
+                products = [];
+            }
 
             productsLoaded = true;
 
@@ -336,11 +333,11 @@ function startProductsListener() {
         },
         error => {
             console.error("Products listener error:", error);
-            alert("Firebase থেকে Product লোড করা যায়নি: " + error.message);
+            renderProducts(products);
+            updateCartUI();
         }
     );
 }
-
 
 /* ---------------- FIRESTORE ORDERS ---------------- */
 
@@ -366,7 +363,6 @@ function startOrdersListener() {
                 ...item.data()
             }));
 
-            ordersLoaded = true;
             saveOrdersToStorage();
             renderDashboardView();
         },
@@ -376,7 +372,6 @@ function startOrdersListener() {
         }
     );
 }
-
 
 /* ---------------- CUSTOMER EMAIL FIRESTORE SYNC ---------------- */
 
@@ -390,7 +385,6 @@ async function syncCustomerEmails() {
             emails: customerEmails,
             updatedAt: new Date().toISOString()
         });
-
     } catch (error) {
         console.error("Customer email sync error:", error);
     }
@@ -427,7 +421,6 @@ function startCustomerEmailsListener() {
     );
 }
 
-
 /* ---------------- AUTHENTICATION STATE ---------------- */
 
 onAuthStateChanged(auth, user => {
@@ -453,7 +446,6 @@ onAuthStateChanged(auth, user => {
             if (unsubscribeEmails) unsubscribeEmails();
             orders = [];
         }
-
     } else {
         if (authText) authText.textContent = "Login / Register";
         if (customerEmailInput) customerEmailInput.value = "";
@@ -467,7 +459,6 @@ onAuthStateChanged(auth, user => {
 
     startProductsListener();
 });
-
 
 /* ---------------- CUSTOMER AUTH MODAL ---------------- */
 
@@ -556,7 +547,6 @@ async function handleForgotPassword() {
         showAuthError(error);
     }
 }
-
 
 /* ---------------- ADMIN DASHBOARD ---------------- */
 
@@ -811,7 +801,6 @@ async function saveNewProduct(event) {
     }
 }
 
-
 /* ---------------- PRODUCT RENDERING ---------------- */
 
 function renderProducts(items) {
@@ -886,7 +875,6 @@ function filterByCategory(category) {
         (product.category || "").toLowerCase() === category.toLowerCase()
     ));
 }
-
 
 /* ---------------- CART SYSTEM ---------------- */
 
@@ -1012,7 +1000,6 @@ function updateCartUI() {
     updateCheckoutUI(subtotal, totalCount);
 }
 
-
 /* ---------------- CHECKOUT ---------------- */
 
 function openCheckoutModal() {
@@ -1100,7 +1087,6 @@ function calculateFinalTotal() {
     };
 }
 
-
 /* ---------------- ORDER SUBMISSION ---------------- */
 
 async function handleOrderSubmit(event) {
@@ -1180,8 +1166,8 @@ async function handleOrderSubmit(event) {
         for (const item of cart) {
             const product = products.find(p => sameId(p.id, item.id));
 
-            if (product) {
-                await updateDoc(doc(db, "products", String(product.id)), {
+            if (product && typeof product.id === "string") {
+                await updateDoc(doc(db, "products", product.id), {
                     stock: Math.max(0, Number(product.stock || 0) - item.quantity)
                 });
             }
@@ -1219,7 +1205,6 @@ async function handleOrderSubmit(event) {
 
             closeCheckoutModal();
         }, 3000);
-
     } catch (error) {
         console.error("Order submission error:", error);
 
@@ -1231,7 +1216,6 @@ async function handleOrderSubmit(event) {
         }
     }
 }
-
 
 /* ---------------- PRODUCT DETAILS ---------------- */
 
@@ -1275,7 +1259,6 @@ function closeProductModal() {
     if (modal) modal.style.display = "none";
 }
 
-
 /* ---------------- SHIPPING MODAL ---------------- */
 
 function openShippingModal() {
@@ -1287,7 +1270,6 @@ function closeShippingModal() {
     const modal = getElement("shippingModal");
     if (modal) modal.style.display = "none";
 }
-
 
 /* ---------------- CLOUDFLARE WORKER IMAGE UPLOAD ---------------- */
 
@@ -1346,7 +1328,6 @@ async function uploadProductImage(file) {
     return `https://${GITHUB_OWNER}.github.io/${GITHUB_REPO}/${filePath}`;
 }
 
-
 /* ---------------- GLOBAL WINDOW BINDINGS ---------------- */
 
 Object.assign(window, {
@@ -1379,3 +1360,6 @@ Object.assign(window, {
     openShippingModal,
     closeShippingModal
 });
+
+renderProducts(products);
+updateCartUI();
