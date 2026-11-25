@@ -70,7 +70,6 @@ let cart = [];
 
 let customerEmails = [];
 let selectedImageFile = null;
-let uploadedImageBase64 = null;
 
 let productsLoaded = false;
 let ordersLoaded = false;
@@ -623,6 +622,195 @@ function switchAdminTab(tab) {
     if (index === 0) renderDashboardView();
 }
 
+function renderDashboardView() {
+    const container = getElement("adminDashboardView");
+    if (!container) return;
+
+    if (!isAdminUser) {
+        container.innerHTML = "<p>Admin access required.</p>";
+        return;
+    }
+
+    const totalRevenue = orders.reduce((sum, ord) => sum + Number(ord.total || 0), 0);
+
+    const ordersHtml = orders.length === 0
+        ? "<p>No orders found yet.</p>"
+        : orders.map(ord => `
+            <div class="order-row">
+                <div><strong>Order ID:</strong> ${escapeHTML(ord.orderId || ord.id)} | <strong>Status:</strong> ${escapeHTML(ord.status || "Pending")}</div>
+                <div><strong>Customer:</strong> ${escapeHTML(ord.customerName || "")} (${escapeHTML(ord.customerPhone || "")})</div>
+                <div><strong>Address:</strong> ${escapeHTML(ord.customerAddress || "")}</div>
+                <div><strong>Items:</strong> ${escapeHTML(ord.itemsSummary || "")}</div>
+                <div><strong>Total:</strong> ${formatMoney(ord.total)} (${escapeHTML(ord.payMethod || "")})</div>
+            </div>
+        `).join("");
+
+    container.innerHTML = `
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div>Total Products</div>
+                <strong>${products.length}</strong>
+            </div>
+            <div class="stat-box">
+                <div>Total Orders</div>
+                <strong>${orders.length}</strong>
+            </div>
+            <div class="stat-box">
+                <div>Total Sales</div>
+                <strong>${formatMoney(totalRevenue)}</strong>
+            </div>
+        </div>
+        <h3>Recent Orders</h3>
+        ${ordersHtml}
+    `;
+}
+
+function renderAdminProductManageList() {
+    const container = getElement("adminProductManageList");
+    if (!container) return;
+
+    if (!isAdminUser) {
+        container.innerHTML = "";
+        return;
+    }
+
+    if (products.length === 0) {
+        container.innerHTML = "<p>No products in store.</p>";
+        return;
+    }
+
+    container.innerHTML = products.map(prod => `
+        <div class="manage-row" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="${escapeHTML(prod.image || PLACEHOLDER_PRODUCT_IMG)}"
+                     alt="${escapeHTML(prod.name)}"
+                     style="width:52px;height:52px;object-fit:cover;border-radius:6px;"
+                     onerror="this.src='${PLACEHOLDER_PRODUCT_IMG}';">
+                <div>
+                    <div><strong>${escapeHTML(prod.name)}</strong> (${escapeHTML(prod.category || "General")})</div>
+                    <div>Price: ${formatMoney(prod.price)} | Stock: ${Number(prod.stock ?? 0)}</div>
+                </div>
+            </div>
+            <button type="button" class="danger-btn" onclick='deleteProductItem(${JSON.stringify(String(prod.id))})'>Delete</button>
+        </div>
+    `).join("");
+}
+
+async function deleteProductItem(productId) {
+    if (!isAdminUser) return;
+    if (!confirm("আপনি কি এই Product-টি Delete করতে চান?")) return;
+
+    try {
+        await deleteDoc(doc(db, "products", String(productId)));
+        alert("Product Delete করা হয়েছে।");
+    } catch (error) {
+        console.error("Delete product error:", error);
+        alert("Product Delete করা যায়নি: " + error.message);
+    }
+}
+
+function renderCustomerEmails() {
+    const container = getElement("adminCustomerEmailsList");
+    if (!container) return;
+
+    if (!isAdminUser) {
+        container.innerHTML = "";
+        return;
+    }
+
+    if (!customerEmails || customerEmails.length === 0) {
+        container.innerHTML = "<p>No customer emails recorded yet.</p>";
+        return;
+    }
+
+    container.innerHTML = customerEmails.map(entry => `
+        <div class="email-row">
+            <div><strong>Email:</strong> ${escapeHTML(entry.email)}</div>
+            <div><strong>Method:</strong> ${escapeHTML(entry.method || "Login")} | <strong>Last Seen:</strong> ${escapeHTML(entry.lastLogin || entry.date || "")}</div>
+        </div>
+    `).join("");
+}
+
+function handleProductImageSelect(event) {
+    const file = event.target?.files?.[0] || null;
+    selectedImageFile = file;
+
+    const preview = getElement("newProdImagePreview");
+    if (!preview) return;
+
+    if (!file) {
+        preview.src = PLACEHOLDER_PREVIEW_IMG;
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        preview.src = String(reader.result || PLACEHOLDER_PREVIEW_IMG);
+    };
+    reader.readAsDataURL(file);
+}
+
+async function saveNewProduct(event) {
+    event.preventDefault();
+
+    if (!isAdminUser) {
+        alert("শুধুমাত্র Admin নতুন Product যোগ করতে পারবেন।");
+        return;
+    }
+
+    const name = getElement("newProdName")?.value.trim();
+    const category = getElement("newProdCategory")?.value || "General";
+    const price = Number(getElement("newProdPrice")?.value || 0);
+    const stock = Number(getElement("newProdStock")?.value ?? 0);
+    const description = getElement("newProdDesc")?.value.trim() || "";
+
+    if (!name || price <= 0) {
+        alert("সঠিক Product Name এবং Price দিন।");
+        return;
+    }
+
+    const saveBtn = getElement("saveProductBtn");
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Uploading...";
+    }
+
+    try {
+        let imageUrl = PLACEHOLDER_PRODUCT_IMG;
+
+        if (selectedImageFile) {
+            imageUrl = await uploadProductImage(selectedImageFile);
+        }
+
+        await addDoc(collection(db, "products"), {
+            name,
+            category,
+            price,
+            stock,
+            description,
+            image: imageUrl,
+            createdAt: new Date().toISOString()
+        });
+
+        const form = getElement("addProductForm");
+        if (form) form.reset();
+
+        selectedImageFile = null;
+        const preview = getElement("newProdImagePreview");
+        if (preview) preview.src = PLACEHOLDER_PREVIEW_IMG;
+
+        alert("নতুন Product সফলভাবে যুক্ত হয়েছে!");
+    } catch (error) {
+        console.error("Save product error:", error);
+        alert("Product সংরক্ষণ করা যায়নি: " + error.message);
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerText = "Save Product";
+        }
+    }
+}
+
 
 /* ---------------- PRODUCT RENDERING ---------------- */
 
@@ -1157,3 +1345,37 @@ async function uploadProductImage(file) {
 
     return `https://${GITHUB_OWNER}.github.io/${GITHUB_REPO}/${filePath}`;
 }
+
+
+/* ---------------- GLOBAL WINDOW BINDINGS ---------------- */
+
+Object.assign(window, {
+    openCustomerAuthModal,
+    closeCustomerAuthModal,
+    handleCustomerEmailLogin,
+    handleCustomerRegister,
+    handleGoogleLogin,
+    handleForgotPassword,
+    openAdminDashboardFromTop,
+    openAdminDashboard,
+    closeAdminDashboard,
+    switchAdminTab,
+    deleteProductItem,
+    handleProductImageSelect,
+    saveNewProduct,
+    openProductModal,
+    closeProductModal,
+    searchProducts,
+    filterByCategory,
+    addToCart,
+    directBuyNow,
+    decreaseQty,
+    removeFromCart,
+    toggleCartDrawer,
+    openCheckoutModal,
+    closeCheckoutModal,
+    calculateFinalTotal,
+    handleOrderSubmit,
+    openShippingModal,
+    closeShippingModal
+});
