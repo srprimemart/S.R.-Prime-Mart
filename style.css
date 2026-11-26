@@ -1267,15 +1267,15 @@ textarea.form-control {
         margin: 10vh auto;
     }
 }
-/* Mobile Hero Banner */
+/* Mobile Hero Banner - Taller */
 @media (max-width: 768px) {
     .hero-banner {
-        height: 50vh;
-        min-height: 300px;
-        max-height: 420px;
-        padding: 0;
+        height: 70vh !important;
+        min-height: 520px !important;
+        max-height: 650px;
+        padding: 0 !important;
         background-size: cover;
-        background-position: center;
+        background-position: center center;
         background-repeat: no-repeat;
     }
 }
